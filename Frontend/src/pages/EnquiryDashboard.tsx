@@ -58,7 +58,7 @@ export default function EnquiryDashboard() {
 
     const fetchEnquiries = async () => {
         try {
-            const response = await axios.get("http://localhost:5000/api/enquiries");
+            const response = await axios.get("https://enquryformss-1.onrender.com/api/enquiries");
             console.log("Enquiries Data:", response.data);
             setEnquiries(response.data.data || []);
         } catch (error) {
