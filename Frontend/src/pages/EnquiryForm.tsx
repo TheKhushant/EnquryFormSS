@@ -74,7 +74,7 @@ export default function EnquiryForm() {
         try {
             // Backend API Call
             const response = await axios.post(
-                `${import.meta.env.VITE_API_URL}/api/enquiries`,
+                `https://enquryformss-1.onrender.com/api/enquiries`,
                 submissionData
             );
 
