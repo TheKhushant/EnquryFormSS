@@ -102,11 +102,24 @@ export default function EnquiryForm() {
                 whomToMeet: "",
                 otherName: "",
             });
+        } catch (error: any) {
+            console.log("FULL ERROR:", error);
 
-        } catch (error) {
-            console.log(error);
-            alert("Something went wrong!");
+            if (error.response) {
+                console.log("Backend Error:", error.response.data);
+                console.log("Status:", error.response.status);
+            } else if (error.request) {
+                console.log("No Response From Server");
+            } else {
+                console.log("Error Message:", error.message);
+            }
+
+            alert(error?.response?.data?.message || "Something went wrong!");
         }
+        // } catch (error) {
+        //     console.log(error);
+        //     alert("Something went wrong!");
+        // }
 
         // Reset form
         // setFormData({
