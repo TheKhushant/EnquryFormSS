@@ -7,8 +7,8 @@ export default function Footer() {
         <div className="space-y-3">
           <div className="inline-flex items-center gap-2">
            <img
-  src="/newlogo.png"
-  alt="Skill Training Center Logo"
+  src="/ssgrp.png"
+  alt="SS GROUP "
   className="
     w-16 h-16           /* default size */
     sm:w-12 sm:h-12     /* small screens */
@@ -21,7 +21,7 @@ export default function Footer() {
 />
 
             <span className="text-lg font-extrabold tracking-tight text-white">
-              Skill Training Center
+              SS GROUP
             </span>
           </div>
           <p className="text-sm text-gray-400">
@@ -76,7 +76,7 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="border-t border-gray-700 py-6 text-center text-xs text-gray-400">
+      {/* <div className="border-t border-gray-700 py-6 text-center text-xs text-gray-400">
         © {new Date().getFullYear()} Skill Training Center. All rights reserved. <br />
         Developed by{" "}
         <a
@@ -87,7 +87,7 @@ export default function Footer() {
         >
           Tejas khope 
         </a>.
-      </div>
+      </div> */}
     </footer>
   );
 }
