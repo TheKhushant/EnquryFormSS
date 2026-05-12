@@ -204,17 +204,14 @@ export default function EnquiryForm() {
                                             className={`w-full pl-12 pr-6 py-4 rounded-3xl bg-[#e0e5ec] ${insetShadow} focus:shadow-[inset_8px_8px_16px_#bebebe,inset_-8px_-8px_16px_#ffffff] transition-all outline-none text-gray-800`}
                                         >
                                             <option value="">Select Your College</option>
-                                            <option value="Shri Ramdeobaba College of Engineering and Management">
-                                                Shri Ramdeobaba College of Engineering and Management
+                                            <option value="Dr. Ambedkar College, Deekshabhoomi">
+                                                Dr. Ambedkar College, Deekshabhoomi
                                             </option>
                                             <option value="G H Raisoni College of Engineering">
                                                 G H Raisoni College of Engineering
                                             </option>
-                                            <option value="St. Vincent Pallotti College of Engineering and Technology">
-                                                St. Vincent Pallotti College of Engineering and Technology
-                                            </option>
-                                            <option value="S. B. Jain Institute of Technology, Management and Research">
-                                                S. B. Jain Institute of Technology, Management and Research
+                                            <option value="Guru Nanak Institute of Engineering and Technology">
+                                                Guru Nanak Institute of Engineering and Technology
                                             </option>
                                             <option value="JD College of Engineering and Management">
                                                 JD College of Engineering and Management
@@ -222,23 +219,26 @@ export default function EnquiryForm() {
                                             <option value="Jhulelal Institute of Technology">
                                                 Jhulelal Institute of Technology
                                             </option>
-                                            <option value="Prerna College of Commerce and Science">
-                                                Prerna College of Commerce and Science
-                                            </option>
-                                            <option value="Tulsiramji Gaikwad-Patil College of Engineering and Technology">
-                                                Tulsiramji Gaikwad-Patil College of Engineering and Technology
-                                            </option>
-                                            <option value="Dr. Ambedkar College, Deekshabhoomi">
-                                                Dr. Ambedkar College, Deekshabhoomi
-                                            </option>
-                                            <option value="Guru Nanak Institute of Engineering and Technology">
-                                                Guru Nanak Institute of Engineering and Technology
-                                            </option>
                                             <option value="Karmaveer Dadasaheb Kannamwar College of Engineering">
                                                 Karmaveer Dadasaheb Kannamwar College of Engineering
                                             </option>
+                                            <option value="Prerna College of Commerce and Science">
+                                                Prerna College of Commerce and Science
+                                            </option>
+                                            <option value="S. B. Jain Institute of Technology, Management and Research">
+                                                S. B. Jain Institute of Technology, Management and Research
+                                            </option>
+                                            <option value="Shri Ramdeobaba College of Engineering and Management">
+                                                Shri Ramdeobaba College of Engineering and Management
+                                            </option>
+                                            <option value="St. Vincent Pallotti College of Engineering and Technology">
+                                                St. Vincent Pallotti College of Engineering and Technology
+                                            </option>
                                             <option value="Suryoday College of Engineering and Technology">
                                                 Suryoday College of Engineering and Technology
+                                            </option>
+                                            <option value="Tulsiramji Gaikwad-Patil College of Engineering and Technology">
+                                                Tulsiramji Gaikwad-Patil College of Engineering and Technology
                                             </option>
                                             <option className="font-bold" value="Other">Other</option>
                                             {/* <option value="Other">Other</option>    */}
