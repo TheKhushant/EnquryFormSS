@@ -168,7 +168,7 @@ export default function EnquiryForm() {
                                             onChange={handleChange}
                                             required
                                             className={`w-full pl-12 pr-6 py-4 rounded-3xl bg-[#e0e5ec] ${insetShadow} focus:shadow-[inset_8px_8px_16px_#bebebe,inset_-8px_-8px_16px_#ffffff] transition-all outline-none`}
-                                            placeholder="John Doe"
+                                            placeholder="Your Name Here"
                                         />
                                     </div>
                                 </div>
@@ -278,7 +278,7 @@ export default function EnquiryForm() {
                                             onChange={handleChange}
                                             required
                                             className={`w-full pl-12 pr-6 py-4 rounded-3xl bg-[#e0e5ec] ${insetShadow} focus:shadow-[inset_8px_8px_16px_#bebebe,inset_-8px_-8px_16px_#ffffff] transition-all outline-none`}
-                                            placeholder="john@example.com"
+                                            placeholder="mail@example.com"
                                         />
                                     </div>
                                 </div>
@@ -287,8 +287,8 @@ export default function EnquiryForm() {
                             {/* Enquiry For Buttons */}
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-3">Enquiry For</label>
-                                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                                    {["Internship", "Job", "Course", "Other"].map((type) => (
+                                <div className="grid grid-cols-2 md:grid-cols-4 gap-1">
+                                    {["Internship", "Job", "Course", "Hiring", "Other"].map((type) => (
                                         <button
                                             key={type}
                                             type="button"
