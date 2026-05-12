@@ -14,17 +14,11 @@ export default function EnquiryHeader() {
         <div className="flex items-center gap-3">
           <Link to="/" className="flex items-center">
             <img
-              src="/ssgrp.png"        // ← Put your SS GRP logo here
+              src="/ssgrp.png"
               alt="SS GRP Logo"
               className="w-[30px] md:w-[50px] h-auto object-contain"
             />
           </Link>
-          
-          {/* Current Location Indicator (Optional) */}
-          {/* <div className="hidden sm:flex flex-col text-xs">
-            <span className="text-gray-500">Current Location</span>
-            <span className="font-semibold text-gray-700">Skill Training Center</span>
-          </div> */}
         </div>
 
         {/* Center: Welcome Text */}
@@ -37,16 +31,10 @@ export default function EnquiryHeader() {
           </p>
         </div>
 
-        {/* Right: Scanner Info + Admin Dashboard Button */}
+        {/* Right: Admin Button */}
         <div className="flex items-center gap-4">
-          {/* Scanner Message */}
-          {/* <div className="hidden sm:flex items-center gap-2 bg-white/70 px-4 py-2 rounded-2xl text-sm text-gray-700">
-            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-            Scanner Active
-          </div> */}
-
-          {/* Admin Dashboard Button */}
-          <Link to="/dashboard">
+          {/* Admin Dashboard Button - Updated */}
+          <Link to="/admin-login">
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.97 }}
