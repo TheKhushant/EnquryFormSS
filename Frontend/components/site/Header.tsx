@@ -14,9 +14,9 @@ export default function EnquiryHeader() {
         <div className="flex items-center gap-3">
           <Link to="/" className="flex items-center">
             <img
-              src="/ssgrp-logo.png"        // ← Put your SS GRP logo here
+              src="/ssgrp.png"        // ← Put your SS GRP logo here
               alt="SS GRP Logo"
-              className="w-[130px] md:w-[150px] h-auto object-contain"
+              className="w-[30px] md:w-[50px] h-auto object-contain"
             />
           </Link>
           
@@ -40,10 +40,10 @@ export default function EnquiryHeader() {
         {/* Right: Scanner Info + Admin Dashboard Button */}
         <div className="flex items-center gap-4">
           {/* Scanner Message */}
-          <div className="hidden sm:flex items-center gap-2 bg-white/70 px-4 py-2 rounded-2xl text-sm text-gray-700">
+          {/* <div className="hidden sm:flex items-center gap-2 bg-white/70 px-4 py-2 rounded-2xl text-sm text-gray-700">
             <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
             Scanner Active
-          </div>
+          </div> */}
 
           {/* Admin Dashboard Button */}
           <Link to="/dashboard">
