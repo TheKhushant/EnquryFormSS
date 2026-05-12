@@ -151,9 +151,9 @@ export default function EnquiryForm() {
                         Submit Another Enquiry
                     </motion.button>
 
-                    <p className="text-sm text-gray-500">
+                    {/* <p className="text-sm text-gray-500">
                         You will receive a confirmation on your email shortly
-                    </p>
+                    </p> */}
                 </div>
             </div>
         </motion.div>
