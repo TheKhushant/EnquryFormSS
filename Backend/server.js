@@ -19,7 +19,7 @@ const app = express();
 //     credentials: true
 // }));
 app.use(cors({
-    origin: ['https://enqury-form-ss.vercel.app'],
+    origin: ['https://enqury-form-ss.vercel.app' , 'http://localhost:5173'],
     credentials: true
 }));
 
