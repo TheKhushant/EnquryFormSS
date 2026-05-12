@@ -15,7 +15,7 @@ export default function EnquiryHeader() {
             <img
               src="/ssgrp.png"
               alt="SS GRP Logo"
-              className="w-[32px] md:w-[48px] h-auto object-contain"
+              className="w-[47px] md:w-[48px] h-auto object-contain"
             />
           </Link>
 

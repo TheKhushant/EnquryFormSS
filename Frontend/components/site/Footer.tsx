@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 export default function Footer() {
   return (
     <footer className="border-t border-gray-700 bg-gray-900">
-      <div className="container grid gap-8 py-10 md:grid-cols-4">
+      <div className="container grid gap-8 py-10 md:grid-cols-4 ml-4">
         <div className="space-y-3">
           <div className="inline-flex items-center gap-2">
            <img
@@ -30,7 +30,7 @@ export default function Footer() {
           </p>
         </div>
 
-        <div>
+        {/* <div>
           <h4 className="mb-3 text-sm font-bold text-white">Company</h4>
           <ul className="space-y-2 text-sm text-gray-300">
             <li>
@@ -61,7 +61,7 @@ export default function Footer() {
               <Link to="/corporate-training" className="hover:text-blue-400">Corporate</Link>
             </li>
           </ul>
-        </div>
+        </div> */}
 
         <div>
           <h4 className="mb-3 text-sm font-bold text-white">Address</h4>
