@@ -31,22 +31,22 @@ export default function StatsGrid({ enquiries }: StatsGridProps) {
     ];
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
             {stats.map((stat, i) => (
                 <motion.div
                     key={i}
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: i * 0.1 }}
-                    className="bg-[#e0e5ec] rounded-3xl p-8 shadow-[10px_10px_20px_#bebebe,-10px_-10px_20px_#ffffff]"
+                    className="bg-[#e0e5ec] rounded-3xl p-4 shadow-[10px_10px_20px_#bebebe,-10px_-10px_20px_#ffffff]"
                 >
                     <div className="flex justify-between items-start">
                         <div>
                             <p className="text-gray-600 text-sm">{stat.label}</p>
                             <p className="text-5xl font-bold text-gray-800 mt-3">{stat.value}</p>
                         </div>
-                        <div className="p-4 rounded-2xl bg-white/60">
-                            <stat.icon className="w-8 h-8" style={{ color: accentColor }} />
+                        <div className="p-1 rounded-2xl bg-white/60">
+                            <stat.icon className="w-5 h-5" style={{ color: accentColor }} />
                         </div>
                     </div>
                     <p className="text-emerald-600 text-sm font-medium mt-4 flex items-center gap-1">

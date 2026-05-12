@@ -53,7 +53,8 @@ export default function EnquiryDashboard() {
                             <p className="text-gray-600 mt-2">Real-time insights from your enquiry form</p>
                         </div>
 
-                        <div className="flex gap-3">
+                        {/* <div className="flex gap-3"> */}
+                        <div className="hidden sm:flex gap-3">
                             {(["daily", "weekly", "monthly"] as const).map((period) => (
                                 <button
                                     key={period}
