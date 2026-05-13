@@ -1,14 +1,16 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Layout from "../../components/site/Layout";
 import axios from "axios";
+import { io, Socket } from "socket.io-client";
+import toast from "react-hot-toast";
 
 import StatsGrid from "../../components/site/StatsGrid";
 import TrendChart from "../../components/site/TrendChart";
 import TypeBreakdown from "../../components/site/TypeBreakdown";
 import TopColleges from "../../components/site/TopColleges";
-import RecentEnquiries from "../../components/site/RecentEnquiries.tsx";
-
-import type { Enquiry } from "../../components/site/types.ts";
+import RecentEnquiries from "../../components/site/RecentEnquiries";
+import voice from "../assets/notify.mp3";
+import type { Enquiry } from "../../components/site/types";
 
 export default function EnquiryDashboard() {
     const [enquiries, setEnquiries] = useState<Enquiry[]>([]);
@@ -17,20 +19,86 @@ export default function EnquiryDashboard() {
     const [showComparison, setShowComparison] = useState(false);
     const [filterPeriod, setFilterPeriod] = useState<"daily" | "weekly" | "monthly" | "yearly">("daily");
 
+    const socketRef = useRef<Socket | null>(null);
+
+    // Request notification permission on mount
     useEffect(() => {
-        fetchEnquiries();
+        if ("Notification" in window && Notification.permission === "default") {
+            Notification.requestPermission();
+        }
     }, []);
+
+    // Socket connection
+    useEffect(() => {
+        const socket = io("https://enquryformss-2.onrender.com", {
+            transports: ["websocket", "polling"],
+            reconnection: true,
+            reconnectionAttempts: 5,
+        });
+
+        socketRef.current = socket;
+
+        socket.on("connect", () => {
+            console.log("✅ Socket connected");
+        });
+
+        socket.on("new-enquiry", (data: Enquiry) => {
+            console.log("📩 New enquiry received:", data);
+
+            setEnquiries((prev) => [data, ...prev]);
+            playNotificationSound();
+            showNotification();
+        });
+
+        socket.on("connect_error", (err) => {
+            console.error("Socket connection error:", err);
+        });
+
+        return () => {
+            socket.disconnect();
+        };
+    }, []);
+
+    const playNotificationSound = () => {
+        try {
+            const audio = new Audio(voice);
+            audio.volume = 0.7;
+            audio.play();
+        } catch (error) {
+            console.error("Audio playback failed:", error);
+        }
+    };
+
+    const showNotification = () => {
+        toast.success("New Enquiry Received!", {
+            duration: 4000,
+            position: "top-right",
+        });
+
+        // Browser notification
+        if ("Notification" in window && Notification.permission === "granted") {
+            new Notification("New Enquiry", {
+                body: "A new enquiry has arrived",
+                icon: "/favicon.ico", // Optional
+            });
+        }
+    };
 
     const fetchEnquiries = async () => {
         try {
             const response = await axios.get("https://enquryformss-2.onrender.com/api/enquiries");
-            setEnquiries(response.data.data || []);
+            setEnquiries(response.data.data || response.data || []);
         } catch (error) {
             console.error("Error fetching enquiries:", error);
+            toast.error("Failed to load enquiries");
         } finally {
             setLoading(false);
         }
     };
+
+    useEffect(() => {
+        fetchEnquiries();
+    }, []);
 
     if (loading) {
         return (
@@ -53,7 +121,6 @@ export default function EnquiryDashboard() {
                             <p className="text-gray-600 mt-2">Real-time insights from your enquiry form</p>
                         </div>
 
-                        {/* <div className="flex gap-3"> */}
                         <div className="hidden sm:flex gap-3">
                             {(["daily", "weekly", "monthly"] as const).map((period) => (
                                 <button
@@ -61,8 +128,8 @@ export default function EnquiryDashboard() {
                                     onClick={() => setFilterPeriod(period)}
                                     className={`px-5 py-3 rounded-3xl font-medium transition-all ${
                                         filterPeriod === period
-                                            ? "bg-gradient-to-r from-[#e5bcfb] to-[#c084fc] text-white"
-                                            : "bg-[#e0e5ec] shadow-[6px_6px_12px_#bebebe,-6px_-6px_12px_#ffffff]"
+                                            ? "bg-gradient-to-r from-[#e5bcfb] to-[#c084fc] text-white shadow-lg"
+                                            : "bg-[#e0e5ec] shadow-[6px_6px_12px_#bebebe,-6px_-6px_12px_#ffffff] hover:shadow-inner"
                                     }`}
                                 >
                                     {period.charAt(0).toUpperCase() + period.slice(1)}
@@ -82,9 +149,7 @@ export default function EnquiryDashboard() {
                         />
 
                         <TypeBreakdown enquiries={enquiries} />
-
                         <TopColleges enquiries={enquiries} />
-
                         <RecentEnquiries enquiries={enquiries} />
                     </div>
                 </div>
