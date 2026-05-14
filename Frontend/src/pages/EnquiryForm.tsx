@@ -492,7 +492,7 @@ export default function EnquiryForm() {
                                         </label>
 
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                            {["Mr. Allan Abhraham", "Mr. Viraj Patle", "Dr. N. G. Alvi", "Mrs. Manisha Mali", "Other"].map((person) => (
+                                            {["Dr. N. G. Alvi", "Mr. Allan Abhraham", "Mrs. Manisha Mali","Mr. Viraj Patle", "Other"].map((person) => (
                                                 <label
                                                     key={person}
                                                     className={`flex items-center gap-3 p-1 rounded-3xl cursor-pointer transition-all ${formData.whomToMeet === person
