@@ -208,6 +208,7 @@ export default function RecentEnquiries({ enquiries, filterPeriod }: RecentEnqui
                                         <th className="text-left py-3 px-3 text-xs font-medium">Duration</th>
                                         <th className="text-left py-3 px-3 text-xs font-medium">Experience</th>
                                         <th className="text-left py-3 px-3 text-xs font-medium">Whom to Meet</th>
+                                        <th className="text-left py-3 px-3 text-xs font-medium">Reference</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -237,7 +238,17 @@ export default function RecentEnquiries({ enquiries, filterPeriod }: RecentEnqui
                                                 {enq.internshipDuration || "—"}
                                             </td>
                                             <td className="py-4 px-3 text-xs text-gray-600">{enq.experience || "—"}</td>
-                                            <td className="py-4 px-3 text-xs text-gray-600">{enq.whomToMeet || "—"}</td>
+                                            <td className="py-4 px-3 text-xs text-gray-600">
+                                                {enq.whomToMeet || "—"}
+                                            </td>
+
+                                            <td className="py-4 px-3 text-xs text-gray-600">
+                                                {enq.reference === "Friends" || enq.reference === "Teacher"
+                                                    ? `${enq.reference} (${((enq as any).referenceName || "N/A")})`
+                                                    : enq.reference === "Other"
+                                                        ? ((enq as any).referenceOther || "Other")
+                                                        : enq.reference || "—"}
+                                            </td>
                                         </tr>
                                     ))}
                                 </tbody>
