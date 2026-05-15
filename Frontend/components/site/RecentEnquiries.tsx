@@ -4,7 +4,7 @@ import type { Enquiry } from "./types";
 
 interface RecentEnquiriesProps {
     enquiries: Enquiry[];
-    filterPeriod: "daily" | "weekly" | "monthly";
+    filterPeriod: "daily" | "weekly" | "monthly" | "yearly";
 }
 
 export default function RecentEnquiries({ enquiries, filterPeriod }: RecentEnquiriesProps) {

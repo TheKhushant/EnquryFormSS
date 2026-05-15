@@ -6,7 +6,7 @@ const accentColor = "#e5bcfb";
 
 interface StatsGridProps {
     enquiries: Enquiry[];
-    filterPeriod: "daily" | "weekly" | "monthly";
+    filterPeriod: "daily" | "weekly" | "monthly" | "yearly";
 }
 
 export default function StatsGrid({ enquiries, filterPeriod }: StatsGridProps) {

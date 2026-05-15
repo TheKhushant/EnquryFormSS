@@ -33,7 +33,7 @@ interface TrendChartProps {
     setChartView: (view: "daily" | "weekly") => void;
     showComparison: boolean;
     setShowComparison: (val: boolean) => void;
-    filterPeriod: "daily" | "weekly" | "monthly";
+    filterPeriod: "daily" | "weekly" | "monthly" | "yearly";
     enquiries: any[]; // Adjust type as needed
 }
 

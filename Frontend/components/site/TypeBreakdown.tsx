@@ -4,7 +4,8 @@ import type { Enquiry } from "./types";
 
 interface TypeBreakdownProps {
     enquiries: Enquiry[];
-  filterPeriod: "daily" | "weekly" | "monthly";
+    filterPeriod: "daily" | "weekly" | "monthly" | "yearly";
+
 
 }
 
