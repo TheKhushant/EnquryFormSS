@@ -6,34 +6,46 @@ const enquirySchema = new mongoose.Schema({
     email: { type: String, required: true },
     college: { type: String, required: true },
     customCollege: { type: String },
-    
+
     enquiryFor: { 
         type: String, 
-        enum: ['Internship', 'Job', 'Course','Hiring', 'Certificate/OfferLetter', 'Other'],
+        enum: ['Internship', 'Job', 'Course', 'Hiring', 'Certificate/OfferLetter', 'Other'],
         required: true 
     },
 
-    // Internship fields
+    // Optional fields
     internshipDuration: String,
     internshipDomain: String,
-
-    // Course fields
     courseName: String,
-
-    // Job fields
     jobType: String,
     jobCategory: String,
     experience: String,
-
-    // Whom to meet
     whomToMeet: String,
+
+    // ==================== REFERENCE FIELDS (Fixed) ====================
+    reference: { 
+        type: String,
+        // enum: ['Instagram', 'Facebook', 'Ads', 'Friends', 'Teacher', 'Newspaper', 'Other', null, undefined, '']
+        default: "",
+    },
+    
+    referenceName: {
+        type: String,
+        default: "",
+    },
+
+    referenceOther: {
+        type: String,
+        default: "",
+    },
 
     status: {
         type: String,
         enum: ['New', 'Contacted', 'In Progress', 'Closed'],
         default: 'New'
-    },
-    createdAt: { type: Date, default: Date.now }
-}, { timestamps: true });
+    }
+}, { 
+    timestamps: true 
+});
 
 module.exports = mongoose.model('Enquiry', enquirySchema);

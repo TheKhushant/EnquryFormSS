@@ -9,46 +9,87 @@ import {
     Tooltip,
     Area,
 } from "recharts";
-
-const chartData = {
-    daily: [
-        { label: "Mon", current: 12, previous: 8 },
-        { label: "Tue", current: 18, previous: 10 },
-        { label: "Wed", current: 9, previous: 6 },
-        { label: "Thu", current: 22, previous: 14 },
-        { label: "Fri", current: 31, previous: 20 },
-        { label: "Sat", current: 15, previous: 12 },
-        { label: "Sun", current: 8, previous: 5 },
-    ],
-    weekly: [
-        { label: "Week 1", current: 80, previous: 60 },
-        { label: "Week 2", current: 120, previous: 95 },
-        { label: "Week 3", current: 95, previous: 70 },
-        { label: "Week 4", current: 140, previous: 110 },
-    ],
-};
+import { useMemo } from "react";
 
 interface TrendChartProps {
-    chartView: "daily" | "weekly";
-    setChartView: (view: "daily" | "weekly") => void;
+    enquiries: any[];
+    filterPeriod: "daily" | "weekly" | "monthly" | "yearly";
+    chartView?: "daily" | "weekly"; // keeping for backward compatibility
+    setChartView?: any;
     showComparison: boolean;
     setShowComparison: (val: boolean) => void;
-    filterPeriod: "daily" | "weekly" | "monthly" | "yearly";
-    enquiries: any[]; // Adjust type as needed
 }
 
 export default function TrendChart({
-    chartView,
-    setChartView,
+    enquiries,
+    filterPeriod,
     showComparison,
     setShowComparison,
-    filterPeriod,
-    enquiries
 }: TrendChartProps) {
-    const currentData = chartData[chartView];
-    const totalCurrent = currentData.reduce((sum, item) => sum + item.current, 0);
-    const totalPrevious = currentData.reduce((sum, item) => sum + (item.previous || 0), 0);
-    
+
+    // ==================== DYNAMIC CHART DATA ====================
+    const chartData = useMemo(() => {
+        if (!enquiries.length) return [];
+
+        const dataMap = new Map();
+
+        enquiries.forEach(enq => {
+            const date = new Date(enq.createdAt);
+            if (isNaN(date.getTime())) return;
+
+            let label: string;
+            let sortKey: string;
+
+            switch (filterPeriod) {
+                case "daily":
+                    label = date.getHours().toString().padStart(2, '0') + ":00";
+                    sortKey = date.getHours().toString().padStart(2, '0');
+                    break;
+
+                case "weekly":
+                    label = date.toLocaleDateString('en-IN', { weekday: 'short' });
+                    sortKey = date.getDay().toString();
+                    break;
+
+                case "monthly":
+                    label = date.getDate().toString();
+                    sortKey = date.getDate().toString().padStart(2, '0');
+                    break;
+
+                case "yearly":
+                    label = date.toLocaleDateString('en-IN', { month: 'short' });
+                    sortKey = date.getMonth().toString().padStart(2, '0');
+                    break;
+
+                default:
+                    label = "Unknown";
+                    sortKey = "0";
+            }
+
+            dataMap.set(label, (dataMap.get(label) || 0) + 1);
+        });
+
+        // Convert to array and sort
+        let result = Array.from(dataMap.entries()).map(([label, value]) => ({
+            label,
+            current: value,
+            previous: Math.floor(value * (0.7 + Math.random() * 0.6)), // Mock previous for demo
+        }));
+
+        // Sort properly
+        if (filterPeriod === "daily" || filterPeriod === "monthly") {
+            result.sort((a, b) => parseInt(a.label) - parseInt(b.label));
+        } else if (filterPeriod === "yearly") {
+            const monthOrder = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            result.sort((a, b) => monthOrder.indexOf(a.label) - monthOrder.indexOf(b.label));
+        }
+
+        return result;
+    }, [enquiries, filterPeriod]);
+
+    const totalCurrent = chartData.reduce((sum, item) => sum + item.current, 0);
+    const totalPrevious = chartData.reduce((sum, item) => sum + (item.previous || 0), 0);
+
     const growth = totalPrevious > 0 
         ? Math.round(((totalCurrent - totalPrevious) / totalPrevious) * 100) 
         : 0;
@@ -59,8 +100,8 @@ export default function TrendChart({
             <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6">
                 <div>
                     <h3 className="text-2xl font-semibold text-gray-800">Enquiry Trend</h3>
-                    <p className="text-gray-600 text-sm mt-1">
-                        {chartView === "daily" ? "This Week" : "This Month"}
+                    <p className="text-gray-600 text-sm mt-1 capitalize">
+                        {filterPeriod} View • {totalCurrent} Enquiries
                     </p>
                 </div>
 
@@ -81,60 +122,24 @@ export default function TrendChart({
                 </div>
 
                 {/* Controls */}
-                <div className="flex items-center gap-2">
-                    {/* Mobile Tabs */}
-                    <div className="sm:hidden flex bg-white rounded-2xl p-1 shadow-sm">
-                        <button
-                            onClick={() => setChartView("daily")}
-                            className={`px-5 py-2 rounded-xl text-sm font-medium transition-all ${
-                                chartView === "daily" 
-                                    ? "bg-purple-600 text-white shadow" 
-                                    : "text-gray-600 hover:bg-gray-100"
-                            }`}
-                        >
-                            Daily
-                        </button>
-                        <button
-                            onClick={() => setChartView("weekly")}
-                            className={`px-5 py-2 rounded-xl text-sm font-medium transition-all ${
-                                chartView === "weekly" 
-                                    ? "bg-purple-600 text-white shadow" 
-                                    : "text-gray-600 hover:bg-gray-100"
-                            }`}
-                        >
-                            Weekly
-                        </button>
-                    </div>
-
-                    {/* Desktop Controls */}
-                    <div className="hidden sm:flex gap-3">
-                        <select
-                            value={chartView}
-                            onChange={(e) => setChartView(e.target.value as "daily" | "weekly")}
-                            className="px-5 py-2.5 rounded-2xl bg-white shadow border border-gray-200 text-sm focus:outline-none focus:border-purple-400"
-                        >
-                            <option value="daily">Daily View</option>
-                            <option value="weekly">Weekly View</option>
-                        </select>
-
-                        <button
-                            onClick={() => setShowComparison(!showComparison)}
-                            className={`px-5 py-2.5 rounded-2xl text-sm font-medium transition-all flex items-center gap-2 ${
-                                showComparison 
-                                    ? "bg-purple-600 text-white" 
-                                    : "bg-white shadow border border-gray-200 hover:bg-gray-50"
-                            }`}
-                        >
-                            {showComparison ? "Hide Comparison" : "Compare Previous"}
-                        </button>
-                    </div>
+                <div className="flex items-center gap-3">
+                    <button
+                        onClick={() => setShowComparison(!showComparison)}
+                        className={`px-5 py-2.5 rounded-2xl text-sm font-medium transition-all flex items-center gap-2 ${
+                            showComparison 
+                                ? "bg-purple-600 text-white" 
+                                : "bg-white shadow border border-gray-200 hover:bg-gray-50"
+                        }`}
+                    >
+                        {showComparison ? "Hide Comparison" : "Compare Previous"}
+                    </button>
                 </div>
             </div>
 
             {/* Chart */}
-            <div className="">
-                <ResponsiveContainer width="100%" height={260}>
-                    <LineChart data={currentData} margin={{ top: 30, right: 5, left: -35, bottom: 55 }}>
+            <div className="mt-4">
+                <ResponsiveContainer width="100%" height={280}>
+                    <LineChart data={chartData} margin={{ top: 20, right: 20, left: -20, bottom: 40 }}>
                         <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                         
                         <XAxis 
@@ -142,6 +147,8 @@ export default function TrendChart({
                             stroke="#6b7280" 
                             fontSize={13}
                             tickLine={false}
+                            angle={filterPeriod === "monthly" ? -45 : 0}
+                            textAnchor={filterPeriod === "monthly" ? "end" : "middle"}
                         />
                         
                         <YAxis 
@@ -153,7 +160,6 @@ export default function TrendChart({
 
                         <Tooltip content={<CustomTooltip />} />
 
-                        {/* Area under current line */}
                         <Area
                             type="monotone"
                             dataKey="current"
@@ -162,7 +168,6 @@ export default function TrendChart({
                             fillOpacity={0.08}
                         />
 
-                        {/* Current Line */}
                         <Line
                             type="monotone"
                             dataKey="current"
@@ -172,7 +177,6 @@ export default function TrendChart({
                             activeDot={{ r: 7, fill: "#c084fc" }}
                         />
 
-                        {/* Previous Line */}
                         {showComparison && (
                             <Line
                                 type="monotone"
@@ -188,7 +192,7 @@ export default function TrendChart({
             </div>
 
             {/* Legend */}
-            <div className="flex flex-wrap gap-x-6 gap-y-2 justify-center text-sm">
+            <div className="flex flex-wrap gap-x-6 gap-y-2 justify-center text-sm mt-4">
                 <div className="flex items-center gap-2">
                     <div className="w-3 h-0.5 bg-[#c084fc] rounded" />
                     <span className="text-gray-700">Current Period</span>
@@ -212,19 +216,16 @@ const CustomTooltip = ({ active, payload, label }: any) => {
         <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white shadow-xl rounded-2xl p-4 border border-gray-100 text-sm"
+            className="bg-white shadow-xl rounded-2xl p-4 border border-gray-100 text-sm z-50"
         >
             <p className="font-medium text-gray-800 mb-3">{label}</p>
             
             {payload.map((entry: any, index: number) => (
-                <div key={index} className="flex items-center justify-between gap-6 mb-1">
+                <div key={index} className="flex items-center justify-between gap-8 mb-1">
                     <div className="flex items-center gap-2">
-                        <div 
-                            className="w-3 h-3 rounded-full" 
-                            style={{ backgroundColor: entry.color }}
-                        />
+                        <div className="w-3 h-3 rounded-full" style={{ backgroundColor: entry.color }} />
                         <span className="text-gray-600">
-                            {entry.name === "current" ? "Current" : "Previous"}
+                            {entry.name === "current" ? "Enquiries" : "Previous"}
                         </span>
                     </div>
                     <span className="font-semibold text-gray-800">{entry.value}</span>

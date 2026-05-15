@@ -4,7 +4,7 @@ import type { Enquiry } from "./types.ts";
 
 interface TopCollegesProps {
     enquiries: Enquiry[];
-    filterPeriod: "daily" | "weekly" | "monthly";
+    filterPeriod: "daily" | "weekly" | "monthly" | "yearly";
 }
 
 export default function TopColleges({ enquiries, filterPeriod }: TopCollegesProps) {

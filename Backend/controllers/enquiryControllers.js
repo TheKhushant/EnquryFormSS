@@ -15,10 +15,17 @@ const addEnquiry = async (req, res) => {
             jobType,
             jobCategory,
             experience,
-            whomToMeet
+            whomToMeet,
+            reference,
+            referenceName,
+            referenceOther,
         } = req.body;
 
-        // Create and save enquiry
+        // Strong sanitization
+        const finalReference = reference && reference.trim() !== "" ? reference.trim() : null;
+        const finalReferenceName = referenceName && referenceName.trim() !== "" ? referenceName.trim() : null;
+        const finalReferenceOther = referenceOther && referenceOther.trim() !== "" ? referenceOther.trim() : null;
+
         const newEnquiry = new Enquiry({
             name,
             mobile,
@@ -32,19 +39,18 @@ const addEnquiry = async (req, res) => {
             jobType,
             jobCategory,
             experience,
-            whomToMeet
+            whomToMeet,
+            reference: finalReference,
+            referenceName: finalReferenceName,
+            referenceOther: finalReferenceOther,
         });
 
         await newEnquiry.save();
 
-        // Emit real-time event to all connected clients
         if (global.io) {
             global.io.emit("new-enquiry", newEnquiry);
-        } else {
-            console.warn("Socket.io not initialized (global.io is missing)");
         }
 
-        // Send success response
         res.status(201).json({
             success: true,
             message: "Enquiry submitted successfully!",
@@ -52,10 +58,14 @@ const addEnquiry = async (req, res) => {
         });
 
     } catch (error) {
-        console.error("Error saving enquiry:", error);
+        console.error("=== Enquiry Save Error ===", error);
+
+        // Send clear error to frontend
         res.status(500).json({
             success: false,
-            message: "Server error while saving enquiry"
+            message: error.message || "Failed to save enquiry",
+            errorType: error.name,
+            details: error.errors ? Object.keys(error.errors) : null
         });
     }
 };

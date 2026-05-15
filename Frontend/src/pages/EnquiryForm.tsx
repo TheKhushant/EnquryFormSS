@@ -7,14 +7,15 @@ import {
     PhoneIcon,
     EnvelopeIcon,
     BuildingLibraryIcon,
-    SparklesIcon,
+    // SparklesIcon,
     CheckCircleIcon,
 } from "@heroicons/react/24/outline";
+// const [reference, setReference] = useState("");
 
 import { useEnquiries } from "../../contexts/EnquiryContext";
 
 export default function EnquiryForm() {
-    const accentColor = "#e5bcfb";
+    // const accentColor = "#e5bcfb";
 
     const raisedShadow = "shadow-[8px_8px_16px_#bebebe,-8px_-8px_16px_#ffffff]";
     const insetShadow = "shadow-[inset_6px_6px_12px_#bebebe,inset_-6px_-6px_12px_#ffffff]";
@@ -39,6 +40,9 @@ export default function EnquiryForm() {
         experience: "",
         whomToMeet: "",
         otherName: "",
+        reference: "",
+        referenceName: "",     
+        referenceOther: "",
     });
 
     const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -70,12 +74,17 @@ export default function EnquiryForm() {
             whomToMeet: formData.whomToMeet === "Other"
                 ? (formData.otherName || "Other")
                 : formData.whomToMeet,
+            reference: formData.reference,
+            referenceName: formData.referenceName || null,
+            referenceOther: formData.referenceOther || null,
         };
+
+        console.log("FORM DATA BEFORE API:", formData);
 
         try {
             const response = await axios.post(
                 `https://enquryformss-2.onrender.com/api/enquiries`,
-                submissionData
+                submissionData,
             );
 
             console.log(response.data);
@@ -84,7 +93,7 @@ export default function EnquiryForm() {
             setIsSubmitted(true);
 
             // Optional: Add to context if needed
-            // addEnquiry(submissionData);
+            addEnquiry(submissionData);
 
         } catch (error: any) {
             console.log("FULL ERROR:", error);
@@ -107,7 +116,7 @@ export default function EnquiryForm() {
             name: "", mobile: "", email: "", college: "", enquiryFor: "",
             internshipDuration: "", customCollege: "", internshipDomain: "",
             courseName: "", jobType: "", jobCategory: "",
-            experience: "", whomToMeet: "", otherName: "",
+            experience: "", whomToMeet: "", otherName: "", reference: "", referenceName: "", referenceOther: "",
         });
         setIsSubmitted(false);
     };
@@ -277,6 +286,9 @@ export default function EnquiryForm() {
                                                     </option>
                                                     <option value="Tulsiramji Gaikwad-Patil College of Engineering and Technology">
                                                         Tulsiramji Gaikwad-Patil College of Engineering and Technology
+                                                    </option>
+                                                    <option value="Yeshwantrao Chavan College of Engineering">
+                                                        Yeshwantrao Chavan College of Engineering
                                                     </option>
                                                     <option className="font-bold" value="Other">Other</option>
                                                 </select>
@@ -533,6 +545,98 @@ export default function EnquiryForm() {
                                             )}
                                         </AnimatePresence>
                                     </div>
+                                    {/* ==================== REFERENCE / SOURCE ==================== */}
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-3">
+                                            How did you hear about us? (Reference)
+                                        </label>
+
+                                        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                                            {["Instagram", "Facebook", "Ads", "Friends", "Teacher", "Newspaper", "Other"].map((ref) => (
+                                                <label
+                                                    key={ref}
+                                                    className={`flex items-center gap-3 p-4 rounded-3xl cursor-pointer transition-all ${formData.reference === ref
+                                                        ? "bg-gradient-to-r from-[#e5bcfb] to-[#c084fc] text-white shadow-[inset_4px_4px_8px_#bebebe,inset_-4px_-4px_8px_#ffffff]"
+                                                        : `bg-[#e0e5ec] ${raisedShadow} hover:-translate-y-0.5`
+                                                    }`}
+                                                >
+                                                    <input
+                                                        type="radio"
+                                                        name="reference"
+                                                        value={ref}
+                                                        checked={formData.reference === ref}
+                                                        onChange={handleChange}
+                                                        className="w-5 h-5 accent-purple-500"
+                                                    />
+                                                    <span className="font-medium">{ref}</span>
+                                                </label>
+                                            ))}
+                                        </div>
+
+                                        {/* Conditional Input Fields */}
+                                        <AnimatePresence>
+                                            {/* Friends */}
+                                            {formData.reference === "Friends" && (
+                                                <motion.div
+                                                    initial={{ opacity: 0, height: 0 }}
+                                                    animate={{ opacity: 1, height: "auto" }}
+                                                    exit={{ opacity: 0, height: 0 }}
+                                                    className="mt-4"
+                                                >
+                                                    <input
+                                                        type="text"
+                                                        name="referenceName"
+                                                        value={formData.referenceName}
+                                                        onChange={handleChange}
+                                                        placeholder="Friend's Name"
+                                                        className={`w-full p-4 rounded-3xl bg-[#e0e5ec] ${insetShadow} outline-none`}
+                                                        required
+                                                    />
+                                                </motion.div>
+                                            )}
+
+                                            {/* Teacher */}
+                                            {formData.reference === "Teacher" && (
+                                                <motion.div
+                                                    initial={{ opacity: 0, height: 0 }}
+                                                    animate={{ opacity: 1, height: "auto" }}
+                                                    exit={{ opacity: 0, height: 0 }}
+                                                    className="mt-4"
+                                                >
+                                                    <input
+                                                        type="text"
+                                                        name="referenceName"
+                                                        value={formData.referenceName}
+                                                        onChange={handleChange}
+                                                        placeholder="Teacher's Name"
+                                                        className={`w-full p-4 rounded-3xl bg-[#e0e5ec] ${insetShadow} outline-none`}
+                                                        required
+                                                    />
+                                                </motion.div>
+                                            )}
+
+                                            {/* Other */}
+                                            {formData.reference === "Other" && (
+                                                <motion.div
+                                                    initial={{ opacity: 0, height: 0 }}
+                                                    animate={{ opacity: 1, height: "auto" }}
+                                                    exit={{ opacity: 0, height: 0 }}
+                                                    className="mt-4"
+                                                >
+                                                    <input
+                                                        type="text"
+                                                        name="referenceOther"
+                                                        value={formData.referenceOther}
+                                                        onChange={handleChange}
+                                                        placeholder="Please specify"
+                                                        className={`w-full p-4 rounded-3xl bg-[#e0e5ec] ${insetShadow} outline-none`}
+                                                        required
+                                                    />
+                                                </motion.div>
+                                            )}
+                                        </AnimatePresence>
+                                    </div>
+                                    
 
                                     {/* Submit Button */}
                                     <motion.button
