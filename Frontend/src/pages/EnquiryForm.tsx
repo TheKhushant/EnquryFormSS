@@ -336,7 +336,7 @@ export default function EnquiryForm() {
                                     <div>
                                         <label className="block text-medium font-medium text-gray-700 mb-3">Enquiry For</label>
                                         <div className="grid grid-cols-2 md:grid-cols-4 gap-1">
-                                            {["Internship", "Job", "Course", "Hiring", "Other"].map((type) => (
+                                            {["Internship", "Job", "Course", "Hiring","Overseas","Certification","Other"].map((type) => (
                                                 <button
                                                     key={type}
                                                     type="button"
@@ -555,7 +555,7 @@ export default function EnquiryForm() {
                                             {["Instagram", "Facebook", "Ads", "Friends", "Teacher", "Newspaper", "Other"].map((ref) => (
                                                 <label
                                                     key={ref}
-                                                    className={`flex items-center gap-3 p-4 rounded-3xl cursor-pointer transition-all ${formData.reference === ref
+                                                    className={`flex items-center gap-1 py-1 p-1 rounded-3xl cursor-pointer transition-all ${formData.reference === ref
                                                         ? "bg-gradient-to-r from-[#e5bcfb] to-[#c084fc] text-white shadow-[inset_4px_4px_8px_#bebebe,inset_-4px_-4px_8px_#ffffff]"
                                                         : `bg-[#e0e5ec] ${raisedShadow} hover:-translate-y-0.5`
                                                     }`}
@@ -566,9 +566,9 @@ export default function EnquiryForm() {
                                                         value={ref}
                                                         checked={formData.reference === ref}
                                                         onChange={handleChange}
-                                                        className="w-5 h-5 accent-purple-500"
+                                                        className="w-3 h-3 accent-purple-500"
                                                     />
-                                                    <span className="font-medium">{ref}</span>
+                                                    <span className="font-sm text-sm">{ref}</span>
                                                 </label>
                                             ))}
                                         </div>

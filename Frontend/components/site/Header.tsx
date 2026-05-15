@@ -22,7 +22,7 @@ export default function EnquiryHeader() {
           {/* Welcome Text - Visible on all screens */}
           <div className="flex flex-col">
             <h1 className="text-base md:text-lg font-semibold text-gray-800 leading-tight">
-              Welcome to SS GRP Enquiry
+              Welcome to SS Group
             </h1>
             <p className="text-xs md:text-sm text-gray-600 leading-tight hidden sm:block">
               Please fill the form • Details will be forwarded to admin
