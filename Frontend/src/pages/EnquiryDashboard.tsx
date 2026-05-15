@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import Layout from "../../components/site/Layout";
 import axios from "axios";
 import { io, Socket } from "socket.io-client";
@@ -17,11 +17,14 @@ export default function EnquiryDashboard() {
     const [loading, setLoading] = useState(true);
     const [chartView, setChartView] = useState<"daily" | "weekly">("daily");
     const [showComparison, setShowComparison] = useState(false);
-    const [filterPeriod, setFilterPeriod] = useState<"daily" | "weekly" | "monthly" | "yearly">("daily");
+
+    // ==================== NEW FILTER STATES ====================
+    const [selectedPerson, setSelectedPerson] = useState<string>("all");
+    const [filterPeriod, setFilterPeriod] = useState<"daily" | "weekly" | "monthly">("daily");
 
     const socketRef = useRef<Socket | null>(null);
 
-    // Request notification permission on mount
+    // Notification setup
     useEffect(() => {
         if ("Notification" in window && Notification.permission === "default") {
             Notification.requestPermission();
@@ -38,20 +41,12 @@ export default function EnquiryDashboard() {
 
         socketRef.current = socket;
 
-        socket.on("connect", () => {
-            console.log("✅ Socket connected");
-        });
-
+        socket.on("connect", () => console.log("✅ Socket connected"));
         socket.on("new-enquiry", (data: Enquiry) => {
             console.log("📩 New enquiry received:", data);
-
             setEnquiries((prev) => [data, ...prev]);
             playNotificationSound();
             showNotification();
-        });
-
-        socket.on("connect_error", (err) => {
-            console.error("Socket connection error:", err);
         });
 
         return () => {
@@ -70,16 +65,12 @@ export default function EnquiryDashboard() {
     };
 
     const showNotification = () => {
-        toast.success("New Enquiry Received!", {
-            duration: 4000,
-            position: "top-right",
-        });
+        toast.success("New Enquiry Received!", { duration: 4000, position: "top-right" });
 
-        // Browser notification
         if ("Notification" in window && Notification.permission === "granted") {
             new Notification("New Enquiry", {
                 body: "A new enquiry has arrived",
-                icon: "/favicon.ico", // Optional
+                icon: "/favicon.ico",
             });
         }
     };
@@ -100,6 +91,65 @@ export default function EnquiryDashboard() {
         fetchEnquiries();
     }, []);
 
+    // ==================== FILTERING LOGIC ====================
+    const filteredEnquiries = useMemo(() => {
+        let result = [...enquiries];
+
+        // 1. Filter by Person (Whom To Meet)
+        if (selectedPerson !== "all") {
+            result = result.filter(enq => enq.whomToMeet === selectedPerson);
+        }
+
+        // 2. Filter by Time Period
+        const now = new Date();
+        const currentYear = now.getFullYear();
+        const currentMonth = now.getMonth();
+        const currentDate = now.getDate();
+
+        result = result.filter(enq => {
+            if (!enq.createdAt) return false;
+
+            const enquiryDate = new Date(enq.createdAt);
+            // Temporary debug (remove after testing)
+            console.log(`Filter: ${filterPeriod} | Selected Person: ${selectedPerson} | Total Data: ${enquiries.length} | Filtered: ${result.length}`);
+
+            // Invalid date protection
+            if (isNaN(enquiryDate.getTime())) return false;
+
+            if (filterPeriod === "daily") {
+                return (
+                    enquiryDate.getFullYear() === currentYear &&
+                    enquiryDate.getMonth() === currentMonth &&
+                    enquiryDate.getDate() === currentDate
+                );
+            }
+
+            if (filterPeriod === "weekly") {
+                const oneWeekAgo = new Date(now);
+                oneWeekAgo.setDate(now.getDate() - 7);
+
+                return enquiryDate >= oneWeekAgo && enquiryDate <= now;
+            }
+
+            if (filterPeriod === "monthly") {
+                return (
+                    enquiryDate.getFullYear() === currentYear &&
+                    enquiryDate.getMonth() === currentMonth
+                );
+            }
+            
+            return true;
+        });
+
+        return result;
+    }, [enquiries, selectedPerson, filterPeriod]);
+
+    // Get unique persons for dropdown
+    const uniquePersons = useMemo(() => {
+        const persons = new Set(enquiries.map(enq => enq.whomToMeet).filter(Boolean));
+        return Array.from(persons).sort();
+    }, [enquiries]);
+
     if (loading) {
         return (
             <Layout>
@@ -114,31 +164,49 @@ export default function EnquiryDashboard() {
         <Layout>
             <div className="min-h-screen bg-[#e0e5ec] p-8">
                 <div className="max-w-7xl mx-auto">
-                    {/* Header */}
-                    <div className="flex justify-between items-center mb-10">
+                    {/* ==================== HEADER WITH FILTERS ==================== */}
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 mb-10">
                         <div>
                             <h1 className="text-4xl font-bold text-gray-800">Enquiry Dashboard</h1>
                             <p className="text-gray-600 mt-2">Real-time insights from your enquiry form</p>
                         </div>
 
-                        <div className="hidden sm:flex gap-3">
-                            {(["daily", "weekly", "monthly"] as const).map((period) => (
-                                <button
-                                    key={period}
-                                    onClick={() => setFilterPeriod(period)}
-                                    className={`px-5 py-3 rounded-3xl font-medium transition-all ${
-                                        filterPeriod === period
-                                            ? "bg-gradient-to-r from-[#e5bcfb] to-[#c084fc] text-white shadow-lg"
-                                            : "bg-[#e0e5ec] shadow-[6px_6px_12px_#bebebe,-6px_-6px_12px_#ffffff] hover:shadow-inner"
-                                    }`}
+                        <div className="flex flex-wrap gap-4">
+                            {/* Whom To Meet Filter */}
+                            <div className="relative min-w-[200px]">
+                                <label className="text-xs text-gray-500 mb-1 block">Whom To Meet</label>
+                                <select
+                                    value={selectedPerson}
+                                    onChange={(e) => setSelectedPerson(e.target.value)}
+                                    className="w-full bg-[#e0e5ec] px-5 py-3 rounded-3xl font-medium text-gray-800 shadow-[6px_6px_12px_#bebebe,-6px_-6px_12px_#ffffff] focus:outline-none focus:ring-2 focus:ring-[#c084fc] cursor-pointer appearance-none"
                                 >
-                                    {period.charAt(0).toUpperCase() + period.slice(1)}
-                                </button>
-                            ))}
+                                    <option value="all">All Persons</option>
+                                    {uniquePersons.map(person => (
+                                        <option key={person} value={person}>
+                                            {person}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            {/* Time Period Filter */}
+                            <div className="relative min-w-[180px]">
+                                <label className="text-xs text-gray-500 mb-1 block">Time Period</label>
+                                <select
+                                    value={filterPeriod}
+                                    onChange={(e) => setFilterPeriod(e.target.value as "daily" | "weekly" | "monthly")}
+                                    className="w-full bg-[#e0e5ec] px-5 py-3 rounded-3xl font-medium text-gray-800 shadow-[6px_6px_12px_#bebebe,-6px_-6px_12px_#ffffff] focus:outline-none focus:ring-2 focus:ring-[#c084fc] cursor-pointer appearance-none"
+                                >
+                                    <option value="daily">Daily</option>
+                                    <option value="weekly">Weekly</option>
+                                    <option value="monthly">Monthly</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
 
-                    <StatsGrid enquiries={enquiries} />
+                    {/* Pass filteredEnquiries to all components */}
+                    <StatsGrid enquiries={filteredEnquiries} filterPeriod={filterPeriod} />
 
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                         <TrendChart
@@ -146,11 +214,22 @@ export default function EnquiryDashboard() {
                             setChartView={setChartView}
                             showComparison={showComparison}
                             setShowComparison={setShowComparison}
+                            filterPeriod={filterPeriod}
+                            enquiries={filteredEnquiries}   // ← Updated
                         />
 
-                        <TypeBreakdown enquiries={enquiries} />
-                        <TopColleges enquiries={enquiries} />
-                        <RecentEnquiries enquiries={enquiries} />
+                        <TypeBreakdown 
+                            enquiries={filteredEnquiries} 
+                            filterPeriod={filterPeriod}
+                        />
+                        <TopColleges 
+                            enquiries={filteredEnquiries} 
+                            filterPeriod={filterPeriod}
+                        />
+                        <RecentEnquiries 
+                            enquiries={filteredEnquiries} 
+                            filterPeriod={filterPeriod}
+                        />
                     </div>
                 </div>
             </div>

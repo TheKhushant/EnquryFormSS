@@ -4,9 +4,10 @@ import type { Enquiry } from "./types";
 
 interface RecentEnquiriesProps {
     enquiries: Enquiry[];
+    filterPeriod: "daily" | "weekly" | "monthly";
 }
 
-export default function RecentEnquiries({ enquiries }: RecentEnquiriesProps) {
+export default function RecentEnquiries({ enquiries, filterPeriod }: RecentEnquiriesProps) {
     const [showModal, setShowModal] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
     const [filterType, setFilterType] = useState<string>("All");
@@ -23,7 +24,7 @@ export default function RecentEnquiries({ enquiries }: RecentEnquiriesProps) {
             e.college === "Other" ? e.customCollege : e.college
         ).filter(Boolean);
         return ["All", ...new Set(cols)];
-    }, [enquiries]);
+    }, [enquiries, filterPeriod]);
 
     const filteredEnquiries = useMemo(() => {
         return enquiries
@@ -45,7 +46,7 @@ export default function RecentEnquiries({ enquiries }: RecentEnquiriesProps) {
                 return matchesSearch && matchesType && matchesCollege && matchesDateFrom && matchesDateTo;
             })
             .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-    }, [enquiries, searchTerm, filterType, filterCollege, dateFrom, dateTo]);
+    }, [enquiries, searchTerm, filterType, filterCollege, dateFrom, dateTo, filterPeriod]);
 
     return (
         <>

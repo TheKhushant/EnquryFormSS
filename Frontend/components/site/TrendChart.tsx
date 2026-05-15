@@ -33,6 +33,8 @@ interface TrendChartProps {
     setChartView: (view: "daily" | "weekly") => void;
     showComparison: boolean;
     setShowComparison: (val: boolean) => void;
+    filterPeriod: "daily" | "weekly" | "monthly";
+    enquiries: any[]; // Adjust type as needed
 }
 
 export default function TrendChart({
@@ -40,6 +42,8 @@ export default function TrendChart({
     setChartView,
     showComparison,
     setShowComparison,
+    filterPeriod,
+    enquiries
 }: TrendChartProps) {
     const currentData = chartData[chartView];
     const totalCurrent = currentData.reduce((sum, item) => sum + item.current, 0);

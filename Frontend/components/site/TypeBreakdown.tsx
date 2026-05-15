@@ -4,6 +4,8 @@ import type { Enquiry } from "./types";
 
 interface TypeBreakdownProps {
     enquiries: Enquiry[];
+  filterPeriod: "daily" | "weekly" | "monthly";
+
 }
 
 const COLORS = [
@@ -15,7 +17,7 @@ const COLORS = [
     "#e879f9", // Pinkish
 ];
 
-export default function TypeBreakdown({ enquiries }: TypeBreakdownProps) {
+export default function TypeBreakdown({ enquiries, filterPeriod }: TypeBreakdownProps) {
     const typeData = useMemo(() => {
         const count = enquiries.reduce((acc, curr) => {
             const type = curr.enquiryFor?.trim() || "Other";
@@ -33,7 +35,7 @@ export default function TypeBreakdown({ enquiries }: TypeBreakdownProps) {
                 color: COLORS[Object.keys(count).indexOf(name) % COLORS.length],
             }))
             .sort((a, b) => b.value - a.value); // Sort by count descending
-    }, [enquiries]);
+    }, [enquiries, filterPeriod]);
 
     const totalEnquiries = enquiries.length;
 

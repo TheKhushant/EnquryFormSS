@@ -4,9 +4,10 @@ import type { Enquiry } from "./types.ts";
 
 interface TopCollegesProps {
     enquiries: Enquiry[];
+    filterPeriod: "daily" | "weekly" | "monthly";
 }
 
-export default function TopColleges({ enquiries }: TopCollegesProps) {
+export default function TopColleges({ enquiries, filterPeriod }: TopCollegesProps) {
     const topColleges = useMemo(() => {
         const count = enquiries.reduce((acc, curr) => {
             const collegeName = curr.college === "Other"
@@ -26,7 +27,7 @@ export default function TopColleges({ enquiries }: TopCollegesProps) {
                 name: name.length > 28 ? name.substring(0, 25) + "..." : name,
                 count,
             }));
-    }, [enquiries]);
+    }, [enquiries, filterPeriod]);
 
     return (
         <div className="lg:col-span-5 bg-[#e0e5ec] rounded-3xl p-8 shadow-[10px_10px_20px_#bebebe,-10px_-10px_20px_#ffffff]">

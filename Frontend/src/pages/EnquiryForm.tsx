@@ -177,10 +177,10 @@ export default function EnquiryForm() {
                                 animate={{ opacity: 1, y: 0 }}
                                 className="text-center mb-6"
                             >
-                                <div className="inline-flex items-center gap-3 px-6 py-2 rounded-3xl bg-[#e0e5ec] shadow-[6px_6px_12px_#bebebe,-6px_-6px_12px_#ffffff] mb-6">
+                                {/* <div className="inline-flex items-center gap-3 px-6 py-2 rounded-3xl bg-[#e0e5ec] shadow-[6px_6px_12px_#bebebe,-6px_-6px_12px_#ffffff] mb-6">
                                     <SparklesIcon className="w-6 h-6" style={{ color: accentColor }} />
                                     <span className="font-semibold text-purple-800">Get In Touch</span>
-                                </div>
+                                </div> */}
                                 <h1 className="text-5xl font-bold text-gray-800 tracking-tight">Enquiry Form</h1>
                                 <p className="mt-4 text-gray-600 text-lg">Tell us what you're looking for</p>
                             </motion.div>
