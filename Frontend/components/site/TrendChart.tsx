@@ -9,16 +9,16 @@ import {
     Tooltip,
     Area,
 } from "recharts";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 
 interface TrendChartProps {
     enquiries: any[];
     filterPeriod: "daily" | "weekly" | "monthly" | "yearly";
-    chartView?: "daily" | "weekly"; // keeping for backward compatibility
-    setChartView?: any;
     showComparison: boolean;
     setShowComparison: (val: boolean) => void;
 }
+
+type WeeklyMode = "rolling" | "calendar";
 
 export default function TrendChart({
     enquiries,
@@ -26,19 +26,20 @@ export default function TrendChart({
     showComparison,
     setShowComparison,
 }: TrendChartProps) {
+    const [weeklyMode, setWeeklyMode] = useState<WeeklyMode>("rolling");
 
     // ==================== DYNAMIC CHART DATA ====================
     const chartData = useMemo(() => {
         if (!enquiries.length) return [];
 
-        const dataMap = new Map();
+        const dataMap = new Map<string, number>(); // key = sortable date string or label
 
         enquiries.forEach(enq => {
             const date = new Date(enq.createdAt);
             if (isNaN(date.getTime())) return;
 
             let label: string;
-            let sortKey: string;
+            let sortKey: string; // Used for final chronological sort
 
             switch (filterPeriod) {
                 case "daily":
@@ -46,10 +47,16 @@ export default function TrendChart({
                     sortKey = date.getHours().toString().padStart(2, '0');
                     break;
 
-                case "weekly":
-                    label = date.toLocaleDateString('en-IN', { weekday: 'short' });
-                    sortKey = date.getDay().toString();
+                case "weekly": {
+                    const dayStr = date.toISOString().split('T')[0]; // YYYY-MM-DD
+                    label = date.toLocaleDateString('en-IN', { 
+                        weekday: 'short', 
+                        day: 'numeric', 
+                        month: 'short' 
+                    });
+                    sortKey = dayStr;
                     break;
+                }
 
                 case "monthly":
                     label = date.getDate().toString();
@@ -66,26 +73,89 @@ export default function TrendChart({
                     sortKey = "0";
             }
 
-            dataMap.set(label, (dataMap.get(label) || 0) + 1);
+            dataMap.set(sortKey, (dataMap.get(sortKey) || 0) + 1);
         });
 
-        // Convert to array and sort
-        let result = Array.from(dataMap.entries()).map(([label, value]) => ({
-            label,
-            current: value,
-            previous: Math.floor(value * (0.7 + Math.random() * 0.6)), // Mock previous for demo
-        }));
+        // Generate complete periods (especially important for weekly)
+        let result: Array<{ label: string; current: number; previous: number; sortKey: string }> = [];
 
-        // Sort properly
-        if (filterPeriod === "daily" || filterPeriod === "monthly") {
-            result.sort((a, b) => parseInt(a.label) - parseInt(b.label));
-        } else if (filterPeriod === "yearly") {
-            const monthOrder = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-            result.sort((a, b) => monthOrder.indexOf(a.label) - monthOrder.indexOf(b.label));
+        if (filterPeriod === "weekly") {
+            const now = new Date();
+            now.setHours(23, 59, 59, 999);
+
+            let periodDates: Date[] = [];
+
+            if (weeklyMode === "rolling") {
+                // Last 7 days (including today) - oldest first
+                for (let i = 6; i >= 0; i--) {
+                    const d = new Date(now);
+                    d.setDate(d.getDate() - i);
+                    periodDates.push(d);
+                }
+            } else {
+                // Calendar Week: Monday → Sunday
+                const startOfWeek = new Date(now);
+                const day = startOfWeek.getDay(); // 0=Sun, 1=Mon, ...
+                const diff = startOfWeek.getDay() === 0 ? 6 : startOfWeek.getDay() - 1; // days to Monday
+                startOfWeek.setDate(startOfWeek.getDate() - diff);
+                startOfWeek.setHours(0, 0, 0, 0);
+
+                for (let i = 0; i < 7; i++) {
+                    const d = new Date(startOfWeek);
+                    d.setDate(d.getDate() + i);
+                    periodDates.push(d);
+                }
+            }
+
+            periodDates.forEach(date => {
+                const key = date.toISOString().split('T')[0];
+                const count = dataMap.get(key) || 0;
+
+                const label = date.toLocaleDateString('en-IN', { 
+                    weekday: 'short', 
+                    day: 'numeric' 
+                });
+
+                result.push({
+                    label,
+                    current: count,
+                    previous: Math.floor(count * (0.7 + Math.random() * 0.6)), // Mock
+                    sortKey: key,
+                });
+            });
+        } else {
+            // Existing logic for other periods
+            result = Array.from(dataMap.entries()).map(([sortKey, value]) => {
+                let label: string;
+                if (filterPeriod === "daily") {
+                    label = sortKey + ":00";
+                } else if (filterPeriod === "monthly") {
+                    label = parseInt(sortKey).toString();
+                } else if (filterPeriod === "yearly") {
+                    label = sortKey; // already month short
+                } else {
+                    label = sortKey;
+                }
+
+                return {
+                    label,
+                    current: value,
+                    previous: Math.floor(value * (0.7 + Math.random() * 0.6)),
+                    sortKey,
+                };
+            });
+
+            // Sort other periods
+            if (filterPeriod === "daily" || filterPeriod === "monthly") {
+                result.sort((a, b) => parseInt(a.sortKey) - parseInt(b.sortKey));
+            } else if (filterPeriod === "yearly") {
+                const monthOrder = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+                result.sort((a, b) => monthOrder.indexOf(a.label) - monthOrder.indexOf(b.label));
+            }
         }
 
         return result;
-    }, [enquiries, filterPeriod]);
+    }, [enquiries, filterPeriod, weeklyMode]);
 
     const totalCurrent = chartData.reduce((sum, item) => sum + item.current, 0);
     const totalPrevious = chartData.reduce((sum, item) => sum + (item.previous || 0), 0);
@@ -122,7 +192,18 @@ export default function TrendChart({
                 </div>
 
                 {/* Controls */}
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 flex-wrap">
+                    {filterPeriod === "weekly" && (
+                        <select
+                            value={weeklyMode}
+                            onChange={(e) => setWeeklyMode(e.target.value as WeeklyMode)}
+                            className="px-4 py-2.5 rounded-2xl text-sm font-medium bg-white border border-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        >
+                            <option value="rolling">Last 7 Days</option>
+                            <option value="calendar">Calendar Week (Mon-Sun)</option>
+                        </select>
+                    )}
+
                     <button
                         onClick={() => setShowComparison(!showComparison)}
                         className={`px-5 py-2.5 rounded-2xl text-sm font-medium transition-all flex items-center gap-2 ${
@@ -139,7 +220,10 @@ export default function TrendChart({
             {/* Chart */}
             <div className="mt-4">
                 <ResponsiveContainer width="100%" height={280}>
-                    <LineChart data={chartData} margin={{ top: 20, right: 20, left: -20, bottom: 40 }}>
+                    <LineChart 
+                        data={chartData} 
+                        margin={{ top: 20, right: 30, left: -20, bottom: 40 }}
+                    >
                         <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                         
                         <XAxis 
@@ -147,8 +231,9 @@ export default function TrendChart({
                             stroke="#6b7280" 
                             fontSize={13}
                             tickLine={false}
-                            angle={filterPeriod === "monthly" ? -45 : 0}
-                            textAnchor={filterPeriod === "monthly" ? "end" : "middle"}
+                            angle={-35}
+                            textAnchor="end"
+                            height={60}
                         />
                         
                         <YAxis 
