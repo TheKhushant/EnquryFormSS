@@ -336,7 +336,7 @@ export default function EnquiryForm() {
                                     <div>
                                         <label className="block text-medium font-medium text-gray-700 mb-3">Enquiry For</label>
                                         <div className="grid grid-cols-2 md:grid-cols-4 gap-1">
-                                            {["Internship", "Job", "Course", "Hiring","Overseas","Certification","Other"].map((type) => (
+                                            {["Internship", "Job", "Course", "Hiring","Overseas","Certification","New Visitor","Other"].map((type) => (
                                                 <button
                                                     key={type}
                                                     type="button"
