@@ -17,6 +17,9 @@ export default function RecentEnquiries({ enquiries, filterPeriod }: RecentEnqui
     const [filterCollege, setFilterCollege] = useState<string>("All");
     const [dateFrom, setDateFrom] = useState("");
     const [dateTo, setDateTo] = useState("");
+    const [duplicateGroups, setDuplicateGroups] = useState<any[]>([]);
+    const [showDuplicateModal, setShowDuplicateModal] = useState(false);
+    const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
     const enquiryTypes = useMemo(() => {
         return ["All", ...new Set(enquiries.map(e => e.enquiryFor).filter(Boolean))];
@@ -77,12 +80,103 @@ export default function RecentEnquiries({ enquiries, filterPeriod }: RecentEnqui
         }
     };
 
+    const removeDuplicates = async () => {
+        const confirmDelete = window.confirm(
+            "Remove all duplicate enquiries of the same day?"
+        );
+
+        if (!confirmDelete) return;
+
+        try {
+            const res = await axios.delete(
+            "https://enquryformss-2.onrender.com/api/enquiries/remove-duplicates"
+            );
+
+            alert(res.data.message);
+
+            window.location.reload();
+        } catch (err: any) {
+            alert(err?.response?.data?.message || "Failed");
+        }
+    };
+
+    
+    const scanDuplicates = async () => {
+        try {
+            const res = await axios.get(
+            "https://enquryformss-2.onrender.com/api/enquiries/duplicates"
+            );
+
+            setDuplicateGroups(res.data.data);
+            setShowDuplicateModal(true);
+
+        } catch (err) {
+            console.error(err);
+            alert("Failed to scan duplicates");
+        }
+    };
+    const toggleSelection = (id: string) => {
+    setSelectedIds(prev =>
+        prev.includes(id)
+        ? prev.filter(x => x !== id)
+        : [...prev, id]
+    );
+    };
+
+    const deleteSelectedDuplicates = async () => {
+
+        for (const group of duplicateGroups) {
+
+            const selectedInGroup =
+            group.entries.filter((entry: any) =>
+                selectedIds.includes(entry._id)
+            ).length;
+
+            if (selectedInGroup >= group.entries.length) {
+            alert(
+                `At least one enquiry must remain for ${group.mobile}`
+            );
+            return;
+            }
+        }
+
+        try {
+
+            const res = await axios.post(
+            "https://enquryformss-2.onrender.com/api/enquiries/delete-duplicates",
+            {
+                ids: selectedIds
+            }
+            );
+
+            alert(res.data.message);
+
+            window.location.reload();
+
+        } catch (err) {
+            console.error(err);
+            alert("Delete failed");
+        }
+    };
+
     return (
         <>
             {/* Recent Enquiries Card */}
             <div className="lg:col-span-7 bg-[#e0e5ec] rounded-3xl p-6 md:p-8 shadow-[10px_10px_20px_#bebebe,-10px_-10px_20px_#ffffff]">
                 <div className="flex justify-between items-center mb-6 md:mb-8">
                     <h3 className="text-xl md:text-2xl font-semibold text-gray-800">Recent Enquiries</h3>
+                    <button
+                        onClick={scanDuplicates}
+                        className="px-4 py-2 bg-orange-500 text-white rounded-xl"
+                        >
+                        Scan Duplicates
+                    </button>
+                    <button
+                        onClick={removeDuplicates}
+                        className="px-4 py-2 rounded-xl bg-red-500 text-white hover:bg-red-600"
+                        >
+                        Remove Duplicates
+                    </button>
                     <button
                         onClick={() => setShowModal(true)}
                         className="text-purple-600 hover:underline text-sm font-medium flex items-center gap-1"
@@ -136,6 +230,85 @@ export default function RecentEnquiries({ enquiries, filterPeriod }: RecentEnqui
                     </table>
                 </div>
             </div>
+
+            {showDuplicateModal && (
+                <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+
+                    <div className="bg-white rounded-2xl p-6 max-w-4xl w-full max-h-[80vh] overflow-auto">
+
+                    <h2 className="text-2xl font-bold mb-6">
+                        Duplicate Enquiries
+                    </h2>
+
+                    {duplicateGroups.length === 0 && (
+                        <p>No duplicates found.</p>
+                    )}
+
+                    {duplicateGroups.map((group, index) => (
+                        <div
+                        key={index}
+                        className="mb-8 border rounded-xl p-4"
+                        >
+
+                        <h3 className="font-semibold">
+                            Mobile: {group.mobile}
+                        </h3>
+
+                        <p className="text-sm text-gray-500 mb-4">
+                            Date: {group.date}
+                        </p>
+
+                        {group.entries.map((entry: any) => (
+                            <label
+                            key={entry._id}
+                            className="flex items-center gap-3 mb-2"
+                            >
+                            <input
+                                type="checkbox"
+                                checked={selectedIds.includes(entry._id)}
+                                onChange={() =>
+                                toggleSelection(entry._id)
+                                }
+                            />
+
+                            <span>
+                                {entry.name}
+                                {" - "}
+                                {new Date(
+                                entry.createdAt
+                                ).toLocaleTimeString()}
+                            </span>
+
+                            </label>
+                        ))}
+
+                        </div>
+                    ))}
+
+                    <div className="flex gap-3">
+
+                        <button
+                        onClick={() =>
+                            setShowDuplicateModal(false)
+                        }
+                        className="px-4 py-2 border rounded-xl"
+                        >
+                        Cancel
+                        </button>
+
+                        <button
+                        onClick={deleteSelectedDuplicates}
+                        className="px-4 py-2 bg-red-500 text-white rounded-xl"
+                        >
+                        Delete Selected
+                        </button>
+
+                    </div>
+
+                    </div>
+
+                </div>
+                )}
 
             {/* Full View Modal - Improved Mobile View */}
             {showModal && (

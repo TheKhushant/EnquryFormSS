@@ -101,6 +101,26 @@ export default function EnquiryDashboard() {
     const uniqueReferences = useMemo(() => Array.from(new Set(enquiries.map(e => e.reference).filter(Boolean))).sort(), [enquiries]);
     const uniqueEnquiryFor = useMemo(() => Array.from(new Set(enquiries.map(e => e.enquiryFor).filter(Boolean))).sort(), [enquiries]);
 
+    const removeDuplicates = async () => {
+        const confirmDelete = window.confirm(
+            "Remove all duplicate enquiries of the same day?"
+        );
+
+        if (!confirmDelete) return;
+
+        try {
+            const res = await axios.delete(
+            "https://enquryformss-2.onrender.com/api/enquiries/remove-duplicates"
+            );
+
+            alert(res.data.message);
+
+            window.location.reload();
+        } catch (err: any) {
+            alert(err?.response?.data?.message || "Failed");
+        }
+    };
+
     if (loading) {
         return (
             <Layout>
@@ -171,7 +191,7 @@ export default function EnquiryDashboard() {
 
                             <select
                                 value={filterPeriod}
-                                onChange={(e) => setFilterPeriod(e.target.value)}
+                                onChange={(e) => setFilterPeriod(e.target.value as any)}
                                 className="w-full bg-[#e0e5ec] px-3 py-2 rounded-xl text-sm font-medium shadow-[4px_4px_8px_#bebebe,-4px_-4px_8px_#ffffff]"
                             >
                                 <option value="daily">Daily</option>

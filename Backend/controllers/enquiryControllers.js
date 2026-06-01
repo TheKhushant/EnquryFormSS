@@ -109,4 +109,110 @@ const deleteEnquiry = async (req, res) => {
   }
 };
 
-module.exports = { addEnquiry, getEnquiries, deleteEnquiry };
+const removeDuplicateEnquiries = async (req, res) => {
+  try {
+    const enquiries = await Enquiry.find().sort({ createdAt: -1 });
+
+    const seen = new Set();
+    const idsToDelete = [];
+
+    enquiries.forEach((enq) => {
+      const date = new Date(enq.createdAt).toISOString().split("T")[0];
+
+      const key = `${enq.mobile}_${date}`;
+
+      if (seen.has(key)) {
+        idsToDelete.push(enq._id);
+      } else {
+        seen.add(key);
+      }
+    });
+
+    const result = await Enquiry.deleteMany({
+      _id: { $in: idsToDelete },
+    });
+
+    res.json({
+      success: true,
+      deletedCount: result.deletedCount,
+      message: `${result.deletedCount} duplicate enquiries removed`,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+const getDuplicateEnquiries = async (req, res) => {
+  try {
+    const enquiries = await Enquiry.find().sort({ createdAt: -1 });
+
+    const groups = {};
+
+    enquiries.forEach((enq) => {
+      const date = new Date(enq.createdAt)
+        .toISOString()
+        .split("T")[0];
+
+      const key = `${enq.mobile}_${date}`;
+
+      if (!groups[key]) {
+        groups[key] = [];
+      }
+
+      groups[key].push(enq);
+    });
+
+    const duplicates = Object.values(groups)
+      .filter(group => group.length > 1)
+      .map(group => ({
+        mobile: group[0].mobile,
+        date: new Date(group[0].createdAt)
+          .toISOString()
+          .split("T")[0],
+        count: group.length,
+        entries: group
+      }));
+
+    res.json({
+      success: true,
+      data: duplicates
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+const deleteDuplicateEnquiries = async (req, res) => {
+        try {
+            const { ids } = req.body;
+
+            if (!ids || !Array.isArray(ids)) {
+            return res.status(400).json({
+                success: false,
+                message: "Ids required"
+            });
+            }
+
+            await Enquiry.deleteMany({
+            _id: { $in: ids }
+            });
+
+            res.json({
+            success: true,
+            message: `${ids.length} duplicate enquiries deleted`
+            });
+
+        } catch (error) {
+            res.status(500).json({
+            success: false,
+            message: error.message
+            });
+        }
+    };
+
+module.exports = { addEnquiry, getEnquiries, deleteEnquiry, removeDuplicateEnquiries, getDuplicateEnquiries, deleteDuplicateEnquiries };
