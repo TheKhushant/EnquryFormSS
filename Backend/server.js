@@ -45,6 +45,31 @@ app.get('/', (req, res) => {
     res.send('Enquiry Backend is running...');
 });
 
+app.get("/test-whatsapp", async (req, res) => {
+
+    const sendWhatsAppMessage =
+        require("./services/whatsappService");
+
+    await sendWhatsAppMessage(
+        "YOUR_NUMBER",
+        "Sankalp",
+        "TEST123"
+    );
+
+    res.send("sent");
+});
+
+app.get("/check-local", (req, res) => {
+    console.log("LOCAL BACKEND HIT");
+    res.send("LOCAL BACKEND WORKING");
+});
+
+app.get("/whatsapp-status", (req, res) => {
+    res.json({
+        info: client?.info || null
+    });
+});
+
 // Socket Connection
 io.on("connection", (socket) => {
     console.log(`✅ User Connected: ${socket.id}`);
@@ -68,5 +93,7 @@ const startServer = async () => {
         console.error("Failed to start server:", error);
     }
 };
+
+// require("./services/whatsappService");
 
 startServer();

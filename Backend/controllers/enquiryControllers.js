@@ -1,6 +1,8 @@
 const Enquiry = require('../models/Enquiry');
+const sendWhatsAppMessage = require('../services/whatsappService');
 
 const addEnquiry = async (req, res) => {
+    console.log("🔥 addEnquiry called");
     try {
         const {
             name,
@@ -21,7 +23,6 @@ const addEnquiry = async (req, res) => {
             referenceOther,
         } = req.body;
 
-        // Strong sanitization
         const finalReference = reference && reference.trim() !== "" ? reference.trim() : null;
         const finalReferenceName = referenceName && referenceName.trim() !== "" ? referenceName.trim() : null;
         const finalReferenceOther = referenceOther && referenceOther.trim() !== "" ? referenceOther.trim() : null;
@@ -46,6 +47,20 @@ const addEnquiry = async (req, res) => {
         });
 
         await newEnquiry.save();
+        console.log("Enquiry Saved Successfully");
+        console.log("=== ENQUIRY SAVED ===");
+        console.log("Name:", name);
+        console.log("Mobile:", mobile);
+
+        await sendWhatsAppMessage(
+            mobile,
+            name,
+            newEnquiry._id
+        );
+
+        console.log("WhatsApp Function Called");
+
+       
 
         if (global.io) {
             global.io.emit("new-enquiry", newEnquiry);
@@ -60,7 +75,6 @@ const addEnquiry = async (req, res) => {
     } catch (error) {
         console.error("=== Enquiry Save Error ===", error);
 
-        // Send clear error to frontend
         res.status(500).json({
             success: false,
             message: error.message || "Failed to save enquiry",
@@ -73,12 +87,15 @@ const addEnquiry = async (req, res) => {
 const getEnquiries = async (req, res) => {
     try {
         const enquiries = await Enquiry.find().sort({ createdAt: -1 });
+
         res.json({
             success: true,
             data: enquiries
         });
+
     } catch (error) {
         console.error("Error fetching enquiries:", error);
+
         res.status(500).json({
             success: false,
             message: error.message
