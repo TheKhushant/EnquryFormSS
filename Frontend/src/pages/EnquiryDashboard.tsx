@@ -122,27 +122,66 @@ export default function EnquiryDashboard() {
                     <div className="flex flex-col lg:flex-row justify-between gap-6 mb-10">
                         <div>
                             <h1 className="text-4xl font-bold text-gray-800">Enquiry Dashboard</h1>
-                            <p className="text-gray-600 mt-2">Real-time insights with advanced filters</p>
+                            {/* <p className="text-gray-600 mt-2">Real-time insights with advanced filters</p> */}
                         </div>
 
                         {/* All Filters in Dropdowns */}
-                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-                            <FilterDropdown label="Whom To Meet" value={selectedPerson} onChange={setSelectedPerson} options={uniquePersons} />
-                            <FilterDropdown label="College" value={selectedCollege} onChange={setSelectedCollege} options={uniqueColleges} />
-                            <FilterDropdown label="Reference" value={selectedReference} onChange={setSelectedReference} options={uniqueReferences} />
-                            <FilterDropdown label="Enquiry For" value={selectedEnquiryFor} onChange={setSelectedEnquiryFor} options={uniqueEnquiryFor} />
-                            
-                            <div>
-                                <label className="text-xs text-gray-500 mb-1 block">Time Period</label>
-                                <select value={filterPeriod} onChange={e => setFilterPeriod(e.target.value as any)}
-                                    className="w-full bg-[#e0e5ec] px-5 py-3 rounded-3xl font-medium shadow-[6px_6px_12px_#bebebe,-6px_-6px_12px_#ffffff]">
-                                    <option value="daily">Daily</option>
-                                    <option value="weekly">Weekly</option>
-                                    <option value="monthly">Monthly</option>
-                                    <option value="yearly">Yearly</option>
-                                </select>
-                            </div>
+                        <div className="flex flex-wrap items-end gap-2">
+    
+                        <div className="min-w-[130px] flex-1">
+                            <FilterDropdown
+                                label="Meet"
+                                value={selectedPerson}
+                                onChange={setSelectedPerson}
+                                options={uniquePersons}
+                            />
                         </div>
+
+                        <div className="min-w-[130px] flex-1">
+                            <FilterDropdown
+                                label="College"
+                                value={selectedCollege}
+                                onChange={setSelectedCollege}
+                                options={uniqueColleges}
+                            />
+                        </div>
+
+                        <div className="min-w-[130px] flex-1">
+                            <FilterDropdown
+                                label="Reference"
+                                value={selectedReference}
+                                onChange={setSelectedReference}
+                                options={uniqueReferences}
+                            />
+                        </div>
+
+                        <div className="min-w-[130px] flex-1">
+                            <FilterDropdown
+                                label="Enquiry"
+                                value={selectedEnquiryFor}
+                                onChange={setSelectedEnquiryFor}
+                                options={uniqueEnquiryFor}
+                            />
+                        </div>
+
+                        <div className="min-w-[130px] flex-1">
+                            <label className="text-xs text-gray-500 mb-1 block">
+                                Period
+                            </label>
+
+                            <select
+                                value={filterPeriod}
+                                onChange={(e) => setFilterPeriod(e.target.value)}
+                                className="w-full bg-[#e0e5ec] px-3 py-2 rounded-xl text-sm font-medium shadow-[4px_4px_8px_#bebebe,-4px_-4px_8px_#ffffff]"
+                            >
+                                <option value="daily">Daily</option>
+                                <option value="weekly">Weekly</option>
+                                <option value="monthly">Monthly</option>
+                                <option value="yearly">Yearly</option>
+                            </select>
+                        </div>
+
+                    </div>
                     </div>
 
                     <StatsGrid enquiries={filteredEnquiries} filterPeriod={filterPeriod} />
