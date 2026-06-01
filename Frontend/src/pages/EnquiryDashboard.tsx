@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import Layout from "../../components/site/Layout";
 import axios from "axios";
-
+import ChatLeads from "../components/site/ChatLeads";
 import StatsGrid from "../../components/site/StatsGrid";
 import TrendChart from "../../components/site/TrendChart";
 import TypeBreakdown from "../../components/site/TypeBreakdown";
@@ -12,6 +12,20 @@ import type { Enquiry } from "../../components/site/types";
 export default function EnquiryDashboard() {
     const [enquiries, setEnquiries] = useState<Enquiry[]>([]);
     const [loading, setLoading] = useState(true);
+    const [chatLeads, setChatLeads] = useState([]);
+    const fetchChatLeads = async () => {
+    try {
+
+        const response = await axios.get(
+            "http://localhost:5000/api/chat-leads"
+        );
+
+        setChatLeads(response.data.data || []);
+
+    } catch (error) {
+        console.error("Chat Lead Error:", error);
+    }
+};
 
     // ==================== MULTIPLE FILTERS ====================
     const [selectedPerson, setSelectedPerson] = useState<string>("all");
@@ -20,7 +34,6 @@ export default function EnquiryDashboard() {
     const [selectedEnquiryFor, setSelectedEnquiryFor] = useState<string>("all");
     const [filterPeriod, setFilterPeriod] = useState<"daily" | "weekly" | "monthly" | "yearly">("daily");
     const [showComparison, setShowComparison] = useState<boolean>(false);
-
     const fetchEnquiries = async () => {
         setLoading(true);
         try {
@@ -44,6 +57,7 @@ export default function EnquiryDashboard() {
 
     useEffect(() => {
         fetchEnquiries();
+        fetchChatLeads();
     }, []);
 
     // ==================== ADVANCED FILTERING ====================
@@ -217,12 +231,14 @@ export default function EnquiryDashboard() {
                         <TypeBreakdown enquiries={filteredEnquiries} filterPeriod={filterPeriod} />
                         <TopColleges enquiries={filteredEnquiries} filterPeriod={filterPeriod}/>
                         <RecentEnquiries enquiries={filteredEnquiries} filterPeriod={filterPeriod} />
+                        <ChatLeads leads={chatLeads} />
                     </div>
                 </div>
             </div>
         </Layout>
     );
 }
+
 
 // Reusable Filter Component
 const FilterDropdown = ({ label, value, onChange, options }: any) => {
@@ -244,3 +260,6 @@ const FilterDropdown = ({ label, value, onChange, options }: any) => {
         </div>
     );
 };
+
+
+

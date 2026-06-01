@@ -83,7 +83,7 @@ export default function EnquiryForm() {
 
         try {
             const response = await axios.post(
-                `https://enquryformss-2.onrender.com/api/enquiries`,
+                "http://localhost:5000/api/enquiries",
                 submissionData,
             );
 
