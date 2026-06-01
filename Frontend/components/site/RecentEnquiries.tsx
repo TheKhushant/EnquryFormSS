@@ -100,6 +100,7 @@ export default function RecentEnquiries({ enquiries, filterPeriod }: RecentEnqui
                                 <th className="text-left py-4 px-3 md:px-4 text-xs md:text-sm font-medium text-gray-600">College</th>
                                 <th className="text-left py-4 px-3 md:px-4 text-xs md:text-sm font-medium text-gray-600">Enquiry For</th>
                                 <th className="text-left py-4 px-3 md:px-4 text-xs md:text-sm font-medium text-gray-600">Contact</th>
+                                <th className="text-left py-3 px-3 text-xs font-medium">Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -118,6 +119,17 @@ export default function RecentEnquiries({ enquiries, filterPeriod }: RecentEnqui
                                         </span>
                                     </td>
                                     <td className="py-4 px-3 md:px-4 text-xs md:text-sm text-gray-600">{enq.mobile}</td>
+                                    <td className="py-4 px-3">
+                                        <button
+                                            onClick={() => handleDelete(enq._id)}
+                                            className="p-2 rounded-xl text-red-500 hover:bg-red-100 transition-colors"
+                                            title="Delete Enquiry"
+                                        >
+                                            {/* 🗑️ */}
+                                            <TrashIcon className="w-4 h-4" />
+                                            {/* <Trash size={16} /> */}
+                                        </button>
+                                    </td>
                                 </tr>
                             ))}
                         </tbody>
