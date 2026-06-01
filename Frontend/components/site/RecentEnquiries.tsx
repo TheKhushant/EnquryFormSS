@@ -1,6 +1,9 @@
 import { useState, useMemo } from "react";
-import { XMarkIcon } from "@heroicons/react/24/outline";
+import { XMarkIcon, TrashIcon } from "@heroicons/react/24/outline";
 import type { Enquiry } from "./types";
+// import { Trash} from "lucide-react";
+// import { api } from "@/lib/api";
+import axios from "axios";
 
 interface RecentEnquiriesProps {
     enquiries: Enquiry[];
@@ -47,6 +50,32 @@ export default function RecentEnquiries({ enquiries, filterPeriod }: RecentEnqui
             })
             .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
     }, [enquiries, searchTerm, filterType, filterCollege, dateFrom, dateTo, filterPeriod]);
+
+    const handleDelete = async (id: string) => {
+        const confirmed = window.confirm(
+            "Are you sure you want to delete this enquiry?"
+        );
+
+        if (!confirmed) return;
+
+        try {
+            await axios.delete(
+            `https://enquryformss-2.onrender.com/api/enquiries/${id}`
+            );
+
+            // agar parent se reload function nahi aa raha hai
+            // to page refresh kar sakte ho
+            window.location.reload();
+        } catch (error: any) {
+            console.error(error);
+
+            alert(
+                error?.response?.data?.message ||
+                error?.message ||
+                "Failed to delete enquiry"
+            );
+        }
+    };
 
     return (
         <>
@@ -209,6 +238,7 @@ export default function RecentEnquiries({ enquiries, filterPeriod }: RecentEnqui
                                         <th className="text-left py-3 px-3 text-xs font-medium">Experience</th>
                                         <th className="text-left py-3 px-3 text-xs font-medium">Whom to Meet</th>
                                         <th className="text-left py-3 px-3 text-xs font-medium">Reference</th>
+                                        <th className="text-left py-3 px-3 text-xs font-medium">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -248,6 +278,17 @@ export default function RecentEnquiries({ enquiries, filterPeriod }: RecentEnqui
                                                     : enq.reference === "Other"
                                                         ? ((enq as any).referenceOther || "Other")
                                                         : enq.reference || "—"}
+                                            </td>
+                                            <td className="py-4 px-3">
+                                                <button
+                                                    onClick={() => handleDelete(enq._id)}
+                                                    className="p-2 rounded-xl text-red-500 hover:bg-red-100 transition-colors"
+                                                    title="Delete Enquiry"
+                                                >
+                                                    {/* 🗑️ */}
+                                                    <TrashIcon className="w-4 h-4" />
+                                                    {/* <Trash size={16} /> */}
+                                                </button>
                                             </td>
                                         </tr>
                                     ))}

@@ -86,4 +86,27 @@ const getEnquiries = async (req, res) => {
     }
 };
 
-module.exports = { addEnquiry, getEnquiries };
+const deleteEnquiry = async (req, res) => {
+  try {
+    const enquiry = await Enquiry.findByIdAndDelete(req.params.id);
+
+    if (!enquiry) {
+      return res.status(404).json({
+        success: false,
+        message: 'Enquiry not found',
+      });
+    }
+
+    res.json({
+      success: true,
+      message: 'Enquiry deleted successfully',
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+module.exports = { addEnquiry, getEnquiries, deleteEnquiry };
