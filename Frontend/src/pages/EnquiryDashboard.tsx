@@ -50,8 +50,10 @@ const courseLeads =
         try {
             const response = await axios.get("https://enquryformss-2.onrender.com/api/enquiries");
             const data = response?.data;
+            console.log("ENQUIRIES API RESPONSE:", data);
             if (data?.success && Array.isArray(data.data)) {
                 setEnquiries(data.data);
+                console.log("SETTING ENQUIRIES:", data.data.length);
             } else if (Array.isArray(data?.data)) {
                 setEnquiries(data.data);
             } else {
