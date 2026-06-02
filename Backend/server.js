@@ -40,10 +40,6 @@ app.use(express.urlencoded({ extended: true }));
 // Routes
 app.use('/api/enquiries', require('./routes/enquiryRoutes'));
 app.use('/api/chat-leads', require('./routes/chatLeadRoutes'));
-app.use(
-    "/api/chat-leads",
-    require("./routes/chatLeadRoutes")
-);
 
 // Health Check
 app.get('/', (req, res) => {

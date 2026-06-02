@@ -1,6 +1,8 @@
 const Enquiry = require('../models/Enquiry');
-
+;
 const addEnquiry = async (req, res) => {
+  console.log("ENQUIRY API HIT");
+  console.log(req.body)
     try {
         const {
             name,
@@ -46,6 +48,10 @@ const addEnquiry = async (req, res) => {
         });
 
         await newEnquiry.save();
+        const mongoose = require("mongoose");
+        console.log("DATABASE:", mongoose.connection.name);
+        console.log("ENQUIRY SAVED");
+        console.log(newEnquiry._id);
 
         if (global.io) {
             global.io.emit("new-enquiry", newEnquiry);

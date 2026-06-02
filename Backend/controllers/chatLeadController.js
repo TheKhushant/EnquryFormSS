@@ -1,6 +1,8 @@
 const ChatLead = require("../models/ChatLead");
 
 const saveLead = async (req, res) => {
+  console.log("CHAT LEAD API HIT");
+  console.log(req.body);
   try {
     const { name, mobile, interest } = req.body;
 
@@ -10,11 +12,15 @@ const saveLead = async (req, res) => {
       interest,
     });
 
+    console.log("CHAT LEAD SAVED");
+    console.log(lead._id);
+
     res.status(201).json({
       success: true,
       data: lead,
     });
   } catch (error) {
+    console.error("CHAT LEAD ERROR");
     console.error(error);
 
     res.status(500).json({
