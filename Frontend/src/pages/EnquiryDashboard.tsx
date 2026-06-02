@@ -17,7 +17,7 @@ export default function EnquiryDashboard() {
     try {
 
         const response = await axios.get(
-            "http://localhost:5000/api/chat-leads"
+             "https://enquryformss-2.onrender.com/api/chat-leads"
         );
 
         setChatLeads(response.data.data || []);

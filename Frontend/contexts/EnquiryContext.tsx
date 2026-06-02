@@ -53,7 +53,7 @@ export function EnquiryProvider({ children }: { children: ReactNode }) {
 
     const addEnquiry = async (data: Omit<Enquiry, "id" | "date">) => {
         try {
-            const res = await fetch("http://localhost:5000/api/enquiries", {
+            const res = await fetch("https://enquryformss-2.onrender.com/api/chat-leads", {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)

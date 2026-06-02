@@ -91,7 +91,7 @@ const handleSend = async () => {
     if (leadStep === 2) {
         try {
             await axios.post(
-                "http://localhost:5000/api/chat-leads",
+               "https://enquryformss-2.onrender.com/api/chat-leads",
                 {
                     name: leadName,
                     mobile: userInput,
@@ -107,7 +107,8 @@ const handleSend = async () => {
                 }
             ]);
         } catch (error) {
-            console.error(error);
+            console.error("Chat Lead Error:", error);
+            alert("API Failed");
 
             setMessages((prev) => [
                 ...prev,
