@@ -24,6 +24,7 @@ export default function EnquiryForm() {
 
     // State for Thank You Page
     const [isSubmitted, setIsSubmitted] = useState(false);
+    
 
     const [formData, setFormData] = useState({
         name: "",
@@ -83,7 +84,7 @@ export default function EnquiryForm() {
 
         try {
             const response = await axios.post(
-                "https://enquryformss-2.onrender.com/api/chat-leads",
+                "https://enquryformss-2.onrender.com/api/enquiries",
                 submissionData,
             );
 
