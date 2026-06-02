@@ -58,3 +58,4 @@ export default function StatsGrid({ enquiries, filterPeriod }: StatsGridProps) {
         </div>
     );
 }
+

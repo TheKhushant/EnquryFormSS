@@ -13,6 +13,17 @@ export default function EnquiryDashboard() {
     const [enquiries, setEnquiries] = useState<Enquiry[]>([]);
     const [loading, setLoading] = useState(true);
     const [chatLeads, setChatLeads] = useState([]);
+    const internshipLeads =
+    chatLeads.filter(
+        (x: any) =>
+            x.interest?.toLowerCase().includes("internship")
+    ).length;
+
+const courseLeads =
+    chatLeads.filter(
+        (x: any) =>
+            x.interest?.toLowerCase().includes("course")
+    ).length;
     const fetchChatLeads = async () => {
     try {
 
@@ -23,7 +34,7 @@ export default function EnquiryDashboard() {
         setChatLeads(response.data.data || []);
 
     } catch (error) {
-        console.error("Chat Lead Error:", error);
+        console.error(error);
     }
 };
 
@@ -219,6 +230,40 @@ export default function EnquiryDashboard() {
                     </div>
 
                     <StatsGrid enquiries={filteredEnquiries} filterPeriod={filterPeriod} />
+
+<div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+
+    <div className="bg-white rounded-xl p-4 shadow">
+        <h3 className="text-gray-500">
+            Total Chat Leads
+        </h3>
+
+        <p className="text-3xl font-bold">
+            {chatLeads.length}
+        </p>
+    </div>
+
+    <div className="bg-white rounded-xl p-4 shadow">
+        <h3 className="text-gray-500">
+            Internship Leads
+        </h3>
+
+        <p className="text-3xl font-bold">
+            {internshipLeads}
+        </p>
+    </div>
+
+    <div className="bg-white rounded-xl p-4 shadow">
+        <h3 className="text-gray-500">
+            Course Leads
+        </h3>
+
+        <p className="text-3xl font-bold">
+            {courseLeads}
+        </p>
+    </div>
+
+</div>
 
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                         <TrendChart 
