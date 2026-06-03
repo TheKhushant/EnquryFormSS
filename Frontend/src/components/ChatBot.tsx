@@ -103,7 +103,7 @@ const handleSend = async () => {
                 ...prev,
                 {
                     sender: "bot",
-                    text: "✅ Thank you! Our team will contact you shortly."
+                    text: "✅ Thank you! Our team will contact you shortly.You can also fill the enquiry form below for faster assistance."
                 }
             ]);
         } catch (error) {
@@ -148,9 +148,20 @@ return (
         {open && (
             <div className="fixed bottom-24 right-6 z-50 w-80 h-[500px] bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden">
 
-                <div className="bg-purple-600 text-white p-4 font-semibold">
-                    SS Infotech Assistant
-                </div>
+               <div className="bg-purple-600 text-white p-4 flex justify-between items-center">
+
+    <span className="font-semibold">
+        SS Infotech Assistant
+    </span>
+
+    <button
+        onClick={() => setOpen(false)}
+        className="text-white text-xl font-bold hover:opacity-80"
+    >
+        ✕
+    </button>
+
+</div>
 
                 <div className="flex-1 overflow-y-auto p-4 space-y-3">
                     {messages.map((msg, index) => (
