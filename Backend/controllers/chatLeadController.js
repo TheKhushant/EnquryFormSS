@@ -46,6 +46,30 @@ const getLeads = async (req, res) => {
   }
 };
 
+const deleteLead = async (req, res) => {
+    try {
+
+        const { id } = req.params;
+
+        await ChatLead.findByIdAndDelete(id);
+
+        res.json({
+            success: true,
+            message: "Lead deleted successfully"
+        });
+
+    } catch (error) {
+
+        console.error(error);
+
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+
+    }
+};
+
 module.exports = {
     saveLead,
     getLeads,
