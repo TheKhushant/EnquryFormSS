@@ -47,6 +47,7 @@ const getLeads = async (req, res) => {
 };
 
 module.exports = {
-  saveLead,
-  getLeads,
+    saveLead,
+    getLeads,
+    deleteLead,
 };
