@@ -37,6 +37,7 @@ const ChatLeads = ({ leads }: Props) => {
             console.error(error);
             alert("Failed to delete lead");
 
+            
         }
     };
 
