@@ -9,6 +9,8 @@ import TopColleges from "../../components/site/TopColleges";
 import RecentEnquiries from "../../components/site/RecentEnquiries";
 import type { Enquiry } from "../../components/site/types";
 
+
+
 export default function EnquiryDashboard() {
     const [enquiries, setEnquiries] = useState<Enquiry[]>([]);
     const [loading, setLoading] = useState(true);
@@ -151,10 +153,10 @@ const courseLeads =
     if (loading) {
         return (
             <Layout>
-                <div className="min-h-screen bg-[#e0e5ec] p-8 flex items-center justify-center">
+                <div className="min-h-screen bg-[#e8def8] p-8 flex items-center justify-center">
                     <div className="text-center">
                         <div className="mb-4 text-2xl font-semibold text-gray-700">Loading dashboard...</div>
-                        <div className="inline-block h-12 w-12 animate-spin rounded-full border-4 border-[#c084fc] border-t-transparent" />
+                        <div className="inline-block h-12 w-12 animate-spin rounded-full border-4 border-[#8b5cf6] border-t-transparent" />
                     </div>
                 </div>
             </Layout>
@@ -163,12 +165,16 @@ const courseLeads =
 
     return (
         <Layout>
-            <div className="min-h-screen bg-[#e0e5ec] p-8">
+            <div className="min-h-screen bg-[#e8def8] bg-[#e8def8]
+                rounded-[32px]
+                p-8
+                shadow-[12px_12px_24px_#c5b4e3,-12px_-12px_24px_#ffffff]
+            ">
                 <div className="max-w-7xl mx-auto">
                     {/* Header */}
                     <div className="flex flex-col lg:flex-row justify-between gap-6 mb-10">
                         <div>
-                            <h1 className="text-4xl font-bold text-gray-800">Enquiry Dashboard</h1>
+                            <h1 className="text-4xl font-bold ">Enquiry Dashboard</h1>
                             {/* <p className="text-gray-600 mt-2">Real-time insights with advanced filters</p> */}
                         </div>
 
@@ -219,7 +225,17 @@ const courseLeads =
                             <select
                                 value={filterPeriod}
                                 onChange={(e) => setFilterPeriod(e.target.value as any)}
-                                className="w-full bg-[#e0e5ec] px-3 py-2 rounded-xl text-sm font-medium shadow-[4px_4px_8px_#bebebe,-4px_-4px_8px_#ffffff]"
+                                className="
+                                w-full
+                                bg-[#e8def8]
+                                px-4
+                                py-3
+                                rounded-2xl
+                                text-sm
+                                font-medium
+                                 
+                                shadow-[6px_6px_12px_#c5b4e3,-6px_-6px_12px_#ffffff]
+                                "
                             >
                                 <option value="daily">Daily</option>
                                 <option value="weekly">Weekly</option>
@@ -233,39 +249,68 @@ const courseLeads =
 
                     <StatsGrid enquiries={filteredEnquiries} filterPeriod={filterPeriod} />
 
-<div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
 
-    <div className="bg-white rounded-xl p-4 shadow">
-        <h3 className="text-gray-500">
-            Total Chat Leads
-        </h3>
+                        <div
+                        className="
+                        bg-[#e8def8]
+                        rounded-3xl
+                        p-6
+                        shadow-[10px_10px_20px_#c5b4e3,-10px_-10px_20px_#ffffff]
+                        hover:shadow-[12px_12px_24px_#c5b4e3,-12px_-12px_24px_#ffffff]
+                        transition-all
+                        duration-300
+                        "
+                        >
+                            <h3 className="  font-medium">
+                                Total Chat Leads
+                            </h3>
 
-        <p className="text-3xl font-bold">
-            {chatLeads.length}
-        </p>
-    </div>
+                            <p className="text-4xl font-bold  ">
+                                {chatLeads.length}
+                            </p>
+                        </div>
 
-    <div className="bg-white rounded-xl p-4 shadow">
-        <h3 className="text-gray-500">
-            Internship Leads
-        </h3>
+                        <div
+                        className="
+                        bg-[#e8def8]
+                        rounded-3xl
+                        p-6
+                        shadow-[10px_10px_20px_#c5b4e3,-10px_-10px_20px_#ffffff]
+                        hover:shadow-[12px_12px_24px_#c5b4e3,-12px_-12px_24px_#ffffff]
+                        transition-all
+                        duration-300
+                        ">
+                            <h3 className="  font-medium">
+                                Internship Leads
+                            </h3>
 
-        <p className="text-3xl font-bold">
-            {internshipLeads}
-        </p>
-    </div>
+                            <p className="text-4xl font-bold  ">
+                                {internshipLeads}
+                            </p>
+                        </div>
 
-    <div className="bg-white rounded-xl p-4 shadow">
-        <h3 className="text-gray-500">
-            Course Leads
-        </h3>
+                        <div
+                        className="
+                        bg-[#e8def8]
+                        rounded-3xl
+                        p-6
+                        shadow-[10px_10px_20px_#c5b4e3,-10px_-10px_20px_#ffffff]
+                        hover:shadow-[12px_12px_24px_#c5b4e3,-12px_-12px_24px_#ffffff]
+                        transition-all
+                        duration-300
+                        "
+                        >
+                            <h3 className="  font-medium">
+                                Course Leads
+                            </h3>
 
-        <p className="text-3xl font-bold">
-            {courseLeads}
-        </p>
-    </div>
+                            <p className="text-4xl font-bold  ">
+                                {courseLeads}
+                            </p>
+                        </div>
 
-</div>
+                    </div>
 
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                         <TrendChart 
@@ -297,7 +342,19 @@ const FilterDropdown = ({ label, value, onChange, options }: any) => {
             <select
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
-                className="w-full bg-[#e0e5ec] px-5 py-3 rounded-3xl font-medium text-gray-800 shadow-[6px_6px_12px_#bebebe,-6px_-6px_12px_#ffffff] focus:outline-none focus:ring-2 focus:ring-[#c084fc]"
+                className="
+                w-full
+                bg-[#e8def8]
+                px-5
+                py-3
+                rounded-3xl
+                font-medium
+                 
+                border-0
+                shadow-[8px_8px_16px_#c5b4e3,-8px_-8px_16px_#ffffff]
+                focus:outline-none
+                focus:shadow-[inset_4px_4px_8px_#c5b4e3,inset_-4px_-4px_8px_#ffffff]
+                focus:outline-none focus:ring-2 focus:ring-[#c084fc]"
             >
                 <option key="all" value="all">All {label}</option>
                 {safeOptions.map((item: string) => (

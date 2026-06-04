@@ -30,9 +30,17 @@ export default function TopColleges({ enquiries, filterPeriod }: TopCollegesProp
     }, [enquiries, filterPeriod]);
 
     return (
-        <div className="lg:col-span-5 bg-[#e0e5ec] rounded-3xl p-8 shadow-[10px_10px_20px_#bebebe,-10px_-10px_20px_#ffffff]">
+        <div className="
+            lg:col-span-5
+            bg-[#e8def8]
+            rounded-[32px]
+            p-8
+            border
+            border-white/30
+            shadow-[14px_14px_28px_#c5b4e3,-14px_-14px_28px_#ffffff]
+            ">
             <h3 className="text-2xl font-semibold text-gray-800 mb-6">Top Colleges</h3>
-            <div className="space-y-6">
+            <div className="space-y-4">
                 {topColleges.length > 0 ? (
                     topColleges.map((college, i) => (
                         <div key={i} className="flex items-center justify-between">

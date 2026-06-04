@@ -1,1 +1,15 @@
 @import "tailwindcss";
+
+.neo-purple {
+  background: #e8def8;
+  box-shadow:
+    10px 10px 20px #c5b4e3,
+    -10px -10px 20px #ffffff;
+}
+
+.neo-purple-inset {
+  background: #e8def8;
+  box-shadow:
+    inset 6px 6px 12px #c5b4e3,
+    inset -6px -6px 12px #ffffff;
+}

@@ -2,7 +2,7 @@ import { UsersIcon, CalendarIcon, ArrowTrendingUpIcon, ChartBarIcon } from "@her
 import { motion } from "framer-motion";
 import type { Enquiry } from "./types.ts";
 
-const accentColor = "#e5bcfb";
+const accentColor = "#8b5cf6";
 
 interface StatsGridProps {
     enquiries: Enquiry[];
@@ -39,14 +39,31 @@ export default function StatsGrid({ enquiries, filterPeriod }: StatsGridProps) {
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: i * 0.1 }}
-                    className="bg-[#e0e5ec] rounded-3xl p-4 shadow-[10px_10px_20px_#bebebe,-10px_-10px_20px_#ffffff]"
+                    className="
+                    bg-[#e8def8]
+                    rounded-[28px]
+                    p-6
+                    border border-white/30
+                    shadow-[12px_12px_24px_#c5b4e3,-12px_-12px_24px_#ffffff]
+                    hover:shadow-[16px_16px_32px_#c5b4e3,-16px_-16px_32px_#ffffff]
+                    hover:-translate-y-1
+                    transition-all
+                    duration-300
+                    "
                 >
                     <div className="flex justify-between items-start">
                         <div>
-                            <p className="text-gray-600 text-sm">{stat.label}</p>
-                            <p className="text-5xl font-bold text-gray-800 mt-3">{stat.value}</p>
+                            <p className=" text-sm font-medium tracking-wide">{stat.label}</p>
+                            <p className="text-5xl font-black  mt-3">{stat.value}</p>
                         </div>
-                        <div className="p-1 rounded-2xl bg-white/60">
+                        <div
+                        className="
+                        p-3
+                        rounded-2xl
+                        bg-[#e8def8]
+                        shadow-[6px_6px_12px_#c5b4e3,-6px_-6px_12px_#ffffff]
+                        "
+                        >
                             <stat.icon className="w-5 h-5" style={{ color: accentColor }} />
                         </div>
                     </div>

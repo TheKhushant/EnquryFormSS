@@ -162,12 +162,21 @@ export default function RecentEnquiries({ enquiries, filterPeriod }: RecentEnqui
     return (
         <>
             {/* Recent Enquiries Card */}
-            <div className="lg:col-span-7 bg-[#e0e5ec] rounded-3xl p-6 md:p-8 shadow-[10px_10px_20px_#bebebe,-10px_-10px_20px_#ffffff]">
+            <div className="
+            lg:col-span-7
+            bg-[#e8def8]
+            rounded-[32px]
+            p-6
+            md:p-8
+            border
+            border-white/30
+            shadow-[14px_14px_28px_#c5b4e3,-14px_-14px_28px_#ffffff]
+            ">
                 <div className="flex justify-between items-center mb-6 md:mb-8">
                     <h3 className="text-xl md:text-2xl font-semibold text-gray-800">Recent Enquiries</h3>
                     <button
                         onClick={scanDuplicates}
-                        className="px-4 py-2 bg-orange-500 text-white rounded-xl"
+                        className="px-4 py-2 bg-orange-400 text-white rounded-xl"
                         >
                         Scan Duplicates
                     </button>
@@ -298,7 +307,7 @@ export default function RecentEnquiries({ enquiries, filterPeriod }: RecentEnqui
 
                         <button
                         onClick={deleteSelectedDuplicates}
-                        className="px-4 py-2 bg-red-500 text-white rounded-xl"
+                        className="px-4 py-2 bg-red-400 text-white rounded-xl"
                         >
                         Delete Selected
                         </button>

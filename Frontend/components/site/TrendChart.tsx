@@ -165,12 +165,23 @@ export default function TrendChart({
         : 0;
 
     return (
-        <div className="lg:col-span-8 bg-[#e0e5ec] rounded-3xl p-6 md:p-8 shadow-[10px_10px_20px_#bebebe,-10px_-10px_20px_#ffffff]">
+        <div
+        className="
+        lg:col-span-8
+        bg-[#e8def8]
+        rounded-[32px]
+        p-6
+        md:p-8
+        border
+        border-white/30
+        shadow-[14px_14px_28px_#c5b4e3,-14px_-14px_28px_#ffffff]
+        "
+        >
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6">
                 <div>
-                    <h3 className="text-2xl font-semibold text-gray-800">Enquiry Trend</h3>
-                    <p className="text-gray-600 text-sm mt-1 capitalize">
+                    <h3 className="text-2xl font-bold  ">Enquiry Trend</h3>
+                    <p className="  text-sm mt-1 capitalize">
                         {filterPeriod} View • {totalCurrent} Enquiries
                     </p>
                 </div>
@@ -178,11 +189,11 @@ export default function TrendChart({
                 {/* Stats */}
                 <div className="flex items-center gap-6 text-sm">
                     <div>
-                        <span className="text-gray-500">Total</span>
-                        <p className="text-2xl font-semibold text-gray-800">{totalCurrent}</p>
+                        <span className=" ">Total</span>
+                        <p className="text-2xl font-semibold  ">{totalCurrent}</p>
                     </div>
                     {growth !== 0 && (
-                        <div className={`flex items-center gap-1 ${growth >= 0 ? "text-green-600" : "text-red-600"}`}>
+                        <div className={`flex items-center gap-1 ${growth >= 0 ? "text-violet-600" : "text-red-500"}`}>
                             <span className="text-lg font-medium">
                                 {growth >= 0 ? "↑" : "↓"} {Math.abs(growth)}%
                             </span>
@@ -197,7 +208,18 @@ export default function TrendChart({
                         <select
                             value={weeklyMode}
                             onChange={(e) => setWeeklyMode(e.target.value as WeeklyMode)}
-                            className="px-4 py-2.5 rounded-2xl text-sm font-medium bg-white border border-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            className="
+                            px-4
+                            py-3
+                            rounded-2xl
+                            text-sm
+                            font-medium
+                            bg-[#e8def8]
+                             
+                            border-0
+                            shadow-[6px_6px_12px_#c5b4e3,-6px_-6px_12px_#ffffff]
+                            focus:outline-none
+                            "
                         >
                             <option value="rolling">Last 7 Days</option>
                             <option value="calendar">Calendar Week (Mon-Sun)</option>
@@ -208,8 +230,8 @@ export default function TrendChart({
                         onClick={() => setShowComparison(!showComparison)}
                         className={`px-5 py-2.5 rounded-2xl text-sm font-medium transition-all flex items-center gap-2 ${
                             showComparison 
-                                ? "bg-purple-600 text-white" 
-                                : "bg-white shadow border border-gray-200 hover:bg-gray-50"
+                                ? "bg-[#c084fc] text-white" 
+                                : "bg-[#e8def8] shadow border border-gray-200 hover:bg-gray-50"
                         }`}
                     >
                         {showComparison ? "Hide Comparison" : "Compare Previous"}
@@ -224,7 +246,10 @@ export default function TrendChart({
                         data={chartData} 
                         margin={{ top: 20, right: 30, left: -20, bottom: 40 }}
                     >
-                        <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                        <CartesianGrid
+                            strokeDasharray="4 4"
+                            stroke="#d8c7f3"
+                            />
                         
                         <XAxis 
                             dataKey="label" 
@@ -249,8 +274,8 @@ export default function TrendChart({
                             type="monotone"
                             dataKey="current"
                             stroke="none"
-                            fill="#c084fc"
-                            fillOpacity={0.08}
+                            fill="#8b5cf6"
+                            fillOpacity={0.18}
                         />
 
                         <Line
@@ -301,9 +326,16 @@ const CustomTooltip = ({ active, payload, label }: any) => {
         <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white shadow-xl rounded-2xl p-4 border border-gray-100 text-sm z-50"
+            className="
+            bg-[#e8def8]
+            rounded-3xl
+            p-4
+            text-sm
+            z-50
+            shadow-[10px_10px_20px_#c5b4e3,-10px_-10px_20px_#ffffff]
+            "
         >
-            <p className="font-medium text-gray-800 mb-3">{label}</p>
+            <p className="font-bold   mb-3">{label}</p>
             
             {payload.map((entry: any, index: number) => (
                 <div key={index} className="flex items-center justify-between gap-8 mb-1">

@@ -41,7 +41,17 @@ export default function TypeBreakdown({ enquiries, filterPeriod }: TypeBreakdown
     const totalEnquiries = enquiries.length;
 
     return (
-        <div className="lg:col-span-4 bg-[#e0e5ec] rounded-3xl p-1 md:p-4 shadow-[10px_10px_20px_#bebebe,-10px_-10px_20px_#ffffff] flex flex-col">
+        <div
+            className="
+            lg:col-span-4
+            bg-[#e8def8]
+            rounded-[32px]
+            p-4 md:p-6
+            border border-white/20
+            flex flex-col
+            shadow-[14px_14px_28px_#c5b4e3,-14px_-14px_28px_#ffffff]
+            "
+            >
             {/* Header */}
             <div className="flex items-start justify-between mb-6">
                 <div>
@@ -71,7 +81,7 @@ export default function TypeBreakdown({ enquiries, filterPeriod }: TypeBreakdown
                                     <Cell 
                                         key={`cell-${index}`} 
                                         fill={entry.color}
-                                        stroke="#e0e5ec"
+                                        stroke="#e8def8"
                                         strokeWidth={3}
                                     />
                                 ))
@@ -112,7 +122,7 @@ export default function TypeBreakdown({ enquiries, filterPeriod }: TypeBreakdown
                         ))}
                     </div>
                 ) : (
-                    <div className="text-center py-8 text-gray-500">
+                    <div className="text-center py-8  ">
                         No enquiry data available
                     </div>
                 )}
@@ -128,13 +138,13 @@ const CustomTooltip = ({ active, payload }: any) => {
     const data = payload[0].payload;
 
     return (
-        <div className="bg-white shadow-xl rounded-2xl px-5 py-4 border border-gray-100 text-sm min-w-[180px]">
+        <div className="bg-[#e8def8] shadow-[10px_10px_20px_#c5b4e3,-10px_-10px_20px_#ffffff] rounded-3xl px-5 py-4 border border-white/30 text-sm min-w-[180px]">
             <div className="flex items-center gap-3">
                 <div 
                     className="w-4 h-4 rounded-full" 
                     style={{ backgroundColor: data.color }}
                 />
-                <span className="font-medium text-gray-800">{data.name}</span>
+                <span className="font-medium  ">{data.name}</span>
             </div>
             
             <div className="mt-3 flex justify-between items-baseline">
