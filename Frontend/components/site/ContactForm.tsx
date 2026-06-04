@@ -40,9 +40,9 @@ export default function ContactForm({ raisedShadow, insetShadow }: {
   }
 
   return (
-    <section id="contact" className="py-20 bg-[#e0e5ec]">
+    <section id="contact" className="py-20  bg-[#f3efff]">
       <div className="container mx-auto px-6">
-        <div className={`max-w-6xl mx-auto rounded-3xl bg-[#e0e5ec] ${raisedShadow} p-8 md:p-12 lg:p-16`}>
+        <div className={`max-w-6xl mx-auto rounded-3xl  bg-[#f3efff] ${raisedShadow} p-8 md:p-12 lg:p-16`}>
           
           <div className="grid gap-12 md:grid-cols-2 items-start">
             
@@ -54,7 +54,7 @@ export default function ContactForm({ raisedShadow, insetShadow }: {
             >
               {/* Header */}
               <div>
-                <div className="inline-flex items-center gap-3 px-6 py-3 rounded-3xl bg-[#e0e5ec] shadow-[4px_4px_8px_#bebebe,-4px_-4px_8px_#ffffff] mb-6">
+                <div className="inline-flex items-center gap-3 px-6 py-3 rounded-3xl  bg-[#f3efff] shadow-[4px_4px_8px_#bebebe,-4px_-4px_8px_#ffffff] mb-6">
                   <MapPinIcon className="w-5 h-5 text-emerald-600" />
                   <span className="font-semibold text-emerald-700">Get In Touch</span>
                 </div>
@@ -77,7 +77,7 @@ export default function ContactForm({ raisedShadow, insetShadow }: {
                       name="name"
                       value={form.name}
                       onChange={handleChange}
-                      className={`w-full px-6 py-4 rounded-2xl bg-[#e0e5ec] ${insetShadow} 
+                      className={`w-full px-6 py-4 rounded-2xl  bg-[#f3efff] ${insetShadow} 
                         focus:outline-none focus:ring-2 focus:ring-emerald-400/50 
                         text-gray-700 placeholder:text-gray-400 transition-all`}
                       placeholder="Enter your full name"
@@ -92,7 +92,7 @@ export default function ContactForm({ raisedShadow, insetShadow }: {
                       type="email"
                       value={form.email}
                       onChange={handleChange}
-                      className={`w-full px-6 py-4 rounded-2xl bg-[#e0e5ec] ${insetShadow} 
+                      className={`w-full px-6 py-4 rounded-2xl  bg-[#f3efff] ${insetShadow} 
                         focus:outline-none focus:ring-2 focus:ring-emerald-400/50 
                         text-gray-700 placeholder:text-gray-400 transition-all`}
                       placeholder="your@email.com"
@@ -107,7 +107,7 @@ export default function ContactForm({ raisedShadow, insetShadow }: {
                     name="phone"
                     value={form.phone}
                     onChange={handleChange}
-                    className={`w-full px-6 py-4 rounded-2xl bg-[#e0e5ec] ${insetShadow} 
+                    className={`w-full px-6 py-4 rounded-2xl  bg-[#f3efff] ${insetShadow} 
                       focus:outline-none focus:ring-2 focus:ring-emerald-400/50 
                       text-gray-700 placeholder:text-gray-400 transition-all`}
                     placeholder="+91 98765 43210"
@@ -122,7 +122,7 @@ export default function ContactForm({ raisedShadow, insetShadow }: {
                     value={form.message}
                     onChange={handleChange}
                     rows={5}
-                    className={`w-full px-6 py-4 rounded-3xl bg-[#e0e5ec] ${insetShadow} resize-y min-h-[140px]
+                    className={`w-full px-6 py-4 rounded-3xl  bg-[#f3efff] ${insetShadow} resize-y min-h-[140px]
                       focus:outline-none focus:ring-2 focus:ring-emerald-400/50 
                       text-gray-700 placeholder:text-gray-400 transition-all`}
                     placeholder="Tell us about your goals, course interest, or any questions..."
@@ -137,7 +137,7 @@ export default function ContactForm({ raisedShadow, insetShadow }: {
                   type="submit"
                   disabled={isSubmitting}
                   className={`w-full py-4 px-8 rounded-3xl font-semibold text-lg flex items-center justify-center gap-3 
-                    bg-[#e0e5ec] ${raisedShadow} 
+                     bg-[#f3efff] ${raisedShadow} 
                     hover:shadow-[8px_8px_16px_#bebebe,-8px_-8px_16px_#ffffff] 
                     active:${insetShadow} 
                     text-gray-800 disabled:opacity-70 transition-all duration-300`}
@@ -160,7 +160,7 @@ export default function ContactForm({ raisedShadow, insetShadow }: {
               whileInView={{ opacity: 1, x: 0 }}
               className="relative"
             >
-              <div className={`rounded-3xl overflow-hidden bg-[#e0e5ec] ${raisedShadow} p-3 shadow-inner`}>
+              <div className={`rounded-3xl overflow-hidden  bg-[#f3efff] ${raisedShadow} p-3 shadow-inner`}>
                 <div className="rounded-2xl overflow-hidden border border-gray-200/50">
                   <iframe
                     title="Skill Training Center Nagpur Location"
@@ -179,7 +179,7 @@ export default function ContactForm({ raisedShadow, insetShadow }: {
               <motion.div
                 animate={{ y: [0, -8, 0] }}
                 transition={{ duration: 3, repeat: Infinity }}
-                className="absolute -bottom-4 -left-4 bg-[#e0e5ec] px-5 py-3 rounded-2xl text-sm font-medium shadow-[6px_6px_12px_#bebebe,-6px_-6px_12px_#ffffff]"
+                className="absolute -bottom-4 -left-4  bg-[#f3efff] px-5 py-3 rounded-2xl text-sm font-medium shadow-[6px_6px_12px_#bebebe,-6px_-6px_12px_#ffffff]"
               >
                 📍 SS Infotech, Nagpur
               </motion.div>

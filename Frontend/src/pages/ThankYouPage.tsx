@@ -91,7 +91,7 @@ export default function EnquiryForm() {
         <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="min-h-screen bg-[#e0e5ec] flex items-center justify-center py-16 px-4"
+            className="min-h-screen  bg-[#f3efff] flex items-center justify-center py-16 px-4"
         >
             <div className="max-w-lg w-full text-center">
                 <motion.div
@@ -105,7 +105,7 @@ export default function EnquiryForm() {
 
                 <h1 className="text-5xl font-bold text-gray-800 mb-4">Thank You!</h1>
                 
-                <div className="bg-[#e0e5ec] rounded-3xl p-10 shadow-[10px_10px_20px_#bebebe,-10px_-10px_20px_#ffffff] mb-8">
+                <div className=" bg-[#f3efff] rounded-3xl p-10 shadow-[10px_10px_20px_#bebebe,-10px_-10px_20px_#ffffff] mb-8">
                     <p className="text-2xl font-medium text-gray-700 mb-3">
                         Your form has been submitted successfully
                     </p>
@@ -120,7 +120,7 @@ export default function EnquiryForm() {
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                         onClick={resetForm}
-                        className="w-full py-6 rounded-3xl bg-gradient-to-r from-[#e5bcfb] to-[#c084fc] text-white font-bold text-xl shadow-[8px_8px_16px_#bebebe,-8px_-8px_16px_#ffffff]"
+                        className="w-full py-6 rounded-3xl bg-gradient-to-r from-violet-600 via-purple-600 to-fuchsia-600 text-white font-bold text-xl shadow-[8px_8px_16px_#bebebe,-8px_-8px_16px_#ffffff]"
                     >
                         Submit Another Enquiry
                     </motion.button>
@@ -142,7 +142,7 @@ export default function EnquiryForm() {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        className="min-h-screen bg-[#e0e5ec] py-16 px-4"
+                        className="min-h-screen  bg-[#f3efff] py-16 px-4"
                     >
                         <div className="max-w-2xl mx-auto">
                             {/* Your existing header */}
@@ -151,7 +151,7 @@ export default function EnquiryForm() {
                                 animate={{ opacity: 1, y: 0 }}
                                 className="text-center mb-12"
                             >
-                                <div className="inline-flex items-center gap-3 px-6 py-3 rounded-3xl bg-[#e0e5ec] shadow-[6px_6px_12px_#bebebe,-6px_-6px_12px_#ffffff] mb-6">
+                                <div className="inline-flex items-center gap-3 px-6 py-3 rounded-3xl  bg-[#f3efff] shadow-[6px_6px_12px_#bebebe,-6px_-6px_12px_#ffffff] mb-6">
                                     <SparklesIcon className="w-6 h-6" style={{ color: accentColor }} />
                                     <span className="font-semibold text-purple-800">Get In Touch</span>
                                 </div>
@@ -164,7 +164,7 @@ export default function EnquiryForm() {
                                 onSubmit={handleSubmit}
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
-                                className="bg-[#e0e5ec] rounded-3xl p-10 shadow-[10px_10px_20px_#bebebe,-10px_-10px_20px_#ffffff]"
+                                className=" bg-[#f3efff] rounded-3xl p-10 shadow-[10px_10px_20px_#bebebe,-10px_-10px_20px_#ffffff]"
                             >
                                 {/* ... ALL YOUR EXISTING FORM FIELDS ... */}
                                 {/* (Keep everything from Personal Info to Submit Button unchanged) */}
@@ -178,7 +178,7 @@ export default function EnquiryForm() {
                                         whileHover={{ scale: 1.03 }}
                                         whileTap={{ scale: 0.97 }}
                                         type="submit"
-                                        className="w-full py-6 rounded-3xl bg-gradient-to-r from-[#e5bcfb] to-[#c084fc] text-white font-bold text-xl shadow-[8px_8px_16px_#bebebe,-8px_-8px_16px_#ffffff] active:shadow-[inset_6px_6px_12px_#bebebe,inset_-6px_-6px_12px_#ffffff] mt-6"
+                                        className="w-full py-6 rounded-3xl bg-gradient-to-r from-violet-600 via-purple-600 to-fuchsia-600 text-white font-bold text-xl shadow-[8px_8px_16px_#bebebe,-8px_-8px_16px_#ffffff] active:shadow-[inset_6px_6px_12px_#bebebe,inset_-6px_-6px_12px_#ffffff] mt-6"
                                     >
                                         Submit Enquiry
                                     </motion.button>

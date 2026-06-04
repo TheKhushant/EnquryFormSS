@@ -23,7 +23,7 @@ export default function OverseasDropdown() {
         onBlur={() => setTimeout(() => setIsOpen(false), 150)} // close on outside click
         className={`
           flex items-center gap-2 px-6 py-3 rounded-3xl font-medium text-gray-700
-          bg-[#e0e5ec] transition-all duration-300
+           bg-[#f3efff] transition-all duration-300
           ${isOpen ? pressedShadow : raisedShadow}
           hover:shadow-[8px_8px_16px_#bebebe,-8px_-8px_16px_#ffffff]
           active:scale-95
@@ -49,7 +49,7 @@ export default function OverseasDropdown() {
             className="absolute right-0 mt-3 w-56 z-50"
           >
             <div className={`
-              bg-[#e0e5ec] rounded-3xl p-2 
+               bg-[#f3efff] rounded-3xl p-2 
               shadow-[8px_8px_20px_#bebebe,-8px_-8px_20px_#ffffff]
             `}>
               <button

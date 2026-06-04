@@ -1,6 +1,6 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
-import HeroSlider from "@/components/site/HeroSlider";
+import HeroSlider from "../../components/site/HeroSlider";
 
 export default function Hero() {
   const ref = useRef<HTMLDivElement>(null);

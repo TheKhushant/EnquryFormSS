@@ -173,14 +173,14 @@ export default function PosterTemplates() {
   const softHover = "hover:shadow-[10px_10px_20px_#bebebe,-10px_-10px_20px_#ffffff] hover:-translate-y-1";
 
   return (
-    <section id="posters" className="container py-16 bg-[#e0e5ec]">
+    <section id="posters" className="container py-16  bg-[#f3efff]">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         className="mx-auto max-w-lg text-center mb-12"
       >
-        <div className="inline-flex items-center gap-3 px-6 py-3 rounded-3xl bg-[#e0e5ec] shadow-[4px_4px_8px_#bebebe,-4px_-4px_8px_#ffffff] mb-6 mx-auto">
+        <div className="inline-flex items-center gap-3 px-6 py-3 rounded-3xl  bg-[#f3efff] shadow-[4px_4px_8px_#bebebe,-4px_-4px_8px_#ffffff] mb-6 mx-auto">
           <SparklesIcon className="w-5 h-5" style={{ color: accentColor }} />
           <span className="text-sm font-semibold" style={{ color: "#6b21a8" }}>Latest Updates</span>
         </div>
@@ -197,7 +197,7 @@ export default function PosterTemplates() {
         {currentIndex > 0 && (
           <button
             onClick={handlePrev}
-            className="absolute left-0 top-1/2 -translate-y-1/2 z-20 w-10 h-10 md:w-12 md:h-12 rounded-full bg-[#e0e5ec] shadow-[4px_4px_8px_#bebebe,-4px_-4px_8px_#ffffff] hover:shadow-[6px_6px_12px_#bebebe,-6px_-6px_12px_#ffffff] active:shadow-[inset_4px_4px_8px_#bebebe,inset_-4px_-4px_8px_#ffffff] flex items-center justify-center transition-all duration-300"
+            className="absolute left-0 top-1/2 -translate-y-1/2 z-20 w-10 h-10 md:w-12 md:h-12 rounded-full  bg-[#f3efff] shadow-[4px_4px_8px_#bebebe,-4px_-4px_8px_#ffffff] hover:shadow-[6px_6px_12px_#bebebe,-6px_-6px_12px_#ffffff] active:shadow-[inset_4px_4px_8px_#bebebe,inset_-4px_-4px_8px_#ffffff] flex items-center justify-center transition-all duration-300"
             aria-label="Previous slide"
           >
             <ChevronLeftIcon className="w-5 h-5 md:w-6 md:h-6 text-gray-700" />
@@ -207,7 +207,7 @@ export default function PosterTemplates() {
         {currentIndex < maxIndex && (
           <button
             onClick={handleNext}
-            className="absolute right-0 top-1/2 -translate-y-1/2 z-20 w-10 h-10 md:w-12 md:h-12 rounded-full bg-[#e0e5ec] shadow-[4px_4px_8px_#bebebe,-4px_-4px_8px_#ffffff] hover:shadow-[6px_6px_12px_#bebebe,-6px_-6px_12px_#ffffff] active:shadow-[inset_4px_4px_8px_#bebebe,inset_-4px_-4px_8px_#ffffff] flex items-center justify-center transition-all duration-300"
+            className="absolute right-0 top-1/2 -translate-y-1/2 z-20 w-10 h-10 md:w-12 md:h-12 rounded-full  bg-[#f3efff] shadow-[4px_4px_8px_#bebebe,-4px_-4px_8px_#ffffff] hover:shadow-[6px_6px_12px_#bebebe,-6px_-6px_12px_#ffffff] active:shadow-[inset_4px_4px_8px_#bebebe,inset_-4px_-4px_8px_#ffffff] flex items-center justify-center transition-all duration-300"
             aria-label="Next slide"
           >
             <ChevronRightIcon className="w-5 h-5 md:w-6 md:h-6 text-gray-700" />
@@ -253,7 +253,7 @@ export default function PosterTemplates() {
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' || e.key === ' ') scrollToContact();
                     }}
-                    className={`group relative h-[360px] rounded-3xl bg-[#e0e5ec] p-5 cursor-pointer overflow-hidden transition-all duration-300 ${raisedShadow} ${softHover} w-full flex flex-col`}
+                    className={`group relative h-[360px] rounded-3xl  bg-[#f3efff] p-5 cursor-pointer overflow-hidden transition-all duration-300 ${raisedShadow} ${softHover} w-full flex flex-col`}
                   >
                     {/* Soft Inner Highlight */}
                     <div className="absolute inset-0 bg-gradient-to-br from-white/60 to-transparent rounded-3xl pointer-events-none" />
@@ -309,7 +309,7 @@ export default function PosterTemplates() {
                 className={`h-2 rounded-full transition-all duration-300 ${
                   index === currentIndex
                     ? "w-8 bg-[#c084fc] shadow-[inset_2px_2px_4px_#bebebe,inset_-2px_-2px_4px_#ffffff]"
-                    : "w-2 bg-[#e0e5ec] shadow-[2px_2px_4px_#bebebe,-2px_-2px_4px_#ffffff] hover:shadow-[inset_2px_2px_4px_#bebebe,inset_-2px_-2px_4px_#ffffff]"
+                    : "w-2  bg-[#f3efff] shadow-[2px_2px_4px_#bebebe,-2px_-2px_4px_#ffffff] hover:shadow-[inset_2px_2px_4px_#bebebe,inset_-2px_-2px_4px_#ffffff]"
                 }`}
                 aria-label={`Go to slide ${index + 1}`}
               />
@@ -324,8 +324,8 @@ export default function PosterTemplates() {
               onClick={() => setIsAutoPlaying(!isAutoPlaying)}
               className={`px-4 py-2 rounded-2xl text-sm font-medium transition-all duration-300 ${
                 isAutoPlaying
-                  ? "bg-[#e0e5ec] text-gray-700 shadow-[inset_4px_4px_8px_#bebebe,inset_-4px_-4px_8px_#ffffff]"
-                  : "bg-[#e0e5ec] text-gray-600 shadow-[4px_4px_8px_#bebebe,-4px_-4px_8px_#ffffff] hover:shadow-[6px_6px_12px_#bebebe,-6px_-6px_12px_#ffffff]"
+                  ? " bg-[#f3efff] text-gray-700 shadow-[inset_4px_4px_8px_#bebebe,inset_-4px_-4px_8px_#ffffff]"
+                  : " bg-[#f3efff] text-gray-600 shadow-[4px_4px_8px_#bebebe,-4px_-4px_8px_#ffffff] hover:shadow-[6px_6px_12px_#bebebe,-6px_-6px_12px_#ffffff]"
               }`}
             >
               {isAutoPlaying ? "⏸ Pause" : "▶ Play"}

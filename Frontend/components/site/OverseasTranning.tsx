@@ -134,11 +134,11 @@ const GameCard = ({ gameUrl, features }: { gameUrl: string; features: string[] }
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ delay: 0.2 }}
-      className={`relative overflow-hidden rounded-3xl bg-[#e0e5ec] p-6 ${raisedShadow} ${softHover} transition-all duration-300`}
+      className={`relative overflow-hidden rounded-3xl  bg-[#f3efff] p-6 ${raisedShadow} ${softHover} transition-all duration-300`}
     >
       <div className="relative">
         <div className="flex items-center gap-3 mb-4">
-          <div className={`p-3 rounded-2xl bg-[#e0e5ec] ${raisedShadow}`}>
+          <div className={`p-3 rounded-2xl  bg-[#f3efff] ${raisedShadow}`}>
             <PuzzlePieceIcon className="w-6 h-6 text-gray-700" />
           </div>
           <div>
@@ -156,7 +156,7 @@ const GameCard = ({ gameUrl, features }: { gameUrl: string; features: string[] }
           {features.map((feature) => (
             <div
               key={feature}
-              className={`text-center p-3 rounded-xl bg-[#e0e5ec] ${insetShadow}`}
+              className={`text-center p-3 rounded-xl  bg-[#f3efff] ${insetShadow}`}
             >
               <span className="text-sm font-medium text-gray-700">{feature}</span>
             </div>
@@ -170,7 +170,7 @@ const GameCard = ({ gameUrl, features }: { gameUrl: string; features: string[] }
           rel="noopener noreferrer"
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
-          className={`inline-flex items-center justify-center gap-2 w-full px-6 py-3 bg-[#e0e5ec] text-gray-800 font-semibold rounded-2xl ${raisedShadow} hover:shadow-[10px_10px_20px_#bebebe,-10px_-10px_20px_#ffffff] active:${insetShadow} transition-all duration-300`}
+          className={`inline-flex items-center justify-center gap-2 w-full px-6 py-3  bg-[#f3efff] text-gray-800 font-semibold rounded-2xl ${raisedShadow} hover:shadow-[10px_10px_20px_#bebebe,-10px_-10px_20px_#ffffff] active:${insetShadow} transition-all duration-300`}
         >
           <PlayIcon className="w-5 h-5" />
           <span>Play Now</span>
@@ -193,7 +193,7 @@ const LanguageCard = ({ course, index }: { course: any; index: number }) => {
       viewport={{ once: true }}
       className="group relative h-full"
     >
-      <div className={`h-full relative rounded-3xl bg-[#e0e5ec] p-6 overflow-hidden transition-all duration-500 ${raisedShadow} ${softHover} flex flex-col`}>
+      <div className={`h-full relative rounded-3xl  bg-[#f3efff] p-6 overflow-hidden transition-all duration-500 ${raisedShadow} ${softHover} flex flex-col`}>
         <div className="relative z-10 h-full flex flex-col">
           {/* Header with Flag Image */}
           <div className="flex items-start justify-between mb-4">
@@ -253,7 +253,7 @@ const LanguageCard = ({ course, index }: { course: any; index: number }) => {
           {/* Game Available Badge */}
           {course.gameAvailable && (
             <div className="mb-4">
-              <div className={`inline-flex items-center gap-2 px-3 py-1 bg-[#e0e5ec] rounded-full ${insetShadow}`}>
+              <div className={`inline-flex items-center gap-2 px-3 py-1  bg-[#f3efff] rounded-full ${insetShadow}`}>
                 <SparklesIcon className="w-4 h-4 text-green-600" />
                 <span className="text-xs font-medium text-gray-700">Interactive Games Available</span>
               </div>
@@ -264,7 +264,7 @@ const LanguageCard = ({ course, index }: { course: any; index: number }) => {
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            className={`w-full px-4 py-2.5 rounded-2xl bg-[#e0e5ec] text-gray-800 font-semibold ${raisedShadow} hover:shadow-[10px_10px_20px_#bebebe,-10px_-10px_20px_#ffffff] active:${insetShadow} transition-all duration-300 mt-auto`}
+            className={`w-full px-4 py-2.5 rounded-2xl  bg-[#f3efff] text-gray-800 font-semibold ${raisedShadow} hover:shadow-[10px_10px_20px_#bebebe,-10px_-10px_20px_#ffffff] active:${insetShadow} transition-all duration-300 mt-auto`}
           >
             Enroll Now
           </motion.button>
@@ -279,7 +279,7 @@ export default function OverseasTranning() {
 
   return (
     <Layout>
-      <div className="bg-[#e0e5ec]">
+      <div className=" bg-[#f3efff]">
         {/* Hero Section */}
         <section className="relative py-20">
           <div className="container">
@@ -295,7 +295,7 @@ export default function OverseasTranning() {
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.2, type: "spring" }}
-                className={`inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#e0e5ec] mb-6 ${raisedShadow}`}
+                className={`inline-flex items-center gap-2 px-4 py-2 rounded-full  bg-[#f3efff] mb-6 ${raisedShadow}`}
               >
                 <GlobeAltIcon className="w-4 h-4 text-gray-700" />
                 <span className="text-sm font-semibold text-gray-700">Overseas Education</span>
@@ -324,7 +324,7 @@ export default function OverseasTranning() {
                 viewport={{ once: true }}
                 className="text-center mb-12"
               >
-                <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#e0e5ec] mb-6 ${insetShadow}`}>
+                <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full  bg-[#f3efff] mb-6 ${insetShadow}`}>
                   <SparklesIcon className="w-4 h-4 text-green-600" />
                   <span className="text-sm font-semibold text-gray-700">Featured Game</span>
                 </div>
@@ -407,9 +407,9 @@ export default function OverseasTranning() {
                   <motion.div
                     key={benefit.title}
                     variants={fadeInUp(index * 0.1)}
-                    className={`text-center p-6 rounded-3xl bg-[#e0e5ec] ${raisedShadow} ${softHover} transition-all duration-300`}
+                    className={`text-center p-6 rounded-3xl  bg-[#f3efff] ${raisedShadow} ${softHover} transition-all duration-300`}
                   >
-                    <div className={`inline-flex p-3 rounded-2xl bg-[#e0e5ec] text-gray-700 mb-4 ${raisedShadow}`}>
+                    <div className={`inline-flex p-3 rounded-2xl  bg-[#f3efff] text-gray-700 mb-4 ${raisedShadow}`}>
                       <IconComponent className="w-6 h-6" />
                     </div>
                     <h3 className="text-lg font-bold text-gray-800 mb-2">{benefit.title}</h3>
@@ -428,7 +428,7 @@ export default function OverseasTranning() {
               initial={{ opacity: 0, scale: 0.9 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
-              className={`relative overflow-hidden rounded-3xl bg-[#e0e5ec] p-12 text-center ${raisedShadow}`}
+              className={`relative overflow-hidden rounded-3xl  bg-[#f3efff] p-12 text-center ${raisedShadow}`}
             >
               <div className="relative z-10">
                 <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
@@ -440,7 +440,7 @@ export default function OverseasTranning() {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className={`px-8 py-4 bg-[#e0e5ec] text-gray-800 font-bold rounded-2xl ${raisedShadow} hover:shadow-[12px_12px_24px_#bebebe,-12px_-12px_24px_#ffffff] active:${insetShadow} transition-all duration-300`}
+                  className={`px-8 py-4  bg-[#f3efff] text-gray-800 font-bold rounded-2xl ${raisedShadow} hover:shadow-[12px_12px_24px_#bebebe,-12px_-12px_24px_#ffffff] active:${insetShadow} transition-all duration-300`}
                 >
                   Book Free Demo Class
                 </motion.button>

@@ -13,7 +13,7 @@ const CircleButton = ({ icon: Icon, label, href, onClick, className = "" }) => {
   const isExternal = Boolean(href && href.startsWith("http"));
 
   const baseClassName =
-    "pointer-events-auto inline-flex h-12 w-12 items-center justify-center rounded-full bg-[#e0e5ec] text-gray-700 shadow-[6px_6px_12px_#bebebe,-6px_-6px_12px_#ffffff] transition-transform duration-200 hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500";
+    "pointer-events-auto inline-flex h-12 w-12 items-center justify-center rounded-full  bg-[#f3efff] text-gray-700 shadow-[6px_6px_12px_#bebebe,-6px_-6px_12px_#ffffff] transition-transform duration-200 hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500";
 
   if (href) {
     return (

@@ -93,7 +93,7 @@ const CoursesSection = ({
             <motion.div
               initial={{ opacity: 0, scale: 0.5 }}
               whileInView={{ opacity: 1, scale: 1 }}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-3xl bg-[#e0e5ec] shadow-[3px_3px_6px_#bebebe,-3px_-3px_6px_#ffffff] mb-6"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-3xl  bg-[#f3efff] shadow-[3px_3px_6px_#bebebe,-3px_-3px_6px_#ffffff] mb-6"
             >
               <SparklesIcon className="w-4 h-4 text-violet-600" />
               <span className="text-sm font-semibold text-violet-700">
@@ -125,7 +125,7 @@ const CoursesSection = ({
               onHoverStart={() => setHoveredCourse(i)}
               onHoverEnd={() => setHoveredCourse(null)}
               onClick={() => handleCourseClick(course.id)}
-              className="group relative w-full max-w-sm rounded-3xl bg-[#e0e5ec] p-6 cursor-pointer transition-all duration-300 shadow-[3px_3px_6px_#bebebe,-3px_-3px_6px_#ffffff] hover:shadow-[5px_5px_10px_#bebebe,-5px_-5px_10px_#ffffff]"
+              className="group relative w-full max-w-sm rounded-3xl  bg-[#f3efff] p-6 cursor-pointer transition-all duration-300 shadow-[3px_3px_6px_#bebebe,-3px_-3px_6px_#ffffff] hover:shadow-[5px_5px_10px_#bebebe,-5px_-5px_10px_#ffffff]"
             >
               {/* Image Container with Neumorphic Effect */}
               <div className="relative mb-2">
@@ -229,7 +229,7 @@ const CoursesSection = ({
           <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
             <Link
               to="/courses"
-              className="inline-flex items-center gap-3 px-8 py-4 rounded-3xl bg-[#e0e5ec] text-gray-800 font-semibold text-base shadow-[4px_4px_8px_#bebebe,-4px_-4px_8px_#ffffff] active:shadow-[inset_3px_3px_6px_#bebebe,inset_-3px_-3px_6px_#ffffff] hover:shadow-[6px_6px_12px_#bebebe,-6px_-6px_12px_#ffffff] transition-all duration-300"
+              className="inline-flex items-center gap-3 px-8 py-4 rounded-3xl  bg-[#f3efff] text-gray-800 font-semibold text-base shadow-[4px_4px_8px_#bebebe,-4px_-4px_8px_#ffffff] active:shadow-[inset_3px_3px_6px_#bebebe,inset_-3px_-3px_6px_#ffffff] hover:shadow-[6px_6px_12px_#bebebe,-6px_-6px_12px_#ffffff] transition-all duration-300"
             >
               <EyeIcon className="w-5 h-5" />
               View All Courses

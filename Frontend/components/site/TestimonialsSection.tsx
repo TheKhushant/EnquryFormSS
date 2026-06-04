@@ -9,11 +9,11 @@ const TestimonialsSection = ({ testimonials }) => {
   const duplicatedTestimonials = [...testimonials, ...testimonials, ...testimonials];
 
   return (
-    <section id="testimonials" className="py-20 bg-[#e0e5ec] overflow-hidden">
+    <section id="testimonials" className="py-20  bg-[#f3efff] overflow-hidden">
       <div className="container mx-auto px-6">
         {/* Header */}
         <div className="mx-auto max-w-4xl text-center mb-16">
-          <div className="inline-flex items-center gap-3 px-6 py-3 rounded-3xl bg-[#e0e5ec] shadow-[4px_4px_8px_#bebebe,-4px_-4px_8px_#ffffff] mb-6">
+          <div className="inline-flex items-center gap-3 px-6 py-3 rounded-3xl  bg-[#f3efff] shadow-[4px_4px_8px_#bebebe,-4px_-4px_8px_#ffffff] mb-6">
             <ChatBubbleLeftRightIcon className="w-5 h-5 text-emerald-600" />
             <span className="font-semibold text-emerald-700">Success Stories</span>
           </div>
@@ -34,7 +34,7 @@ const TestimonialsSection = ({ testimonials }) => {
               {duplicatedTestimonials.map((t, idx) => (
                 <div
                   key={idx}
-                  className="bg-[#e0e5ec] rounded-3xl p-6 shadow-[6px_6px_12px_#bebebe,-6px_-6px_12px_#ffffff] 
+                  className=" bg-[#f3efff] rounded-3xl p-6 shadow-[6px_6px_12px_#bebebe,-6px_-6px_12px_#ffffff] 
                              flex-shrink-0 w-full max-w-[320px] flex flex-col min-h-[260px]"
                 >
                   <div className="flex gap-1 mb-4">
@@ -68,7 +68,7 @@ const TestimonialsSection = ({ testimonials }) => {
               {duplicatedTestimonials.map((t, idx) => (
                 <div
                   key={idx}
-                  className="bg-[#e0e5ec] rounded-3xl p-6 shadow-[6px_6px_12px_#bebebe,-6px_-6px_12px_#ffffff] 
+                  className=" bg-[#f3efff] rounded-3xl p-6 shadow-[6px_6px_12px_#bebebe,-6px_-6px_12px_#ffffff] 
                              flex-shrink-0 w-full max-w-[320px] flex flex-col min-h-[260px]"
                 >
                   <div className="flex gap-1 mb-4">

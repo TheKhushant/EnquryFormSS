@@ -322,9 +322,9 @@ export default function RecentEnquiries({ enquiries, filterPeriod }: RecentEnqui
             {/* Full View Modal - Improved Mobile View */}
             {showModal && (
                 <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4">
-                    {/* <div className="bg-[#e0e5ec] w-full max-w-7xl h-[95vh] sm:h-[92vh] rounded-3xl shadow-2xl flex flex-col overflow-hidden"> */}
+                    {/* <div className=" bg-[#f3efff] w-full max-w-7xl h-[95vh] sm:h-[92vh] rounded-3xl shadow-2xl flex flex-col overflow-hidden"> */}
 
-                    <div className="bg-[#e0e5ec] w-full max-w-7xl h-screen sm:h-screen rounded-none sm:rounded-3xl shadow-2xl flex flex-col overflow-hidden">    
+                    <div className=" bg-[#f3efff] w-full max-w-7xl h-screen sm:h-screen rounded-none sm:rounded-3xl shadow-2xl flex flex-col overflow-hidden">    
                     
                         {/* Modal Header */}
                         <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-300 flex-shrink-0">
@@ -419,7 +419,7 @@ export default function RecentEnquiries({ enquiries, filterPeriod }: RecentEnqui
                         {/* Table Container - Full Height */}
                         <div className="flex-1 overflow-auto p-4 sm:p-6">
                             <table className="w-full min-w-[900px] text-sm">
-                                <thead className="sticky top-0 bg-[#e0e5ec] z-10 shadow">
+                                <thead className="sticky top-0  bg-[#f3efff] z-10 shadow">
                                     <tr className="border-b-2 border-gray-400">
                                         <th className="text-left py-3 px-3 text-xs font-medium">Date & Time</th>
                                         <th className="text-left py-3 px-3 text-xs font-medium">Name</th>

@@ -1,12 +1,16 @@
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
-import { ArrowRightIcon } from "@heroicons/react/24/outline";
+// import { motion } from "framer-motion";
+// import { ArrowRightIcon } from "@heroicons/react/24/outline";
 
-const raisedShadow = "shadow-[6px_6px_12px_#bebebe,-6px_-6px_12px_#ffffff]";
+const raisedShadow =
+  "shadow-[8px_8px_16px_#d8b4fe,-8px_-8px_16px_#ffffff]";
+
+const insetShadow =
+  "shadow-[inset_6px_6px_12px_#d8b4fe,inset_-6px_-6px_12px_#ffffff]";
 
 export default function EnquiryHeader() {
   return (
-    <header className="sticky top-0 z-50 w-full bg-[#e0e5ec] border-b border-gray-200/30">
+    <header className="sticky top-0 z-50 w-full bg-[#ede9fe] border-b border-violet-200">
       <div className="container mx-auto px-6 h-20 flex items-center justify-between">
         
         {/* Left: Logo + Welcome Text in Single Row */}
@@ -20,18 +24,17 @@ export default function EnquiryHeader() {
           </Link>
 
           {/* Welcome Text - Visible on all screens */}
-          <div className="flex flex-col">
-            <h1 className="text-base md:text-lg font-semibold text-gray-800 leading-tight">
-              Welcome to SS Group
-            </h1>
-            <p className="text-xs md:text-sm text-gray-600 leading-tight hidden sm:block">
-              Please fill the form • Details will be forwarded to admin
-            </p>
-            {/* Shorter version for very small screens */}
-            <p className="text-xs text-gray-600 leading-tight sm:hidden">
-              Fill form • Forwarded to admin
-            </p>
-          </div>
+          <h1 className="text-base md:text-lg font-semibold text-violet-900 leading-tight">
+            Welcome to SS Group
+          </h1>
+
+          <p className="text-xs md:text-sm text-violet-700 leading-tight hidden sm:block">
+            Please fill the form • Details will be forwarded to admin
+          </p>
+
+          <p className="text-xs text-violet-700 leading-tight sm:hidden">
+            Fill form • Forwarded to admin
+          </p>
         </div>
 
         {/* Right: Admin Dashboard Button */}

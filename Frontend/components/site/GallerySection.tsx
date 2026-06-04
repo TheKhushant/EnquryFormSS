@@ -136,14 +136,14 @@ export default function GallerySection({ raisedShadow, insetShadow }: { raisedSh
   const currentImage = modalState.isOpen ? modalState.items[modalState.currentIndex] : null;
 
   return (
-    <section className="py-20 bg-[#e0e5ec]">
+    <section className="py-20  bg-[#f3efff]">
       <div className="container mx-auto px-6">
         {/* Header */}
         <div className="text-center mb-16">
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             whileInView={{ opacity: 1, scale: 1 }}
-            className="inline-flex items-center gap-3 px-6 py-3 rounded-3xl bg-[#e0e5ec] shadow-[4px_4px_8px_#bebebe,-4px_-4px_8px_#ffffff] mb-6"
+            className="inline-flex items-center gap-3 px-6 py-3 rounded-3xl  bg-[#f3efff] shadow-[4px_4px_8px_#bebebe,-4px_-4px_8px_#ffffff] mb-6"
           >
             <EyeIcon className="w-6 h-6 text-violet-600" />
             <span className="font-semibold text-violet-700">Learning Experience</span>
@@ -168,8 +168,8 @@ export default function GallerySection({ raisedShadow, insetShadow }: { raisedSh
                 onClick={() => setActiveTab(tab.id)}
                 className={`px-8 py-4 rounded-3xl font-semibold text-sm flex items-center gap-3 transition-all duration-300
                   ${activeTab === tab.id
-                    ? `bg-[#e0e5ec] text-violet-700 ${insetShadow}`
-                    : `bg-[#e0e5ec] text-gray-700 hover:text-gray-900 ${raisedShadow}`
+                    ? ` bg-[#f3efff] text-violet-700 ${insetShadow}`
+                    : ` bg-[#f3efff] text-gray-700 hover:text-gray-900 ${raisedShadow}`
                   }`}
               >
                 {tab.label}
@@ -194,7 +194,7 @@ export default function GallerySection({ raisedShadow, insetShadow }: { raisedSh
                 transition={{ delay: index * 0.03 }}
                 whileHover={{ y: -12, scale: 1.03 }}
                 onClick={() => handleImageClick(item)}
-                className={`group relative rounded-3xl overflow-hidden bg-[#e0e5ec] ${raisedShadow} cursor-pointer`}
+                className={`group relative rounded-3xl overflow-hidden  bg-[#f3efff] ${raisedShadow} cursor-pointer`}
               >
                 <div className="relative aspect-video overflow-hidden rounded-t-3xl bg-gray-200">
                   <img
@@ -241,7 +241,7 @@ export default function GallerySection({ raisedShadow, insetShadow }: { raisedSh
                 animate={{ scale: 1, opacity: 1, y: 0 }}
                 exit={{ scale: 0.92, opacity: 0, y: 20 }}
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                className={`relative w-full max-w-6xl bg-[#e0e5ec] rounded-3xl overflow-hidden ${raisedShadow}`}
+                className={`relative w-full max-w-6xl  bg-[#f3efff] rounded-3xl overflow-hidden ${raisedShadow}`}
                 onClick={(e) => e.stopPropagation()}
               >
                 {/* Header Controls */}
@@ -256,7 +256,7 @@ export default function GallerySection({ raisedShadow, insetShadow }: { raisedSh
 
                 <button
                   onClick={closeModal}
-                  className={`absolute top-12 right-6 z-20 p-1 rounded-2xl bg-[#e0e5ec] ${raisedShadow} hover:scale-110 active:${insetShadow} transition-all`}
+                  className={`absolute top-12 right-6 z-20 p-1 rounded-2xl  bg-[#f3efff] ${raisedShadow} hover:scale-110 active:${insetShadow} transition-all`}
                 >
                   <XMarkIcon className="w-6 h-6 text-gray-700" />
                 </button>
@@ -280,13 +280,13 @@ export default function GallerySection({ raisedShadow, insetShadow }: { raisedSh
                     <>
                       <button
                         onClick={prevImage}
-                        className={`absolute left-6 top-1/2 -translate-y-1/2 p-1 rounded-2xl bg-[#e0e5ec]/90 backdrop-blur ${raisedShadow} hover:scale-110 active:${insetShadow}`}
+                        className={`absolute left-6 top-1/2 -translate-y-1/2 p-1 rounded-2xl  bg-[#f3efff]/90 backdrop-blur ${raisedShadow} hover:scale-110 active:${insetShadow}`}
                       >
                         <ChevronLeftIcon className="w-7 h-7 text-gray-700" />
                       </button>
                       <button
                         onClick={nextImage}
-                        className={`absolute right-6 top-1/2 -translate-y-1/2 p-1 rounded-2xl bg-[#e0e5ec]/90 backdrop-blur ${raisedShadow} hover:scale-110 active:${insetShadow}`}
+                        className={`absolute right-6 top-1/2 -translate-y-1/2 p-1 rounded-2xl  bg-[#f3efff]/90 backdrop-blur ${raisedShadow} hover:scale-110 active:${insetShadow}`}
                       >
                         <ChevronRightIcon className="w-7 h-7 text-gray-700" />
                       </button>

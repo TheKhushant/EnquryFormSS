@@ -44,7 +44,7 @@ export default function CourseCard({ course }: { course: Course }) {
       whileHover="hover"
       onHoverStart={() => setIsHovered(true)}
       onHoverEnd={() => setIsHovered(false)}
-      className={`relative bg-[#e0e5ec] rounded-3xl overflow-hidden cursor-pointer transition-all duration-300 group max-w-x mx-auto w-full h-full flex flex-col ${raisedShadow} ${softHover}`}
+      className={`relative  bg-[#f3efff] rounded-3xl overflow-hidden cursor-pointer transition-all duration-300 group max-w-x mx-auto w-full h-full flex flex-col ${raisedShadow} ${softHover}`}
     >
       {/* Course Image Container - Fixed height */}
       <div className="relative overflow-hidden rounded-t-3xl flex-shrink-0">
@@ -62,7 +62,7 @@ export default function CourseCard({ course }: { course: Course }) {
         {/* Category Badge - Raised */}
         <div className="absolute top-4 left-4 z-30">
           <span
-            className="px-4 py-2 text-xs font-semibold rounded-2xl bg-[#e0e5ec] text-gray-800 shadow-[4px_4px_8px_#bebebe,-4px_-4px_8px_#ffffff]"
+            className="px-4 py-2 text-xs font-semibold rounded-2xl  bg-[#f3efff] text-gray-800 shadow-[4px_4px_8px_#bebebe,-4px_-4px_8px_#ffffff]"
           >
             {course.category}
           </span>
@@ -95,12 +95,12 @@ export default function CourseCard({ course }: { course: Course }) {
 
         {/* Metadata - Fixed height */}
         <div className="flex gap-3 mb-2 flex-shrink-0">
-          <div className="flex items-center gap-2 bg-[#e0e5ec] px-4 py-2 rounded-2xl text-sm shadow-[inset_3px_3px_6px_#bebebe,inset_-3px_-3px_6px_#ffffff]">
+          <div className="flex items-center gap-2  bg-[#f3efff] px-4 py-2 rounded-2xl text-sm shadow-[inset_3px_3px_6px_#bebebe,inset_-3px_-3px_6px_#ffffff]">
             <AcademicCapIcon className="w-4 h-4" style={{ color: accentColor }} />
             <span className="font-medium text-gray-700">{course.level}</span>
           </div>
           
-          <div className="flex items-center gap-2 bg-[#e0e5ec] px-4 py-2 rounded-2xl text-sm shadow-[inset_3px_3px_6px_#bebebe,inset_-3px_-3px_6px_#ffffff]">
+          <div className="flex items-center gap-2  bg-[#f3efff] px-4 py-2 rounded-2xl text-sm shadow-[inset_3px_3px_6px_#bebebe,inset_-3px_-3px_6px_#ffffff]">
             <ClockIcon className="w-4 h-4" style={{ color: accentColor }} />
             <span className="font-medium text-gray-700">{course.duration}</span>
           </div>
@@ -164,7 +164,7 @@ export default function CourseCard({ course }: { course: Course }) {
                 e.stopPropagation();
                 setIsExpanded(!isExpanded);
               }}
-              className="p-2 rounded-2xl bg-[#e0e5ec] shadow-[4px_4px_8px_#bebebe,-4px_-4px_8px_#ffffff] hover:shadow-[6px_6px_12px_#bebebe,-6px_-6px_12px_#ffffff] active:shadow-[inset_4px_4px_8px_#bebebe,inset_-4px_-4px_8px_#ffffff] transition-all"
+              className="p-2 rounded-2xl  bg-[#f3efff] shadow-[4px_4px_8px_#bebebe,-4px_-4px_8px_#ffffff] hover:shadow-[6px_6px_12px_#bebebe,-6px_-6px_12px_#ffffff] active:shadow-[inset_4px_4px_8px_#bebebe,inset_-4px_-4px_8px_#ffffff] transition-all"
             >
               <ChevronDownIcon
                 className={`w-4 h-4 text-gray-600 transition-transform duration-300 ${isExpanded ? "rotate-180" : ""}`}
@@ -177,7 +177,7 @@ export default function CourseCard({ course }: { course: Course }) {
             {/* Preview Button - Raised */}
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Link to={`/courses/${course.id}`}>
-                <button className="px-2 py-3 text-sm font-medium bg-[#e0e5ec] text-gray-700 rounded-2xl shadow-[6px_6px_12px_#bebebe,-6px_-6px_12px_#ffffff] active:shadow-[inset_4px_4px_8px_#bebebe,inset_-4px_-4px_8px_#ffffff] flex items-center gap-2 hover:text-gray-900 transition-all">
+                <button className="px-2 py-3 text-sm font-medium  bg-[#f3efff] text-gray-700 rounded-2xl shadow-[6px_6px_12px_#bebebe,-6px_-6px_12px_#ffffff] active:shadow-[inset_4px_4px_8px_#bebebe,inset_-4px_-4px_8px_#ffffff] flex items-center gap-2 hover:text-gray-900 transition-all">
                   <PlayCircleIcon className="w- h-4" />
                   Preview
                 </button>

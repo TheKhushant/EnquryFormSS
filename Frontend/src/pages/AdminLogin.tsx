@@ -34,7 +34,7 @@ export default function AdminLogin() {
   };
 
   return (
-    <div className="min-h-screen bg-[#e0e5ec] flex items-center justify-center p-4">
+    <div className="min-h-screen  bg-[#f3efff] flex items-center justify-center p-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -42,7 +42,7 @@ export default function AdminLogin() {
         className="w-full max-w-md"
       >
         <div
-          className={`bg-[#e0e5ec] rounded-3xl p-10 ${raisedShadow}`}
+          className={` bg-[#f3efff] rounded-3xl p-10 ${raisedShadow}`}
         >
           {/* Header */}
           <div className="text-center mb-10">
@@ -63,7 +63,7 @@ export default function AdminLogin() {
                 type="text"
                 value={userId}
                 onChange={(e) => setUserId(e.target.value)}
-                className={`w-full px-5 py-4 rounded-2xl bg-[#e0e5ec] text-gray-800 focus:outline-none ${insetShadow} transition-all`}
+                className={`w-full px-5 py-4 rounded-2xl  bg-[#f3efff] text-gray-800 focus:outline-none ${insetShadow} transition-all`}
                 placeholder="Enter User ID"
                 required
               />
@@ -77,7 +77,7 @@ export default function AdminLogin() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className={`w-full px-5 py-4 rounded-2xl bg-[#e0e5ec] text-gray-800 focus:outline-none ${insetShadow} transition-all`}
+                className={`w-full px-5 py-4 rounded-2xl  bg-[#f3efff] text-gray-800 focus:outline-none ${insetShadow} transition-all`}
                 placeholder="Enter Password"
                 required
               />

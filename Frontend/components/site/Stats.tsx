@@ -33,7 +33,7 @@ export default function Stats() {
   const pressedShadow = "shadow-[inset_6px_6px_12px_#bebebe,inset_-6px_-6px_12px_#ffffff]";
 
   return (
-    <section ref={ref} className="container py-16 bg-[#e0e5ec]">
+    <section ref={ref} className="container py-16  bg-[#f3efff]">
       <div className="max-w-5xl mx-auto">
         <div className="grid gap-8 md:grid-cols-3">
           <AnimatedNumber 
@@ -75,7 +75,7 @@ function AnimatedNumber({ controls, suffix, label }: {
       whileHover={{ scale: 1.03, y: -4 }}
       transition={{ type: "spring", stiffness: 300, damping: 25 }}
       className={`
-        group relative h-32 w-80 rounded-3xl bg-[#e0e5ec] p-10 
+        group relative h-32 w-80 rounded-3xl  bg-[#f3efff] p-10 
         flex flex-col items-center justify-center text-center 
         cursor-default overflow-hidden transition-all duration-300
         ${raisedShadow}

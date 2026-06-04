@@ -17,8 +17,11 @@ import { useEnquiries } from "../../contexts/EnquiryContext";
 export default function EnquiryForm() {
     // const accentColor = "#e5bcfb";
 
-    const raisedShadow = "shadow-[8px_8px_16px_#bebebe,-8px_-8px_16px_#ffffff]";
-    const insetShadow = "shadow-[inset_6px_6px_12px_#bebebe,inset_-6px_-6px_12px_#ffffff]";
+    const raisedShadow =
+    "shadow-[8px_8px_16px_#d8b4fe,-8px_-8px_16px_#ffffff]";
+
+    const insetShadow =
+    "shadow-[inset_6px_6px_12px_#d8b4fe,inset_-6px_-6px_12px_#ffffff]";
 
     const { addEnquiry } = useEnquiries();
 
@@ -127,7 +130,7 @@ export default function EnquiryForm() {
         <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="min-h-screen bg-[#e0e5ec] flex items-center justify-center py-16 px-4"
+            className="min-h-screen  bg-[#f3efff] flex items-center justify-center py-16 px-4"
         >
             <div className="max-w-lg w-full text-center">
                 <motion.div
@@ -139,9 +142,9 @@ export default function EnquiryForm() {
                     <CheckCircleIcon className="w-20 h-20" style={{ color: "#22c55e" }} />
                 </motion.div>
 
-                <h1 className="text-5xl font-bold text-gray-800 mb-4">Thank You!</h1>
+                <h1 className="text-5xl font-bold text-violet-900 mb-4">Thank You!</h1>
                 
-                <div className="bg-[#e0e5ec] rounded-3xl p-10 shadow-[10px_10px_20px_#bebebe,-10px_-10px_20px_#ffffff] mb-8">
+                <div className=" bg-[#f3efff] rounded-3xl p-10 shadow-[10px_10px_20px_#d8b4fe,-10px_-10px_20px_#ffffff] mb-8">
                     <p className="text-2xl font-medium text-gray-700 mb-3">
                         Your form has been submitted successfully
                     </p>
@@ -178,7 +181,7 @@ export default function EnquiryForm() {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        className="min-h-screen bg-[#e0e5ec] py-6 px-4"
+                        className="min-h-screen  bg-[#f3efff] py-6 px-4"
                     >
                         <div className="max-w-2xl mx-auto">
                             {/* Header */}
@@ -187,12 +190,12 @@ export default function EnquiryForm() {
                                 animate={{ opacity: 1, y: 0 }}
                                 className="text-center mb-6"
                             >
-                                {/* <div className="inline-flex items-center gap-3 px-6 py-2 rounded-3xl bg-[#e0e5ec] shadow-[6px_6px_12px_#bebebe,-6px_-6px_12px_#ffffff] mb-6">
+                                {/* <div className="inline-flex items-center gap-3 px-6 py-2 rounded-3xl  bg-[#f3efff] shadow-[6px_6px_12px_#bebebe,-6px_-6px_12px_#ffffff] mb-6">
                                     <SparklesIcon className="w-6 h-6" style={{ color: accentColor }} />
                                     <span className="font-semibold text-purple-800">Get In Touch</span>
                                 </div> */}
-                                <h1 className="text-5xl font-bold text-gray-800 tracking-tight">Enquiry Form</h1>
-                                <p className="mt-4 text-gray-600 text-lg">Tell us what you're looking for</p>
+                                <h1 className="text-5xl font-bold text-violet-900 tracking-tight">Enquiry Form</h1>
+                                <p className="mt-4 text-violet-700 text-lg">Tell us what you're looking for</p>
                             </motion.div>
 
                             {/* Form */}
@@ -200,7 +203,7 @@ export default function EnquiryForm() {
                                 onSubmit={handleSubmit}
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
-                                className="bg-[#e0e5ec] rounded-3xl p-10 shadow-[10px_10px_20px_#bebebe,-10px_-10px_20px_#ffffff]"
+                                className="bg-[#f3efff] rounded-3xl p-10 border border-violet-200 shadow-[10px_10px_20px_#d8b4fe,-10px_-10px_20px_#ffffff]"
                             >
                                 <div className="space-y-8">
                                     {/* Personal Info */}
@@ -215,7 +218,7 @@ export default function EnquiryForm() {
                                                     value={formData.name}
                                                     onChange={handleChange}
                                                     required
-                                                    className={`w-full pl-12 pr-6 py-1 rounded-3xl bg-[#e0e5ec] ${insetShadow} focus:shadow-[inset_8px_8px_16px_#bebebe,inset_-8px_-8px_16px_#ffffff] transition-all outline-none`}
+                                                    className={`w-full pl-12 pr-6 py-1 rounded-3xl  bg-[#f3efff] ${insetShadow} focus:shadow-[inset_8px_8px_16px_#bebebe,inset_-8px_-8px_16px_#ffffff] transition-all outline-none focus:ring-2 focus:ring-violet-400`}
                                                     placeholder="Your Name Here"
                                                 />
                                             </div>
@@ -231,7 +234,7 @@ export default function EnquiryForm() {
                                                     value={formData.mobile}
                                                     onChange={handleChange}
                                                     required
-                                                    className={`w-full pl-12 pr-6 py-1 rounded-3xl bg-[#e0e5ec] ${insetShadow} focus:shadow-[inset_8px_8px_16px_#bebebe,inset_-8px_-8px_16px_#ffffff] transition-all outline-none`}
+                                                    className={`w-full pl-12 pr-6 py-1 rounded-3xl  bg-[#f3efff] ${insetShadow} focus:shadow-[inset_8px_8px_16px_#bebebe,inset_-8px_-8px_16px_#ffffff] transition-all outline-none focus:ring-2 focus:ring-violet-400`}
                                                     placeholder="+91 98765 43210"
                                                 />
                                             </div>
@@ -249,7 +252,7 @@ export default function EnquiryForm() {
                                                     value={formData.college}
                                                     onChange={handleChange}
                                                     required
-                                                    className={`w-full pl-12 pr-6 py-1 rounded-3xl bg-[#e0e5ec] ${insetShadow} focus:shadow-[inset_8px_8px_16px_#bebebe,inset_-8px_-8px_16px_#ffffff] transition-all outline-none text-gray-800`}
+                                                    className={`w-full pl-12 pr-6 py-1 rounded-3xl  bg-[#f3efff] ${insetShadow} focus:shadow-[inset_8px_8px_16px_#bebebe,inset_-8px_-8px_16px_#ffffff] transition-all outline-none focus:ring-2 focus:ring-violet-400 text-gray-800`}
                                                 >
                                                     <option value="">Select Your College</option>
                                                     <option value="Dr. Ambedkar College, Deekshabhoomi">
@@ -307,7 +310,7 @@ export default function EnquiryForm() {
                                                             type="text"
                                                             placeholder="Enter your college name"
                                                             required
-                                                            className={`w-full pl-6 pr-6 py-1 rounded-3xl bg-[#e0e5ec] ${insetShadow} focus:shadow-[inset_8px_8px_16px_#bebebe,inset_-8px_-8px_16px_#ffffff] transition-all outline-none`}
+                                                            className={`w-full pl-6 pr-6 py-1 rounded-3xl  bg-[#f3efff] ${insetShadow} focus:shadow-[inset_8px_8px_16px_#bebebe,inset_-8px_-8px_16px_#ffffff] transition-all outline-none focus:ring-2 focus:ring-violet-400`}
                                                             value={formData.customCollege}
                                                             onChange={(e) => setFormData(prev => ({ ...prev, customCollege: e.target.value }))}
                                                         />
@@ -326,7 +329,7 @@ export default function EnquiryForm() {
                                                     value={formData.email}
                                                     onChange={handleChange}
                                                     required
-                                                    className={`w-full pl-10 pr-2 py-1 rounded-3xl bg-[#e0e5ec] ${insetShadow} focus:shadow-[inset_8px_8px_16px_#bebebe,inset_-8px_-8px_16px_#ffffff] transition-all outline-none`}
+                                                    className={`w-full pl-10 pr-2 py-1 rounded-3xl  bg-[#f3efff] ${insetShadow} focus:shadow-[inset_8px_8px_16px_#bebebe,inset_-8px_-8px_16px_#ffffff] transition-all outline-none focus:ring-2 focus:ring-violet-400`}
                                                     placeholder="mail@example.com"
                                                 />
                                             </div>
@@ -344,7 +347,7 @@ export default function EnquiryForm() {
                                                     onClick={() => setFormData(prev => ({ ...prev, enquiryFor: type }))}
                                                     className={`py-1 px-2 rounded-3xl font-sm transition-all ${formData.enquiryFor === type
                                                         ? "bg-gradient-to-r from-[#e5bcfb] to-[#c084fc] text-black shadow-[inset_4px_4px_8px_#bebebe,inset_-4px_-4px_8px_#ffffff]"
-                                                        : `bg-[#e0e5ec] ${raisedShadow} hover:-translate-y-0.5`
+                                                        : ` bg-[#f3efff] ${raisedShadow} hover:-translate-y-0.5`
                                                         }`}
                                                 >
                                                     {type}
@@ -368,7 +371,7 @@ export default function EnquiryForm() {
                                                         name="internshipDuration" 
                                                         value={formData.internshipDuration} 
                                                         onChange={handleChange} 
-                                                        className={`w-full p-4 py-2 rounded-3xl bg-[#e0e5ec] ${insetShadow} outline-none`}
+                                                        className={`w-full p-4 py-2 rounded-3xl  bg-[#f3efff] ${insetShadow} outline-none focus:ring-2 focus:ring-violet-400`}
                                                     >
                                                         <option value="">Select Duration</option>
                                                         <option value="1 Month">1 Month</option>
@@ -382,7 +385,7 @@ export default function EnquiryForm() {
                                                         name="internshipDomain" 
                                                         value={formData.internshipDomain} 
                                                         onChange={handleChange} 
-                                                        className={`w-full p-4 py-2 rounded-3xl bg-[#e0e5ec] ${insetShadow} outline-none`}
+                                                        className={`w-full p-4 py-2 rounded-3xl  bg-[#f3efff] ${insetShadow} outline-none focus:ring-2 focus:ring-violet-400`}
                                                     >
                                                         <option value="">Select Domain</option>
                                                         <option value="Fullstack">Fullstack Development</option>
@@ -408,7 +411,7 @@ export default function EnquiryForm() {
                                                         name="courseName"
                                                         value={formData.courseName}
                                                         onChange={handleChange}
-                                                        className={`w-full p-4 py-1 rounded-3xl bg-[#e0e5ec] ${insetShadow} outline-none`}
+                                                        className={`w-full p-4 py-1 rounded-3xl  bg-[#f3efff] ${insetShadow} outline-none focus:ring-2 focus:ring-violet-400`}
                                                     >
                                                         <option value="">Select Course</option>
                                                         <option value="Service Now">Service Now</option>
@@ -437,7 +440,7 @@ export default function EnquiryForm() {
                                                                 onClick={() => setFormData(prev => ({ ...prev, jobType: type }))}
                                                                 className={`flex-1 py-1 rounded-3xl font-medium ${formData.jobType === type
                                                                     ? "bg-gradient-to-r from-[#e5bcfb] to-[#c084fc] text-white"
-                                                                    : `bg-[#e0e5ec] ${raisedShadow}`
+                                                                    : ` bg-[#f3efff] ${raisedShadow}`
                                                                     }`}
                                                             >
                                                                 {type}
@@ -454,7 +457,7 @@ export default function EnquiryForm() {
                                                                 name="jobCategory"
                                                                 value={formData.jobCategory}
                                                                 onChange={handleChange}
-                                                                className={`w-full p-4 py-1 rounded-3xl bg-[#e0e5ec] ${insetShadow} outline-none`}
+                                                                className={`w-full p-4 py-1 rounded-3xl  bg-[#f3efff] ${insetShadow} outline-none focus:ring-2 focus:ring-violet-400`}
                                                             >
                                                                 <option value="">Select Role</option>
                                                                 {formData.jobType === "Tech" ? (
@@ -485,7 +488,7 @@ export default function EnquiryForm() {
                                                                     onClick={() => setFormData(prev => ({ ...prev, experience: level }))}
                                                                     className={`flex-1 py-1 rounded-3xl font-medium ${formData.experience === level
                                                                         ? "bg-gradient-to-r from-[#e5bcfb] to-[#c084fc] text-white"
-                                                                        : `bg-[#e0e5ec] ${raisedShadow}`
+                                                                        : ` bg-[#f3efff] ${raisedShadow}`
                                                                         }`}
                                                                 >
                                                                     {level}
@@ -510,7 +513,7 @@ export default function EnquiryForm() {
                                                     key={person}
                                                     className={`flex items-center gap-3 p-1 rounded-3xl cursor-pointer transition-all ${formData.whomToMeet === person
                                                         ? "bg-gradient-to-r from-[#e5bcfb] to-[#c084fc] text-white shadow-[inset_px_4px_8px_#bebebe,inset_-4px_-4px_8px_#ffffff]"
-                                                        : `bg-[#e0e5ec] ${raisedShadow} hover:-translate-y-0.5`
+                                                        : ` bg-[#f3efff] ${raisedShadow} hover:-translate-y-0.5`
                                                         }`}
                                                 >
                                                     <input
@@ -540,7 +543,7 @@ export default function EnquiryForm() {
                                                         value={formData.otherName}
                                                         onChange={handleChange}
                                                         placeholder="Enter full name"
-                                                        className={`w-full p-4 rounded-3xl bg-[#e0e5ec] ${insetShadow} outline-none`}
+                                                        className={`w-full p-4 rounded-3xl  bg-[#f3efff] ${insetShadow} outline-none focus:ring-2 focus:ring-violet-400`}
                                                     />
                                                 </motion.div>
                                             )}
@@ -558,7 +561,7 @@ export default function EnquiryForm() {
                                                     key={ref}
                                                     className={`flex items-center gap-1 py-1 p-1 rounded-3xl cursor-pointer transition-all ${formData.reference === ref
                                                         ? "bg-gradient-to-r from-[#e5bcfb] to-[#c084fc] text-white shadow-[inset_4px_4px_8px_#bebebe,inset_-4px_-4px_8px_#ffffff]"
-                                                        : `bg-[#e0e5ec] ${raisedShadow} hover:-translate-y-0.5`
+                                                        : ` bg-[#f3efff] ${raisedShadow} hover:-translate-y-0.5`
                                                     }`}
                                                 >
                                                     <input
@@ -590,7 +593,7 @@ export default function EnquiryForm() {
                                                         value={formData.referenceName}
                                                         onChange={handleChange}
                                                         placeholder="Friend's Name"
-                                                        className={`w-full p-4 rounded-3xl bg-[#e0e5ec] ${insetShadow} outline-none`}
+                                                        className={`w-full p-4 rounded-3xl  bg-[#f3efff] ${insetShadow} outline-none focus:ring-2 focus:ring-violet-400`}
                                                         required
                                                     />
                                                 </motion.div>
@@ -610,7 +613,7 @@ export default function EnquiryForm() {
                                                         value={formData.referenceName}
                                                         onChange={handleChange}
                                                         placeholder="Teacher's Name"
-                                                        className={`w-full p-4 rounded-3xl bg-[#e0e5ec] ${insetShadow} outline-none`}
+                                                        className={`w-full p-4 rounded-3xl  bg-[#f3efff] ${insetShadow} outline-none focus:ring-2 focus:ring-violet-400`}
                                                         required
                                                     />
                                                 </motion.div>
@@ -630,7 +633,7 @@ export default function EnquiryForm() {
                                                         value={formData.referenceOther}
                                                         onChange={handleChange}
                                                         placeholder="Please specify"
-                                                        className={`w-full p-4 rounded-3xl bg-[#e0e5ec] ${insetShadow} outline-none`}
+                                                        className={`w-full p-4 rounded-3xl  bg-[#f3efff] ${insetShadow} outline-none`}
                                                         required
                                                     />
                                                 </motion.div>
@@ -644,7 +647,7 @@ export default function EnquiryForm() {
                                         whileHover={{ scale: 1.03 }}
                                         whileTap={{ scale: 0.97 }}
                                         type="submit"
-                                        className="w-full py-2 rounded-3xl bg-gradient-to-r from-[#e5bcfb] to-[#c084fc] text-white font-bold text-xl shadow-[8px_8px_16px_#bebebe,-8px_-8px_16px_#ffffff] active:shadow-[inset_6px_6px_12px_#bebebe,inset_-6px_-6px_12px_#ffffff] mt-6"
+                                        className="w-full py-3 rounded-3xl bg-gradient-to-r from-violet-600 via-purple-600 to-fuchsia-600 text-white font-bold text-xl shadow-lg hover:shadow-xl transition-all duration-300 active:shadow-[inset_6px_6px_12px_#bebebe,inset_-6px_-6px_12px_#ffffff] mt-6"
                                     >
                                         Submit Enquiry
                                     </motion.button>
