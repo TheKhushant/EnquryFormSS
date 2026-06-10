@@ -24,6 +24,7 @@ export default function EnquiryForm() {
     "shadow-[inset_6px_6px_12px_#d8b4fe,inset_-6px_-6px_12px_#ffffff]";
 
     const { addEnquiry } = useEnquiries();
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     // State for Thank You Page
     const [isSubmitted, setIsSubmitted] = useState(false);
@@ -47,6 +48,7 @@ export default function EnquiryForm() {
         reference: "",
         referenceName: "",     
         referenceOther: "",
+        referenceNewspaperOther: '',
     });
 
     const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -81,6 +83,7 @@ export default function EnquiryForm() {
             reference: formData.reference,
             referenceName: formData.referenceName || null,
             referenceOther: formData.referenceOther || null,
+            referenceNewspaperOther: formData.referenceNewspaperOther || null,
         };
 
         console.log("FORM DATA BEFORE API:", formData);
@@ -120,7 +123,7 @@ export default function EnquiryForm() {
             name: "", mobile: "", email: "", college: "", enquiryFor: "",
             internshipDuration: "", customCollege: "", internshipDomain: "",
             courseName: "", jobType: "", jobCategory: "",
-            experience: "", whomToMeet: "", otherName: "", reference: "", referenceName: "", referenceOther: "",
+            experience: "", whomToMeet: "", otherName: "", reference: "", referenceName: "", referenceOther: "", referenceNewspaperOther: "",
         });
         setIsSubmitted(false);
     };
@@ -393,6 +396,12 @@ export default function EnquiryForm() {
                                                         <option value="Cyber Security">Cyber Security</option>
                                                         <option value="UI/UX">UI/UX Design</option>
                                                         <option value="AI ML">AI & Machine Learning</option>
+                                                        <option value="Marketing">Marketing</option>
+                                                        <option value="Finance">Finance</option>
+                                                        <option value="Operation">Operation</option>
+                                                        <option value="HR Intern">HR Intern</option>
+                                                        <option value="Digital Marketing">Digital Marketing</option>
+                                                        <option value="Other">Other</option>
                                                     </select>
                                                 </div>
                                             </motion.div>
@@ -551,6 +560,7 @@ export default function EnquiryForm() {
                                     </div>
                                     {/* ==================== REFERENCE / SOURCE ==================== */}
                                     <div>
+                                
                                         <label className="block text-sm font-medium text-gray-700 mb-3">
                                             How did you hear about us? (Reference)
                                         </label>
@@ -593,7 +603,7 @@ export default function EnquiryForm() {
                                                         value={formData.referenceName}
                                                         onChange={handleChange}
                                                         placeholder="Friend's Name"
-                                                        className={`w-full p-4 rounded-3xl  bg-[#f3efff] ${insetShadow} outline-none focus:ring-2 focus:ring-violet-400`}
+                                                        className={`w-full p-4 rounded-3xl bg-[#f3efff] ${insetShadow} outline-none focus:ring-2 focus:ring-violet-400`}
                                                         required
                                                     />
                                                 </motion.div>
@@ -613,13 +623,78 @@ export default function EnquiryForm() {
                                                         value={formData.referenceName}
                                                         onChange={handleChange}
                                                         placeholder="Teacher's Name"
-                                                        className={`w-full p-4 rounded-3xl  bg-[#f3efff] ${insetShadow} outline-none focus:ring-2 focus:ring-violet-400`}
+                                                        className={`w-full p-4 rounded-3xl bg-[#f3efff] ${insetShadow} outline-none focus:ring-2 focus:ring-violet-400`}
                                                         required
                                                     />
                                                 </motion.div>
                                             )}
 
-                                            {/* Other */}
+                                            {/* Newspaper */}
+                                            {formData.reference === "Newspaper" && (
+                                                <motion.div
+                                                    initial={{ opacity: 0, height: 0 }}
+                                                    animate={{ opacity: 1, height: "auto" }}
+                                                    exit={{ opacity: 0, height: 0 }}
+                                                    className="mt-4 space-y-4"
+                                                >
+                                                    <select
+                                                        name="referenceName"
+                                                        value={formData.referenceName}
+                                                        onChange={handleChange}
+                                                        className={`w-full p-4 rounded-3xl bg-[#f3efff] ${insetShadow} outline-none focus:ring-2 focus:ring-violet-400`}
+                                                        required
+                                                    >
+                                                        <option value="">Select Newspaper</option>
+                                                        
+                                                        <optgroup label="English Newspapers">
+                                                            <option value="The Hitavada">The Hitavada</option>
+                                                            <option value="The Times of India">The Times of India</option>
+                                                            <option value="The Indian Express">The Indian Express</option>
+                                                            <option value="The Hindu">The Hindu</option>
+                                                            <option value="The Economic Times">The Economic Times</option>
+                                                        </optgroup>
+
+                                                        <optgroup label="Marathi Newspapers (Regional)">
+                                                            <option value="Lokmat">Lokmat</option>
+                                                            <option value="Sakal">Sakal</option>
+                                                            <option value="Maharashtra Times">Maharashtra Times</option>
+                                                            <option value="Tarun Bharat">Tarun Bharat</option>
+                                                            <option value="Deshonnati">Deshonnati</option>
+                                                            <option value="Punya Nagari">Punya Nagari</option>
+                                                            <option value="Loksatta">Loksatta</option>
+                                                        </optgroup>
+
+                                                        <optgroup label="Hindi Newspapers">
+                                                            <option value="Nava Bharat">Nava Bharat</option>
+                                                            <option value="Dainik Bhaskar">Dainik Bhaskar</option>
+                                                            <option value="Dainik Jagran">Dainik Jagran</option>
+                                                        </optgroup>
+
+                                                        <option value="Other">Other Newspaper</option>
+                                                    </select>
+
+                                                    {/* Show input only when "Other" is selected in newspaper */}
+                                                    {formData.referenceName === "Other" && (
+                                                        <motion.div
+                                                            initial={{ opacity: 0, height: 0 }}
+                                                            animate={{ opacity: 1, height: "auto" }}
+                                                            exit={{ opacity: 0, height: 0 }}
+                                                        >
+                                                            <input
+                                                                type="text"
+                                                                name="referenceNewspaperOther"
+                                                                value={formData.referenceNewspaperOther || ""}
+                                                                onChange={handleChange}
+                                                                placeholder="Please specify the newspaper name"
+                                                                className={`w-full p-4 rounded-3xl bg-[#f3efff] ${insetShadow} outline-none focus:ring-2 focus:ring-violet-400`}
+                                                                required
+                                                            />
+                                                        </motion.div>
+                                                    )}
+                                                </motion.div>
+                                            )}
+
+                                            {/* Other (Main Reference) */}
                                             {formData.reference === "Other" && (
                                                 <motion.div
                                                     initial={{ opacity: 0, height: 0 }}
@@ -633,23 +708,30 @@ export default function EnquiryForm() {
                                                         value={formData.referenceOther}
                                                         onChange={handleChange}
                                                         placeholder="Please specify"
-                                                        className={`w-full p-4 rounded-3xl  bg-[#f3efff] ${insetShadow} outline-none`}
+                                                        className={`w-full p-4 rounded-3xl bg-[#f3efff] ${insetShadow} outline-none`}
                                                         required
                                                     />
                                                 </motion.div>
                                             )}
                                         </AnimatePresence>
                                     </div>
-                                    
 
                                     {/* Submit Button */}
                                     <motion.button
-                                        whileHover={{ scale: 1.03 }}
-                                        whileTap={{ scale: 0.97 }}
+                                        whileHover={{ scale: isSubmitting ? 1 : 1.03 }}
+                                        whileTap={{ scale: isSubmitting ? 1 : 0.97 }}
                                         type="submit"
-                                        className="w-full py-3 rounded-3xl bg-gradient-to-r from-violet-600 via-purple-600 to-fuchsia-600 text-white font-bold text-xl shadow-lg hover:shadow-xl transition-all duration-300 active:shadow-[inset_6px_6px_12px_#bebebe,inset_-6px_-6px_12px_#ffffff] mt-6"
+                                        disabled={isSubmitting}
+                                        className="w-full py-3 rounded-3xl bg-gradient-to-r from-violet-600 via-purple-600 to-fuchsia-600 text-white font-bold text-xl shadow-lg hover:shadow-xl transition-all duration-300 active:shadow-[inset_6px_6px_12px_#bebebe,inset_-6px_-6px_12px_#ffffff] mt-6 flex items-center justify-center gap-3 disabled:cursor-not-allowed disabled:opacity-90"
                                     >
-                                        Submit Enquiry
+                                        {isSubmitting ? (
+                                            <>
+                                                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                                <span>Submitting...</span>
+                                            </>
+                                        ) : (
+                                            "Submit Enquiry"
+                                        )}
                                     </motion.button>
                                 </div>
                             </motion.form>

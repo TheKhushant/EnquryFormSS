@@ -48,10 +48,10 @@ app.get('/', (req, res) => {
 
 // Socket Connection
 io.on("connection", (socket) => {
-    console.log(`✅ User Connected: ${socket.id}`);
+    console.log(`User Connected: ${socket.id}`);
 
     socket.on("disconnect", () => {
-        console.log(`❌ User Disconnected: ${socket.id}`);
+        console.log(`User Disconnected: ${socket.id}`);
     });
 });
 

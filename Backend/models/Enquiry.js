@@ -38,6 +38,16 @@ const enquirySchema = new mongoose.Schema({
         type: String,
         default: "",
     },
+    
+    referenceOther: {
+        type: String,
+        default: "",
+    },
+
+    referenceNewspaperOther: {
+        type: String,
+        default: "",
+    },
 
     status: {
         type: String,
