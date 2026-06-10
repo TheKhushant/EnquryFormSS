@@ -21,7 +21,6 @@ const addEnquiry = async (req, res) => {
             reference,
             referenceName,
             referenceOther,
-            referenceOther,
             referenceNewspaperOther, // ADD THIS
 
         } = req.body;
