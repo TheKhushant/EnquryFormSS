@@ -1,6 +1,8 @@
 const Enquiry = require('../models/Enquiry');
 ;
 const addEnquiry = async (req, res) => {
+  console.log("BODY:", req.body);
+  console.log("FILE:", req.file);
   console.log("ENQUIRY API HIT");
   console.log(req.body)
     try {
@@ -21,27 +23,12 @@ const addEnquiry = async (req, res) => {
             reference,
             referenceName,
             referenceOther,
-            referenceNewspaperOther, // ADD THIS
-
         } = req.body;
 
         // Strong sanitization
         const finalReference = reference && reference.trim() !== "" ? reference.trim() : null;
-        const finalReferenceName =
-          reference === "Newspaper" &&
-          referenceName === "Other" &&
-          referenceNewspaperOther
-              ? referenceNewspaperOther.trim()
-              : referenceName && referenceName.trim() !== ""
-              ? referenceName.trim()
-              : null;
+        const finalReferenceName = referenceName && referenceName.trim() !== "" ? referenceName.trim() : null;
         const finalReferenceOther = referenceOther && referenceOther.trim() !== "" ? referenceOther.trim() : null;
-
-        const finalReferenceNewspaperOther =
-          referenceNewspaperOther &&
-          referenceNewspaperOther.trim() !== ""
-              ? referenceNewspaperOther.trim()
-              : null;
 
         const newEnquiry = new Enquiry({
             name,
@@ -60,10 +47,15 @@ const addEnquiry = async (req, res) => {
             reference: finalReference,
             referenceName: finalReferenceName,
             referenceOther: finalReferenceOther,
-            referenceNewspaperOther: finalReferenceNewspaperOther,
+            resume: req.file?.filename,
         });
 
         await newEnquiry.save();
+        if (enquiryFor === "Course") {
+
+              await sendCourseMail(email);
+
+          }
         const mongoose = require("mongoose");
         console.log("DATABASE:", mongoose.connection.name);
         console.log("ENQUIRY SAVED");

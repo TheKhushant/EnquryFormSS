@@ -3,7 +3,7 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const http = require('http');           // ← Added
 const { Server } = require("socket.io");
-
+const path = require("path");
 const connectDB = require('./config/db');
 const dns = require('dns');
 
@@ -33,8 +33,17 @@ app.use(cors({
     origin: ["https://enqury-form-ss.vercel.app", "http://localhost:5173"],
     credentials: true
 }));
-
+app.use(
+    "/uploads",
+    express.static(
+        path.join(__dirname, "uploads")
+    )
+);
 app.use(express.json());
+app.use(
+    "/uploads",
+    express.static("uploads")
+);
 app.use(express.urlencoded({ extended: true }));
 
 // Routes
@@ -48,10 +57,10 @@ app.get('/', (req, res) => {
 
 // Socket Connection
 io.on("connection", (socket) => {
-    console.log(`User Connected: ${socket.id}`);
+    console.log(`✅ User Connected: ${socket.id}`);
 
     socket.on("disconnect", () => {
-        console.log(`User Disconnected: ${socket.id}`);
+        console.log(`❌ User Disconnected: ${socket.id}`);
     });
 });
 

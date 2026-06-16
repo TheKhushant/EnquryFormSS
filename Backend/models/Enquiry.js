@@ -6,6 +6,7 @@ const enquirySchema = new mongoose.Schema({
     email: { type: String, required: true },
     college: { type: String, required: true },
     customCollege: { type: String },
+    resume: String, // New field for resume path
 
     enquiryFor: { 
         type: String, 
@@ -35,16 +36,6 @@ const enquirySchema = new mongoose.Schema({
     },
 
     referenceOther: {
-        type: String,
-        default: "",
-    },
-    
-    referenceOther: {
-        type: String,
-        default: "",
-    },
-
-    referenceNewspaperOther: {
         type: String,
         default: "",
     },

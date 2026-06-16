@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 // const { addEnquiry, getEnquiries } = require('../controllers/enquiryControllers');
-
+const upload = require("../config/multer");
 const {
   addEnquiry,
   getEnquiries,
@@ -11,7 +11,11 @@ const {
   removeDuplicateEnquiries
 } = require('../controllers/enquiryControllers');
 
-router.post('/', addEnquiry);
+router.post(
+    "/",
+    upload.single("resume"),
+    addEnquiry
+);
 router.get('/', getEnquiries);
 router.delete('/:id', deleteEnquiry);
 router.delete("/remove-duplicates", removeDuplicateEnquiries);
