@@ -24,12 +24,12 @@ export default function EnquiryForm() {
     "shadow-[inset_6px_6px_12px_#d8b4fe,inset_-6px_-6px_12px_#ffffff]";
 
     const { addEnquiry } = useEnquiries();
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     // State for Thank You Page
     const [isSubmitted, setIsSubmitted] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
+    
 
-    const [resume, setResume] = useState<File | null>(null);
     const [formData, setFormData] = useState({
         name: "",
         mobile: "",
@@ -48,6 +48,7 @@ export default function EnquiryForm() {
         reference: "",
         referenceName: "",     
         referenceOther: "",
+        referenceNewspaperOther: '',
     });
 
     const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -63,68 +64,66 @@ export default function EnquiryForm() {
             return;
         }
 
-        const formDataToSend = new FormData();
-
-formDataToSend.append("name", formData.name);
-formDataToSend.append("mobile", formData.mobile);
-formDataToSend.append("email", formData.email);
-formDataToSend.append("college", formData.college);
-formDataToSend.append("customCollege", formData.customCollege);
-formDataToSend.append("enquiryFor", formData.enquiryFor);
-formDataToSend.append("internshipDuration", formData.internshipDuration);
-formDataToSend.append("internshipDomain", formData.internshipDomain);
-formDataToSend.append("courseName", formData.courseName);
-formDataToSend.append("jobType", formData.jobType);
-formDataToSend.append("jobCategory", formData.jobCategory);
-formDataToSend.append("experience", formData.experience);
-formDataToSend.append("whomToMeet", formData.whomToMeet);
-formDataToSend.append("reference", formData.reference);
-
-if (resume) {
-    formDataToSend.append(
-        "resume",
-        resume
-    );
-}
+        const submissionData = {
+            name: formData.name,
+            mobile: formData.mobile,
+            email: formData.email,
+            college: formData.college,
+            customCollege: formData.customCollege,
+            enquiryFor: formData.enquiryFor,
+            internshipDuration: formData.internshipDuration,
+            internshipDomain: formData.internshipDomain,
+            jobType: formData.jobType,
+            jobCategory: formData.jobCategory,
+            experience: formData.experience,
+            courseName: formData.courseName,
+            whomToMeet: formData.whomToMeet === "Other"
+                ? (formData.otherName || "Other")
+                : formData.whomToMeet,
+            reference: formData.reference,
+            referenceName: formData.referenceName || null,
+            referenceOther: formData.referenceOther || null,
+            referenceNewspaperOther: formData.referenceNewspaperOther || null,
+        };
 
         console.log("FORM DATA BEFORE API:", formData);
-        setIsLoading(true);
 
-try {
-    await axios.post(
-        "http://localhost:5000/api/enquiries",
-        formDataToSend
-    );
+        try {
+            const response = await axios.post(
+                "https://enquryformss-2.onrender.com/api/enquiries",
+                submissionData,
+            );
 
-    setIsSubmitted(true);
+            console.log(response.data);
 
-} catch (error: any) {
+            // Success → Show Thank You Page
+            setIsSubmitted(true);
 
-    console.log("FULL ERROR:", error);
+            // Optional: Add to context if needed
+            // addEnquiry(submissionData);
 
-    if (error.response) {
-        console.log("Backend Error:", error.response.data);
-    }
+        } catch (error: any) {
+            console.log("FULL ERROR:", error);
 
-    alert(
-        error?.response?.data?.message ||
-        "Something went wrong!"
-    );
+            if (error.response) {
+                console.log("Backend Error:", error.response.data);
+                console.log("Status:", error.response.status);
+            } else if (error.request) {
+                console.log("No Response From Server");
+            } else {
+                console.log("Error Message:", error.message);
+            }
 
-} finally {
+            alert(error?.response?.data?.message || "Something went wrong!");
+        }
+    };
 
-    setIsLoading(false);
-
-}
-
-};   // <-- ADD THIS
-
-const resetForm = () => {
+    const resetForm = () => {
         setFormData({
             name: "", mobile: "", email: "", college: "", enquiryFor: "",
             internshipDuration: "", customCollege: "", internshipDomain: "",
             courseName: "", jobType: "", jobCategory: "",
-            experience: "", whomToMeet: "", otherName: "", reference: "", referenceName: "", referenceOther: "",
+            experience: "", whomToMeet: "", otherName: "", reference: "", referenceName: "", referenceOther: "", referenceNewspaperOther: "",
         });
         setIsSubmitted(false);
     };
@@ -178,41 +177,6 @@ const resetForm = () => {
 
     return (
         <Layout>
-             {isLoading && (
-            <div className="
-                fixed
-                inset-0
-                bg-black/50
-                z-[9999]
-                flex
-                items-center
-                justify-center
-            ">
-                <div className="
-                    bg-white
-                    rounded-3xl
-                    p-8
-                    flex
-                    flex-col
-                    items-center
-                    gap-4
-                    shadow-xl
-                ">
-                    <div className="
-                        animate-spin
-                        rounded-full
-                        h-12
-                        w-12
-                        border-b-4
-                        border-purple-600
-                    "></div>
-
-                    <p className="font-semibold">
-                        Submitting your enquiry...
-                    </p>
-                </div>
-            </div>
-        )}
             <AnimatePresence mode="wait">
                 {!isSubmitted ? (
                     <motion.div
@@ -416,7 +380,6 @@ const resetForm = () => {
                                                         <option value="1 Month">1 Month</option>
                                                         <option value="3 Months">3 Months</option>
                                                         <option value="6 Months">6 Months</option>
-                                                        <option value="12 Months">12 Months</option>
                                                     </select>
                                                 </div>
                                                 <div>
@@ -433,6 +396,12 @@ const resetForm = () => {
                                                         <option value="Cyber Security">Cyber Security</option>
                                                         <option value="UI/UX">UI/UX Design</option>
                                                         <option value="AI ML">AI & Machine Learning</option>
+                                                        <option value="Marketing">Marketing</option>
+                                                        <option value="Finance">Finance</option>
+                                                        <option value="Operation">Operation</option>
+                                                        <option value="HR Intern">HR Intern</option>
+                                                        <option value="Digital Marketing">Digital Marketing</option>
+                                                        <option value="Other">Other</option>
                                                     </select>
                                                 </div>
                                             </motion.div>
@@ -591,6 +560,7 @@ const resetForm = () => {
                                     </div>
                                     {/* ==================== REFERENCE / SOURCE ==================== */}
                                     <div>
+                                
                                         <label className="block text-sm font-medium text-gray-700 mb-3">
                                             How did you hear about us? (Reference)
                                         </label>
@@ -633,7 +603,7 @@ const resetForm = () => {
                                                         value={formData.referenceName}
                                                         onChange={handleChange}
                                                         placeholder="Friend's Name"
-                                                        className={`w-full p-4 rounded-3xl  bg-[#f3efff] ${insetShadow} outline-none focus:ring-2 focus:ring-violet-400`}
+                                                        className={`w-full p-4 rounded-3xl bg-[#f3efff] ${insetShadow} outline-none focus:ring-2 focus:ring-violet-400`}
                                                         required
                                                     />
                                                 </motion.div>
@@ -653,13 +623,78 @@ const resetForm = () => {
                                                         value={formData.referenceName}
                                                         onChange={handleChange}
                                                         placeholder="Teacher's Name"
-                                                        className={`w-full p-4 rounded-3xl  bg-[#f3efff] ${insetShadow} outline-none focus:ring-2 focus:ring-violet-400`}
+                                                        className={`w-full p-4 rounded-3xl bg-[#f3efff] ${insetShadow} outline-none focus:ring-2 focus:ring-violet-400`}
                                                         required
                                                     />
                                                 </motion.div>
                                             )}
 
-                                            {/* Other */}
+                                            {/* Newspaper */}
+                                            {formData.reference === "Newspaper" && (
+                                                <motion.div
+                                                    initial={{ opacity: 0, height: 0 }}
+                                                    animate={{ opacity: 1, height: "auto" }}
+                                                    exit={{ opacity: 0, height: 0 }}
+                                                    className="mt-4 space-y-4"
+                                                >
+                                                    <select
+                                                        name="referenceName"
+                                                        value={formData.referenceName}
+                                                        onChange={handleChange}
+                                                        className={`w-full p-4 rounded-3xl bg-[#f3efff] ${insetShadow} outline-none focus:ring-2 focus:ring-violet-400`}
+                                                        required
+                                                    >
+                                                        <option value="">Select Newspaper</option>
+                                                        
+                                                        <optgroup label="English Newspapers">
+                                                            <option value="The Hitavada">The Hitavada</option>
+                                                            <option value="The Times of India">The Times of India</option>
+                                                            <option value="The Indian Express">The Indian Express</option>
+                                                            <option value="The Hindu">The Hindu</option>
+                                                            <option value="The Economic Times">The Economic Times</option>
+                                                        </optgroup>
+
+                                                        <optgroup label="Marathi Newspapers (Regional)">
+                                                            <option value="Lokmat">Lokmat</option>
+                                                            <option value="Sakal">Sakal</option>
+                                                            <option value="Maharashtra Times">Maharashtra Times</option>
+                                                            <option value="Tarun Bharat">Tarun Bharat</option>
+                                                            <option value="Deshonnati">Deshonnati</option>
+                                                            <option value="Punya Nagari">Punya Nagari</option>
+                                                            <option value="Loksatta">Loksatta</option>
+                                                        </optgroup>
+
+                                                        <optgroup label="Hindi Newspapers">
+                                                            <option value="Nava Bharat">Nava Bharat</option>
+                                                            <option value="Dainik Bhaskar">Dainik Bhaskar</option>
+                                                            <option value="Dainik Jagran">Dainik Jagran</option>
+                                                        </optgroup>
+
+                                                        <option value="Other">Other Newspaper</option>
+                                                    </select>
+
+                                                    {/* Show input only when "Other" is selected in newspaper */}
+                                                    {formData.referenceName === "Other" && (
+                                                        <motion.div
+                                                            initial={{ opacity: 0, height: 0 }}
+                                                            animate={{ opacity: 1, height: "auto" }}
+                                                            exit={{ opacity: 0, height: 0 }}
+                                                        >
+                                                            <input
+                                                                type="text"
+                                                                name="referenceNewspaperOther"
+                                                                value={formData.referenceNewspaperOther || ""}
+                                                                onChange={handleChange}
+                                                                placeholder="Please specify the newspaper name"
+                                                                className={`w-full p-4 rounded-3xl bg-[#f3efff] ${insetShadow} outline-none focus:ring-2 focus:ring-violet-400`}
+                                                                required
+                                                            />
+                                                        </motion.div>
+                                                    )}
+                                                </motion.div>
+                                            )}
+
+                                            {/* Other (Main Reference) */}
                                             {formData.reference === "Other" && (
                                                 <motion.div
                                                     initial={{ opacity: 0, height: 0 }}
@@ -673,79 +708,31 @@ const resetForm = () => {
                                                         value={formData.referenceOther}
                                                         onChange={handleChange}
                                                         placeholder="Please specify"
-                                                        className={`w-full p-4 rounded-3xl  bg-[#f3efff] ${insetShadow} outline-none`}
+                                                        className={`w-full p-4 rounded-3xl bg-[#f3efff] ${insetShadow} outline-none`}
                                                         required
                                                     />
                                                 </motion.div>
                                             )}
                                         </AnimatePresence>
                                     </div>
-                                    <div>
-    <label className="block text-sm font-medium text-gray-700 mb-2">
-        Upload Resume (PDF/DOC/DOCX) if applicable
-    </label>
-
-    <div>
-    <label className="block text-sm font-medium text-gray-700 mb-2">
-        Resume
-    </label>
-
-    <label
-        className="
-        cursor-pointer
-        block
-        w-full
-        p-4
-        rounded-3xl
-        bg-[#f3efff]
-        shadow-[inset_6px_6px_12px_#d8b4fe,inset_-6px_-6px_12px_#ffffff]
-        text-center
-        font-medium
-        text-purple-700
-        hover:scale-[1.01]
-        transition
-        "
-    >
-        {resume
-            ? resume.name
-            : "📄 Upload Resume"}
-
-        <input
-            type="file"
-            accept=".pdf,.doc,.docx"
-            onChange={(e) =>
-                setResume(
-                    e.target.files?.[0] || null
-                )
-            }
-            className="hidden"
-        />
-    </label>
-</div>
-        
-</div>
 
                                     {/* Submit Button */}
-                                    <button
-    type="submit"
-    disabled={isLoading}
-    className={`
-        w-full
-        py-3
-        rounded-xl
-        font-semibold
-        text-white
-        transition
-
-        ${
-            isLoading
-                ? "bg-gray-400 cursor-not-allowed"
-                : "bg-purple-600 hover:bg-purple-700"
-        }
-    `}
->
-    {isLoading ? "Submitting..." : "Submit"}
-</button>
+                                    <motion.button
+                                        whileHover={{ scale: isSubmitting ? 1 : 1.03 }}
+                                        whileTap={{ scale: isSubmitting ? 1 : 0.97 }}
+                                        type="submit"
+                                        disabled={isSubmitting}
+                                        className="w-full py-3 rounded-3xl bg-gradient-to-r from-violet-600 via-purple-600 to-fuchsia-600 text-white font-bold text-xl shadow-lg hover:shadow-xl transition-all duration-300 active:shadow-[inset_6px_6px_12px_#bebebe,inset_-6px_-6px_12px_#ffffff] mt-6 flex items-center justify-center gap-3 disabled:cursor-not-allowed disabled:opacity-90"
+                                    >
+                                        {isSubmitting ? (
+                                            <>
+                                                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                                <span>Submitting...</span>
+                                            </>
+                                        ) : (
+                                            "Submit Enquiry"
+                                        )}
+                                    </motion.button>
                                 </div>
                             </motion.form>
                         </div>
