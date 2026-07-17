@@ -9,7 +9,7 @@ const enquirySchema = new mongoose.Schema({
 
     enquiryFor: { 
         type: String, 
-        enum: ['Internship', 'Job', 'Course', 'Hiring', 'Certification','Overseas','New Visitor','Offer Letter', 'Other'],
+        enum: ['Internship', 'Job', 'Course', 'Hiring', 'Certification','Overseas','New Visitor','Offer Letter','Skill Development' ,'Other'],
         required: true 
     },
 
