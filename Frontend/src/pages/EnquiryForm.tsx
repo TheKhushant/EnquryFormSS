@@ -59,10 +59,22 @@ export default function EnquiryForm() {
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
 
-        if (!formData.name || !formData.mobile || !formData.email || !formData.college || !formData.enquiryFor) {
+        // Prevent multiple submissions
+        if (isSubmitting) return;
+
+        if (
+            !formData.name ||
+            !formData.mobile ||
+            !formData.email ||
+            !formData.college ||
+            !formData.enquiryFor
+        ) {
             alert("Please fill all required fields");
             return;
         }
+
+        // Start loading + disable button
+        setIsSubmitting(true);
 
         const submissionData = {
             name: formData.name,
@@ -77,13 +89,15 @@ export default function EnquiryForm() {
             jobCategory: formData.jobCategory,
             experience: formData.experience,
             courseName: formData.courseName,
-            whomToMeet: formData.whomToMeet === "Other"
-                ? (formData.otherName || "Other")
-                : formData.whomToMeet,
+            whomToMeet:
+                formData.whomToMeet === "Other"
+                    ? formData.otherName || "Other"
+                    : formData.whomToMeet,
             reference: formData.reference,
             referenceName: formData.referenceName || null,
             referenceOther: formData.referenceOther || null,
-            referenceNewspaperOther: formData.referenceNewspaperOther || null,
+            referenceNewspaperOther:
+                formData.referenceNewspaperOther || null,
         };
 
         console.log("FORM DATA BEFORE API:", formData);
@@ -91,16 +105,13 @@ export default function EnquiryForm() {
         try {
             const response = await axios.post(
                 "https://enquryformss-2.onrender.com/api/enquiries",
-                submissionData,
+                submissionData
             );
 
             console.log(response.data);
 
             // Success → Show Thank You Page
             setIsSubmitted(true);
-
-            // Optional: Add to context if needed
-            // addEnquiry(submissionData);
 
         } catch (error: any) {
             console.log("FULL ERROR:", error);
@@ -114,9 +125,17 @@ export default function EnquiryForm() {
                 console.log("Error Message:", error.message);
             }
 
-            alert(error?.response?.data?.message || "Something went wrong!");
+            alert(
+                error?.response?.data?.message ||
+                "Something went wrong!"
+            );
+
+        } finally {
+            // Stop loading
+            setIsSubmitting(false);
         }
     };
+
 
     const resetForm = () => {
         setFormData({
