@@ -23,10 +23,10 @@ export default function Footer() {
               SS GROUP
             </span>
           </div>
-          <p className="text-sm text-gray-400">
+          {/* <p className="text-sm text-gray-400">
             Leading training institute for software courses. Modernized
             experience with animations and accessibility.
-          </p>
+          </p> */}
         </div>
 
         {/* <div>
