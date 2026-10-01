@@ -11,6 +11,7 @@ const LABELS: Record<FilterKey, string> = {
     category: "Enquiry type",
     program: "Course / domain",
     college: "College",
+    country: "Preferred country",
     owner: "Counselor",
     priority: "Priority",
     outcome: "Outcome",

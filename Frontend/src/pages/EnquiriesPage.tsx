@@ -16,12 +16,12 @@ import { cx } from "../lib/cx";
 import { enquiryApi, getErrorMessage, type EnquiryUpdate } from "../lib/api";
 import {
     formatDate, formatNumber, formatRelative, getCategory, getCollege, getOwner, getPriority, getProgram, getSource,
-    getSourceDetail, getStatus, NOT_SPECIFIED, PRIORITIES, STATUSES, toDate,
+    getSourceDetail, getStatus, NOT_SPECIFIED, publicReference, PRIORITIES, STATUSES, toDate,
 } from "../lib/analytics";
 import { downloadCsv, fileStamp, toCsv } from "../lib/csv";
 import { ENQUIRY_CSV_COLUMNS } from "../lib/enquiryExport";
 
-type ColumnId = "createdAt" | "name" | "mobile" | "college" | "category" | "program" | "duration" | "experience" | "owner" | "source" | "status" | "priority" | "followUp";
+type ColumnId = "reference" | "qualification" | "country" | "message" | "createdAt" | "name" | "mobile" | "college" | "category" | "program" | "duration" | "experience" | "owner" | "source" | "status" | "priority" | "followUp";
 
 interface Column {
     id: ColumnId;
@@ -61,6 +61,10 @@ const COLUMNS: Column[] = [
     { id: "category", label: "Enquiry for", defaultVisible: true, sortValue: getCategory, render: (e) => <Tag>{getCategory(e)}</Tag> },
     { id: "program", label: "Course / domain", defaultVisible: true, sortValue: getProgram, render: (e) => (getProgram(e) === NOT_SPECIFIED ? "—" : getProgram(e)) },
     { id: "duration", label: "Duration", defaultVisible: false, render: (e) => e.internshipDuration || "—" },
+    { id: "qualification", label: "Qualification", defaultVisible: false, sortValue: (e) => e.qualification || "", render: (e) => <span className="whitespace-nowrap">{e.qualification || "—"}{e.passingYear ? ` (${e.passingYear})` : ""}</span> },
+    { id: "country", label: "Country", defaultVisible: false, sortValue: (e) => e.preferredCountry || "", render: (e) => e.preferredCountry || "—" },
+    { id: "message", label: "Message", defaultVisible: false, render: (e) => (e.message ? <span className="line-clamp-2 block max-w-[240px]" title={e.message}>{e.message}</span> : "—") },
+    { id: "reference", label: "Reference", defaultVisible: false, render: (e) => <span className="whitespace-nowrap font-mono text-xs">{publicReference(e)}</span> },
     { id: "experience", label: "Experience", defaultVisible: false, render: (e) => e.experience || "—" },
     { id: "owner", label: "Counselor", defaultVisible: true, sortValue: getOwner, render: (e) => <span className="whitespace-nowrap">{getOwner(e)}</span> },
     {

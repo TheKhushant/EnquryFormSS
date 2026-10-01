@@ -1,766 +1,537 @@
-import { useState, type ChangeEvent, type FormEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode, type RefObject } from "react";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 import Layout from "../../components/site/Layout";
+import { ArrowLeftIcon, ArrowRightIcon, CheckCircleIcon, CheckIcon, ExclamationTriangleIcon, PencilSquareIcon } from "@heroicons/react/24/outline";
 import { API_BASE_URL } from "../lib/api";
+import { cx } from "../lib/cx";
+import { captureAttribution } from "../lib/tracking";
 import {
-    UserIcon,
-    PhoneIcon,
-    EnvelopeIcon,
-    BuildingLibraryIcon,
-    // SparklesIcon,
-    CheckCircleIcon,
-} from "@heroicons/react/24/outline";
-// const [reference, setReference] = useState("");
+    buildPayload, countryFor, EMPTY_FORM, nationalDigits, STEP_FIELDS, STEPS, validateStep,
+    type EnquiryFormState, type FieldErrors,
+} from "../lib/enquiryForm";
+import {
+    COLLEGES, CONTACT_METHODS, CONTACT_TIMES, COURSES, ENQUIRY_TYPES, INTERNSHIP_DOMAINS, INTERNSHIP_DURATIONS, JOB_ROLES,
+    NEWSPAPERS, OVERSEAS_COUNTRIES, PEOPLE_TO_MEET, QUALIFICATIONS, REFERENCES,
+} from "../data/enquiryOptions";
+import { Checkbox, ChoiceGroup, CollegeCombobox, Field, PhoneInput, SelectInput, TextArea, TextInput } from "../components/enquiry-form/FormControls";
+
+type FormKey = keyof EnquiryFormState;
+
+interface SubmitResult {
+    reference?: string;
+    repeat: boolean;
+    name: string;
+    contactMethod: string;
+}
 
 export default function EnquiryForm() {
-    // const accentColor = "#e5bcfb";
-
-    const raisedShadow =
-    "shadow-[8px_8px_16px_#d8b4fe,-8px_-8px_16px_#ffffff]";
-
-    const insetShadow =
-    "shadow-[inset_6px_6px_12px_#d8b4fe,inset_-6px_-6px_12px_#ffffff]";
-
+    const [form, setForm] = useState<EnquiryFormState>(EMPTY_FORM);
+    const [step, setStep] = useState(0);
+    const [attempted, setAttempted] = useState([false, false, false]);
+    const [touched, setTouched] = useState<Set<FormKey>>(new Set());
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [slowServer, setSlowServer] = useState(false);
+    const [submitError, setSubmitError] = useState<string | null>(null);
+    const [result, setResult] = useState<SubmitResult | null>(null);
+    const [startedAt, setStartedAt] = useState(() => Date.now());
+    const [tracking] = useState(captureAttribution);
+    const headingRef = useRef<HTMLHeadingElement>(null);
+    const firstRender = useRef(true);
 
-    // State for Thank You Page
-    const [isSubmitted, setIsSubmitted] = useState(false);
-    
+    const set = <K extends FormKey>(key: K, value: EnquiryFormState[K]) => {
+        setForm((prev) => ({ ...prev, [key]: value }));
+        setSubmitError(null);
+    };
+    const touch = (key: FormKey) => setTouched((prev) => (prev.has(key) ? prev : new Set(prev).add(key)));
 
-    const [formData, setFormData] = useState({
-        name: "",
-        mobile: "",
-        email: "",
-        college: "",
-        enquiryFor: "",
-        internshipDuration: "",
-        customCollege: "",
-        internshipDomain: "",
-        courseName: "",
-        jobType: "",
-        jobCategory: "",
-        experience: "",
-        whomToMeet: "",
-        otherName: "",
-        reference: "",
-        referenceName: "",     
-        referenceOther: "",
-        referenceNewspaperOther: '',
-    });
+    // Errors show for fields the user has left, or for the whole step after "Continue".
+    const errors = useMemo<FieldErrors>(() => {
+        const all = validateStep(step, form);
+        if (attempted[step]) return all;
+        return Object.fromEntries(Object.entries(all).filter(([k]) => touched.has(k as FormKey))) as FieldErrors;
+    }, [form, step, attempted, touched]);
 
-    const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
+    // Move focus to the step heading on step change so screen readers announce it.
+    useEffect(() => {
+        if (firstRender.current) {
+            firstRender.current = false;
+            return;
+        }
+        headingRef.current?.focus({ preventScroll: true });
+        headingRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, [step, result]);
+
+    const focusFirstError = (errs: FieldErrors, stepIndex: number) => {
+        const first = STEP_FIELDS[stepIndex].find((f) => errs[f]);
+        if (!first) return;
+        requestAnimationFrame(() => {
+            const el = document.getElementById(first);
+            const target = el?.matches("fieldset") ? el.querySelector<HTMLElement>("input") : el;
+            target?.focus({ preventScroll: true });
+            el?.scrollIntoView({ behavior: "smooth", block: "center" });
+        });
+    };
+
+    const goNext = () => {
+        const errs = validateStep(step, form);
+        setAttempted((a) => a.map((v, i) => (i === step ? true : v)));
+        if (Object.keys(errs).length) return focusFirstError(errs, step);
+        setStep((s) => s + 1);
     };
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
-
-        // Prevent multiple submissions
+        if (step < STEPS.length - 1) return goNext();
         if (isSubmitting) return;
 
-        if (
-            !formData.name ||
-            !formData.mobile ||
-            !formData.email ||
-            !formData.college ||
-            !formData.enquiryFor
-        ) {
-            alert("Please fill all required fields");
-            return;
+        // Re-validate every step; jump back to the first one with a problem.
+        for (let i = 0; i < STEPS.length; i++) {
+            const errs = validateStep(i, form);
+            if (Object.keys(errs).length) {
+                setAttempted((a) => a.map((v, j) => (j <= i ? true : v)));
+                setStep(i);
+                return focusFirstError(errs, i);
+            }
         }
 
-        // Start loading + disable button
         setIsSubmitting(true);
-
-        const submissionData = {
-            name: formData.name,
-            mobile: formData.mobile,
-            email: formData.email,
-            college: formData.college,
-            customCollege: formData.customCollege,
-            enquiryFor: formData.enquiryFor,
-            internshipDuration: formData.internshipDuration,
-            internshipDomain: formData.internshipDomain,
-            jobType: formData.jobType,
-            jobCategory: formData.jobCategory,
-            experience: formData.experience,
-            courseName: formData.courseName,
-            whomToMeet:
-                formData.whomToMeet === "Other"
-                    ? formData.otherName || "Other"
-                    : formData.whomToMeet,
-            reference: formData.reference,
-            referenceName: formData.referenceName || null,
-            referenceOther: formData.referenceOther || null,
-            referenceNewspaperOther:
-                formData.referenceNewspaperOther || null,
-        };
-
-        console.log("FORM DATA BEFORE API:", formData);
-
+        setSubmitError(null);
+        // Free hosting can take a while to wake up: say so rather than look frozen.
+        const slowTimer = setTimeout(() => setSlowServer(true), 6000);
         try {
-            const response = await axios.post(
-                `${API_BASE_URL}/api/enquiries`,
-                submissionData
-            );
-
-            console.log(response.data);
-
-            // Success → Show Thank You Page
-            setIsSubmitted(true);
-
+            const response = await axios.post(`${API_BASE_URL}/api/enquiries`, buildPayload(form, tracking, Date.now() - startedAt), { timeout: 70000 });
+            setResult({
+                reference: response.data?.data?.reference,
+                repeat: !!response.data?.repeat,
+                name: form.name.trim().split(/\s+/)[0],
+                contactMethod: form.contactMethod,
+            });
         } catch (err) {
-            const error = err as { response?: { data?: { message?: string }; status?: number }; request?: unknown; message?: string };
-            console.log("FULL ERROR:", error);
-
-            if (error.response) {
-                console.log("Backend Error:", error.response.data);
-                console.log("Status:", error.response.status);
-            } else if (error.request) {
-                console.log("No Response From Server");
+            if (axios.isAxiosError(err)) {
+                if (err.response?.data?.message) setSubmitError(err.response.data.message);
+                else if (err.code === "ECONNABORTED") setSubmitError("The server is taking too long to respond. Please try again.");
+                else setSubmitError("We couldn't reach our server. Check your internet connection and try again.");
             } else {
-                console.log("Error Message:", error.message);
+                setSubmitError("Something went wrong. Please try again.");
             }
-
-            alert(
-                error?.response?.data?.message ||
-                "Something went wrong!"
-            );
-
         } finally {
-            // Stop loading
+            clearTimeout(slowTimer);
+            setSlowServer(false);
             setIsSubmitting(false);
         }
     };
 
-
     const resetForm = () => {
-        setFormData({
-            name: "", mobile: "", email: "", college: "", enquiryFor: "",
-            internshipDuration: "", customCollege: "", internshipDomain: "",
-            courseName: "", jobType: "", jobCategory: "",
-            experience: "", whomToMeet: "", otherName: "", reference: "", referenceName: "", referenceOther: "", referenceNewspaperOther: "",
-        });
-        setIsSubmitted(false);
+        setForm(EMPTY_FORM);
+        setStep(0);
+        setAttempted([false, false, false]);
+        setTouched(new Set());
+        setResult(null);
+        setSubmitError(null);
+        setStartedAt(Date.now());
     };
+
+    const bind = (key: FormKey) => ({
+        id: key,
+        value: form[key] as string,
+        error: errors[key],
+        onBlur: () => touch(key),
+    });
 
     return (
         <Layout>
-            <AnimatePresence mode="wait">
-                {!isSubmitted ? (
-                    <motion.div
-                        key="form"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="min-h-screen  bg-[#f3efff] py-6 px-4"
-                    >
-                        <div className="max-w-2xl mx-auto">
-                            {/* Header */}
-                            <motion.div
-                                initial={{ opacity: 0, y: 30 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                className="text-center mb-6"
-                            >
-                                {/* <div className="inline-flex items-center gap-3 px-6 py-2 rounded-3xl  bg-[#f3efff] shadow-[6px_6px_12px_#bebebe,-6px_-6px_12px_#ffffff] mb-6">
-                                    <SparklesIcon className="w-6 h-6" style={{ color: accentColor }} />
-                                    <span className="font-semibold text-purple-800">Get In Touch</span>
-                                </div> */}
-                                <h1 className="text-5xl font-bold text-violet-900 tracking-tight">Enquiry Form</h1>
-                                <p className="mt-4 text-violet-700 text-lg">Tell us what you're looking for</p>
-                            </motion.div>
-
-                            {/* Form */}
-                            <motion.form
-                                onSubmit={handleSubmit}
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                className="bg-[#f3efff] rounded-3xl p-10 border border-violet-200 shadow-[10px_10px_20px_#d8b4fe,-10px_-10px_20px_#ffffff]"
-                            >
-                                <div className="space-y-8">
-                                    {/* Personal Info */}
-                                    <div className="grid md:grid-cols-2 gap-6">
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
-                                            <div className="relative">
-                                                <UserIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                                                <input
-                                                    type="text"
-                                                    name="name"
-                                                    value={formData.name}
-                                                    onChange={handleChange}
-                                                    required
-                                                    className={`w-full pl-12 pr-6 py-1 rounded-3xl  bg-[#f3efff] ${insetShadow} focus:shadow-[inset_8px_8px_16px_#bebebe,inset_-8px_-8px_16px_#ffffff] transition-all outline-none focus:ring-2 focus:ring-violet-400`}
-                                                    placeholder="Your Name Here"
-                                                />
-                                            </div>
-                                        </div>
-
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">Mobile Number</label>
-                                            <div className="relative">
-                                                <PhoneIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                                                <input
-                                                    type="tel"
-                                                    name="mobile"
-                                                    value={formData.mobile}
-                                                    onChange={handleChange}
-                                                    required
-                                                    className={`w-full pl-12 pr-6 py-1 rounded-3xl  bg-[#f3efff] ${insetShadow} focus:shadow-[inset_8px_8px_16px_#bebebe,inset_-8px_-8px_16px_#ffffff] transition-all outline-none focus:ring-2 focus:ring-violet-400`}
-                                                    placeholder="+91 98765 43210"
-                                                />
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {/* College & Email */}
-                                    <div className="grid md:grid-cols-2 gap-6">
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">College / University</label>
-                                            <div className="relative">
-                                                <BuildingLibraryIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                                                <select
-                                                    name="college"
-                                                    value={formData.college}
-                                                    onChange={handleChange}
-                                                    required
-                                                    className={`w-full pl-12 pr-6 py-1 rounded-3xl  bg-[#f3efff] ${insetShadow} focus:shadow-[inset_8px_8px_16px_#bebebe,inset_-8px_-8px_16px_#ffffff] transition-all outline-none focus:ring-2 focus:ring-violet-400 text-gray-800`}
-                                                >
-                                                    <option value="">Select Your College</option>
-                                                    <option value="Dr. Ambedkar College, Deekshabhoomi">
-                                                        Dr. Ambedkar College, Deekshabhoomi
-                                                    </option>
-                                                    <option value="G H Raisoni College of Engineering">
-                                                        G H Raisoni College of Engineering
-                                                    </option>
-                                                    <option value="Guru Nanak Institute of Engineering and Technology">
-                                                        Guru Nanak Institute of Engineering and Technology
-                                                    </option>
-                                                    <option value="JD College of Engineering and Management">
-                                                        JD College of Engineering and Management
-                                                    </option>
-                                                    <option value="Jhulelal Institute of Technology">
-                                                        Jhulelal Institute of Technology
-                                                    </option>
-                                                    <option value="Karmaveer Dadasaheb Kannamwar College of Engineering">
-                                                        Karmaveer Dadasaheb Kannamwar College of Engineering
-                                                    </option>
-                                                    <option value="Prerna College of Commerce and Science">
-                                                        Prerna College of Commerce and Science
-                                                    </option>
-                                                    <option value="S. B. Jain Institute of Technology, Management and Research">
-                                                        S. B. Jain Institute of Technology, Management and Research
-                                                    </option>
-                                                    <option value="Shri Ramdeobaba College of Engineering and Management">
-                                                        Shri Ramdeobaba College of Engineering and Management
-                                                    </option>
-                                                    <option value="St. Vincent Pallotti College of Engineering and Technology">
-                                                        St. Vincent Pallotti College of Engineering and Technology
-                                                    </option>
-                                                    <option value="Suryoday College of Engineering and Technology">
-                                                        Suryoday College of Engineering and Technology
-                                                    </option>
-                                                    <option value="Tulsiramji Gaikwad-Patil College of Engineering and Technology">
-                                                        Tulsiramji Gaikwad-Patil College of Engineering and Technology
-                                                    </option>
-                                                    <option value="Yeshwantrao Chavan College of Engineering">
-                                                        Yeshwantrao Chavan College of Engineering
-                                                    </option>
-                                                    <option className="font-bold" value="Other">Other</option>
-                                                </select>
-                                            </div>
-
-                                            <AnimatePresence>
-                                                {formData.college === "Other" && (
-                                                    <motion.div
-                                                        initial={{ opacity: 0, height: 0 }}
-                                                        animate={{ opacity: 1, height: "auto" }}
-                                                        exit={{ opacity: 0, height: 0 }}
-                                                        className="mt-3"
-                                                    >
-                                                        <input
-                                                            type="text"
-                                                            placeholder="Enter your college name"
-                                                            required
-                                                            className={`w-full pl-6 pr-6 py-1 rounded-3xl  bg-[#f3efff] ${insetShadow} focus:shadow-[inset_8px_8px_16px_#bebebe,inset_-8px_-8px_16px_#ffffff] transition-all outline-none focus:ring-2 focus:ring-violet-400`}
-                                                            value={formData.customCollege}
-                                                            onChange={(e) => setFormData(prev => ({ ...prev, customCollege: e.target.value }))}
-                                                        />
-                                                    </motion.div>
-                                                )}
-                                            </AnimatePresence>
-                                        </div>
-
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">Email ID</label>
-                                            <div className="relative">
-                                                <EnvelopeIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                                                <input
-                                                    type="email"
-                                                    name="email"
-                                                    value={formData.email}
-                                                    onChange={handleChange}
-                                                    required
-                                                    className={`w-full pl-10 pr-2 py-1 rounded-3xl  bg-[#f3efff] ${insetShadow} focus:shadow-[inset_8px_8px_16px_#bebebe,inset_-8px_-8px_16px_#ffffff] transition-all outline-none focus:ring-2 focus:ring-violet-400`}
-                                                    placeholder="mail@example.com"
-                                                />
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {/* Enquiry For Buttons */}
-                                    <div>
-                                        <label className="block text-medium font-medium text-gray-700 mb-3">Enquiry For</label>
-                                        <div className="grid grid-cols-2 md:grid-cols-4 gap-1">
-                                            {["Internship", "Job", "Course", "Hiring","Overseas","Certification","New Visitor","Offer Letter","Skill Development" ,"Other"].map((type) => (
-                                                <button
-                                                    key={type}
-                                                    type="button"
-                                                    onClick={() => setFormData(prev => ({ ...prev, enquiryFor: type }))}
-                                                    className={`py-1 px-2 rounded-3xl font-sm transition-all ${formData.enquiryFor === type
-                                                        ? "bg-gradient-to-r from-[#e5bcfb] to-[#c084fc] text-black shadow-[inset_4px_4px_8px_#bebebe,inset_-4px_-4px_8px_#ffffff]"
-                                                        : ` bg-[#f3efff] ${raisedShadow} hover:-translate-y-0.5`
-                                                        }`}
-                                                >
-                                                    {type}
-                                                </button>
-                                            ))}
-                                        </div>
-                                    </div>
-
-                                    {/* Conditional Fields */}
-                                    <AnimatePresence mode="wait">
-                                        {formData.enquiryFor === "Internship" && (
-                                            <motion.div 
-                                                initial={{ opacity: 0, height: 0 }} 
-                                                animate={{ opacity: 1, height: "auto" }} 
-                                                exit={{ opacity: 0, height: 0 }} 
-                                                className="grid grid-cols-1 md:grid-cols-2 gap-6"
-                                            >
-                                                <div>
-                                                    <label className="block text-sm font-medium text-gray-700 mb-2">Duration</label>
-                                                    <select 
-                                                        name="internshipDuration" 
-                                                        value={formData.internshipDuration} 
-                                                        onChange={handleChange} 
-                                                        className={`w-full p-4 py-2 rounded-3xl  bg-[#f3efff] ${insetShadow} outline-none focus:ring-2 focus:ring-violet-400`}
-                                                    >
-                                                        <option value="">Select Duration</option>
-                                                        <option value="1 Month">1 Month</option>
-                                                        <option value="3 Months">3 Months</option>
-                                                        <option value="6 Months">6 Months</option>
-                                                    </select>
-                                                </div>
-                                                <div>
-                                                    <label className="block text-sm font-medium text-gray-700 mb-2">Domain</label>
-                                                    <select 
-                                                        name="internshipDomain" 
-                                                        value={formData.internshipDomain} 
-                                                        onChange={handleChange} 
-                                                        className={`w-full p-4 py-2 rounded-3xl  bg-[#f3efff] ${insetShadow} outline-none focus:ring-2 focus:ring-violet-400`}
-                                                    >
-                                                        <option value="">Select Domain</option>
-                                                        <option value="Fullstack">Fullstack Development</option>
-                                                        <option value="Data Analytics">Data Analytics</option>
-                                                        <option value="Cyber Security">Cyber Security</option>
-                                                        <option value="UI/UX">UI/UX Design</option>
-                                                        <option value="AI ML">AI & Machine Learning</option>
-                                                        <option value="Marketing">Marketing</option>
-                                                        <option value="Finance">Finance</option>
-                                                        <option value="Operation">Operation</option>
-                                                        <option value="HR Intern">HR Intern</option>
-                                                        <option value="Digital Marketing">Digital Marketing</option>
-                                                        <option value="Other">Other</option>
-                                                    </select>
-                                                </div>
-                                            </motion.div>
-                                        )}
-
-                                        {formData.enquiryFor === "Course" && (
-                                            <motion.div
-                                                initial={{ opacity: 0, height: 0 }}
-                                                animate={{ opacity: 1, height: "auto" }}
-                                                exit={{ opacity: 0, height: 0 }}
-                                                className="grid grid-cols-1 gap-6"
-                                            >
-                                                <div>
-                                                    <label className="block text-sm font-medium text-gray-700 mb-2">Which Course?</label>
-                                                    <select
-                                                        name="courseName"
-                                                        value={formData.courseName}
-                                                        onChange={handleChange}
-                                                        className={`w-full p-4 py-1 rounded-3xl  bg-[#f3efff] ${insetShadow} outline-none focus:ring-2 focus:ring-violet-400`}
-                                                    >
-                                                        <option value="">Select Course</option>
-                                                        <option value="Service Now">Service Now</option>
-                                                        <option value="Data Analytics">Data Analytics</option>
-                                                        <option value="DataBricks">DataBricks</option>
-                                                        <option value="AI ML">AI & Machine Learning</option>
-                                                    </select>
-                                                </div>
-                                            </motion.div>
-                                        )}
-
-                                        {formData.enquiryFor === "Job" && (
-                                            <motion.div
-                                                initial={{ opacity: 0, height: 0 }}
-                                                animate={{ opacity: 1, height: "auto" }}
-                                                exit={{ opacity: 0, height: 0 }}
-                                                className="space-y-6"
-                                            >
-                                                <div>
-                                                    <label className="block text-sm font-medium text-gray-700 mb-2">Job Type</label>
-                                                    <div className="flex gap-3">
-                                                        {["Tech", "Non-Tech"].map((type) => (
-                                                            <button
-                                                                key={type}
-                                                                type="button"
-                                                                onClick={() => setFormData(prev => ({ ...prev, jobType: type }))}
-                                                                className={`flex-1 py-1 rounded-3xl font-medium ${formData.jobType === type
-                                                                    ? "bg-gradient-to-r from-[#e5bcfb] to-[#c084fc] text-white"
-                                                                    : ` bg-[#f3efff] ${raisedShadow}`
-                                                                    }`}
-                                                            >
-                                                                {type}
-                                                            </button>
-                                                        ))}
-                                                    </div>
-                                                </div>
-
-                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                                    {formData.jobType && (
-                                                        <div>
-                                                            <label className="block text-sm font-medium text-gray-700 mb-2">Job Role / Category</label>
-                                                            <select
-                                                                name="jobCategory"
-                                                                value={formData.jobCategory}
-                                                                onChange={handleChange}
-                                                                className={`w-full p-4 py-1 rounded-3xl  bg-[#f3efff] ${insetShadow} outline-none focus:ring-2 focus:ring-violet-400`}
-                                                            >
-                                                                <option value="">Select Role</option>
-                                                                {formData.jobType === "Tech" ? (
-                                                                    <>
-                                                                        <option value="Fullstack Developer">Fullstack Developer</option>
-                                                                        <option value="AI ML Engineer">AI/ML Engineer</option>
-                                                                        <option value="Data Analyst">Data Analyst</option>
-                                                                        <option value="Java Developer">Java Developer</option>
-                                                                    </>
-                                                                ) : (
-                                                                    <>
-                                                                        <option value="BPO / Calling">BPO / Calling</option>
-                                                                        <option value="Service Now">Service Now</option>
-                                                                        <option value="Electronics">Electronics</option>
-                                                                    </>
-                                                                )}
-                                                            </select>
-                                                        </div>
-                                                    )}
-
-                                                    <div>
-                                                        <label className="block text-sm font-medium text-gray-700 mb-2">Experience Level</label>
-                                                        <div className="flex gap-3">
-                                                            {["Fresher", "Experienced"].map((level) => (
-                                                                <button
-                                                                    key={level}
-                                                                    type="button"
-                                                                    onClick={() => setFormData(prev => ({ ...prev, experience: level }))}
-                                                                    className={`flex-1 py-1 rounded-3xl font-medium ${formData.experience === level
-                                                                        ? "bg-gradient-to-r from-[#e5bcfb] to-[#c084fc] text-white"
-                                                                        : ` bg-[#f3efff] ${raisedShadow}`
-                                                                        }`}
-                                                                >
-                                                                    {level}
-                                                                </button>
-                                                            ))}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </motion.div>
-                                        )}
-                                    </AnimatePresence>
-
-                                    {/* Whom to Meet */}
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-3">
-                                            Whom would you like to meet?
-                                        </label>
-
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                            {["Dr. N. G. Alvi", "Mr. Allan Abraham", "Mrs. Manisha Mali","Mr. Viraj Patle", "Other"].map((person) => (
-                                                <label
-                                                    key={person}
-                                                    className={`flex items-center gap-3 p-1 rounded-3xl cursor-pointer transition-all ${formData.whomToMeet === person
-                                                        ? "bg-gradient-to-r from-[#e5bcfb] to-[#c084fc] text-white shadow-[inset_px_4px_8px_#bebebe,inset_-4px_-4px_8px_#ffffff]"
-                                                        : ` bg-[#f3efff] ${raisedShadow} hover:-translate-y-0.5`
-                                                        }`}
-                                                >
-                                                    <input
-                                                        type="radio"
-                                                        name="whomToMeet"
-                                                        value={person}
-                                                        checked={formData.whomToMeet === person}
-                                                        onChange={handleChange}
-                                                        className="w-5 h-5 accent-purple-500"
-                                                    />
-                                                    <span className="font-medium">{person}</span>
-                                                </label>
-                                            ))}
-                                        </div>
-
-                                        <AnimatePresence>
-                                            {formData.whomToMeet === "Other" && (
-                                                <motion.div
-                                                    initial={{ opacity: 0, height: 0 }}
-                                                    animate={{ opacity: 1, height: "auto" }}
-                                                    exit={{ opacity: 0, height: 0 }}
-                                                    className="mt-4"
-                                                >
-                                                    <input
-                                                        type="text"
-                                                        name="otherName"
-                                                        value={formData.otherName}
-                                                        onChange={handleChange}
-                                                        placeholder="Enter full name"
-                                                        className={`w-full p-4 rounded-3xl  bg-[#f3efff] ${insetShadow} outline-none focus:ring-2 focus:ring-violet-400`}
-                                                    />
-                                                </motion.div>
-                                            )}
-                                        </AnimatePresence>
-                                    </div>
-                                    {/* ==================== REFERENCE / SOURCE ==================== */}
-                                    <div>
-                                
-                                        <label className="block text-sm font-medium text-gray-700 mb-3">
-                                            How did you hear about us? (Reference)
-                                        </label>
-
-                                        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                                            {["Instagram", "Facebook", "Ads", "Friends", "Teacher", "Newspaper", "Other"].map((ref) => (
-                                                <label
-                                                    key={ref}
-                                                    className={`flex items-center gap-1 py-1 p-1 rounded-3xl cursor-pointer transition-all ${formData.reference === ref
-                                                        ? "bg-gradient-to-r from-[#e5bcfb] to-[#c084fc] text-white shadow-[inset_4px_4px_8px_#bebebe,inset_-4px_-4px_8px_#ffffff]"
-                                                        : ` bg-[#f3efff] ${raisedShadow} hover:-translate-y-0.5`
-                                                    }`}
-                                                >
-                                                    <input
-                                                        type="radio"
-                                                        name="reference"
-                                                        value={ref}
-                                                        checked={formData.reference === ref}
-                                                        onChange={handleChange}
-                                                        className="w-3 h-3 accent-purple-500"
-                                                    />
-                                                    <span className="font-sm text-sm">{ref}</span>
-                                                </label>
-                                            ))}
-                                        </div>
-
-                                        {/* Conditional Input Fields */}
-                                        <AnimatePresence>
-                                            {/* Friends */}
-                                            {formData.reference === "Friends" && (
-                                                <motion.div
-                                                    initial={{ opacity: 0, height: 0 }}
-                                                    animate={{ opacity: 1, height: "auto" }}
-                                                    exit={{ opacity: 0, height: 0 }}
-                                                    className="mt-4"
-                                                >
-                                                    <input
-                                                        type="text"
-                                                        name="referenceName"
-                                                        value={formData.referenceName}
-                                                        onChange={handleChange}
-                                                        placeholder="Friend's Name"
-                                                        className={`w-full p-4 rounded-3xl bg-[#f3efff] ${insetShadow} outline-none focus:ring-2 focus:ring-violet-400`}
-                                                        required
-                                                    />
-                                                </motion.div>
-                                            )}
-
-                                            {/* Teacher */}
-                                            {formData.reference === "Teacher" && (
-                                                <motion.div
-                                                    initial={{ opacity: 0, height: 0 }}
-                                                    animate={{ opacity: 1, height: "auto" }}
-                                                    exit={{ opacity: 0, height: 0 }}
-                                                    className="mt-4"
-                                                >
-                                                    <input
-                                                        type="text"
-                                                        name="referenceName"
-                                                        value={formData.referenceName}
-                                                        onChange={handleChange}
-                                                        placeholder="Teacher's Name"
-                                                        className={`w-full p-4 rounded-3xl bg-[#f3efff] ${insetShadow} outline-none focus:ring-2 focus:ring-violet-400`}
-                                                        required
-                                                    />
-                                                </motion.div>
-                                            )}
-
-                                            {/* Newspaper */}
-                                            {formData.reference === "Newspaper" && (
-                                                <motion.div
-                                                    initial={{ opacity: 0, height: 0 }}
-                                                    animate={{ opacity: 1, height: "auto" }}
-                                                    exit={{ opacity: 0, height: 0 }}
-                                                    className="mt-4 space-y-4"
-                                                >
-                                                    <select
-                                                        name="referenceName"
-                                                        value={formData.referenceName}
-                                                        onChange={handleChange}
-                                                        className={`w-full p-4 rounded-3xl bg-[#f3efff] ${insetShadow} outline-none focus:ring-2 focus:ring-violet-400`}
-                                                        required
-                                                    >
-                                                        <option value="">Select Newspaper</option>
-                                                        
-                                                        <optgroup label="English Newspapers">
-                                                            <option value="The Hitavada">The Hitavada</option>
-                                                            <option value="The Times of India">The Times of India</option>
-                                                            <option value="The Indian Express">The Indian Express</option>
-                                                            <option value="The Hindu">The Hindu</option>
-                                                            <option value="The Economic Times">The Economic Times</option>
-                                                        </optgroup>
-
-                                                        <optgroup label="Marathi Newspapers (Regional)">
-                                                            <option value="Lokmat">Lokmat</option>
-                                                            <option value="Sakal">Sakal</option>
-                                                            <option value="Maharashtra Times">Maharashtra Times</option>
-                                                            <option value="Tarun Bharat">Tarun Bharat</option>
-                                                            <option value="Deshonnati">Deshonnati</option>
-                                                            <option value="Punya Nagari">Punya Nagari</option>
-                                                            <option value="Loksatta">Loksatta</option>
-                                                        </optgroup>
-
-                                                        <optgroup label="Hindi Newspapers">
-                                                            <option value="Nava Bharat">Nava Bharat</option>
-                                                            <option value="Dainik Bhaskar">Dainik Bhaskar</option>
-                                                            <option value="Dainik Jagran">Dainik Jagran</option>
-                                                        </optgroup>
-
-                                                        <option value="Other">Other Newspaper</option>
-                                                    </select>
-
-                                                    {/* Show input only when "Other" is selected in newspaper */}
-                                                    {formData.referenceName === "Other" && (
-                                                        <motion.div
-                                                            initial={{ opacity: 0, height: 0 }}
-                                                            animate={{ opacity: 1, height: "auto" }}
-                                                            exit={{ opacity: 0, height: 0 }}
-                                                        >
-                                                            <input
-                                                                type="text"
-                                                                name="referenceNewspaperOther"
-                                                                value={formData.referenceNewspaperOther || ""}
-                                                                onChange={handleChange}
-                                                                placeholder="Please specify the newspaper name"
-                                                                className={`w-full p-4 rounded-3xl bg-[#f3efff] ${insetShadow} outline-none focus:ring-2 focus:ring-violet-400`}
-                                                                required
-                                                            />
-                                                        </motion.div>
-                                                    )}
-                                                </motion.div>
-                                            )}
-
-                                            {/* Other (Main Reference) */}
-                                            {formData.reference === "Other" && (
-                                                <motion.div
-                                                    initial={{ opacity: 0, height: 0 }}
-                                                    animate={{ opacity: 1, height: "auto" }}
-                                                    exit={{ opacity: 0, height: 0 }}
-                                                    className="mt-4"
-                                                >
-                                                    <input
-                                                        type="text"
-                                                        name="referenceOther"
-                                                        value={formData.referenceOther}
-                                                        onChange={handleChange}
-                                                        placeholder="Please specify"
-                                                        className={`w-full p-4 rounded-3xl bg-[#f3efff] ${insetShadow} outline-none`}
-                                                        required
-                                                    />
-                                                </motion.div>
-                                            )}
-                                        </AnimatePresence>
-                                    </div>
-
-                                    {/* Submit Button */}
-                                    <motion.button
-                                        whileHover={{ scale: isSubmitting ? 1 : 1.03 }}
-                                        whileTap={{ scale: isSubmitting ? 1 : 0.97 }}
-                                        type="submit"
-                                        disabled={isSubmitting}
-                                        className="w-full py-3 rounded-3xl bg-gradient-to-r from-violet-600 via-purple-600 to-fuchsia-600 text-white font-bold text-xl shadow-lg hover:shadow-xl transition-all duration-300 active:shadow-[inset_6px_6px_12px_#bebebe,inset_-6px_-6px_12px_#ffffff] mt-6 flex items-center justify-center gap-3 disabled:cursor-not-allowed disabled:opacity-90"
-                                    >
-                                        {isSubmitting ? (
-                                            <>
-                                                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                                                <span>Submitting...</span>
-                                            </>
-                                        ) : (
-                                            "Submit Enquiry"
-                                        )}
-                                    </motion.button>
+            <div className="min-h-screen bg-[#f3efff] px-4 py-8 sm:py-12">
+                <div className="mx-auto max-w-2xl">
+                    <AnimatePresence mode="wait">
+                        {result ? (
+                            <SuccessScreen key="success" result={result} onReset={resetForm} headingRef={headingRef} />
+                        ) : (
+                            <motion.div key="form" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                                <div className="mb-6 text-center">
+                                    <h1 className="text-3xl font-bold tracking-tight text-violet-950 sm:text-4xl">Enquiry Form</h1>
+                                    <p className="mt-2 text-violet-700">Takes about 2 minutes · fields marked <span className="text-rose-500">*</span> are required</p>
                                 </div>
-                            </motion.form>
-                        </div>
-                    </motion.div>
-                ) : (
-                    <ThankYouPage key="thankyou" onReset={resetForm} />
-                )}
-            </AnimatePresence>
+
+                                <Stepper step={step} onStepClick={(i) => i < step && setStep(i)} />
+
+                                <form
+                                    onSubmit={handleSubmit}
+                                    noValidate
+                                    className="relative rounded-3xl border border-violet-100 bg-white p-5 shadow-[0_10px_40px_-12px_rgba(109,40,217,0.25)] sm:p-8"
+                                >
+                                    <div className="mb-6">
+                                        <p className="text-xs font-semibold uppercase tracking-wider text-violet-600">Step {step + 1} of {STEPS.length}</p>
+                                        <h2 ref={headingRef} tabIndex={-1} className="mt-1 scroll-mt-24 text-xl font-semibold text-slate-900 focus:outline-none">{STEPS[step].title}</h2>
+                                        <p className="text-sm text-slate-500">{STEPS[step].description}</p>
+                                    </div>
+
+                                    {/* Honeypot: invisible to people and assistive tech; naive bots fill it in. */}
+                                    <div aria-hidden className="absolute -left-[10000px] h-px w-px overflow-hidden">
+                                        <label htmlFor="website">Website</label>
+                                        <input id="website" name="website" type="text" tabIndex={-1} autoComplete="off" value={form.website} onChange={(e) => set("website", e.target.value)} />
+                                    </div>
+
+                                    <motion.div key={step} initial={{ opacity: 0, x: 12 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.2 }} className="space-y-5">
+                                        {step === 0 && (
+                                            <>
+                                                <Field id="name" label="Full name" required error={errors.name}>
+                                                    <TextInput {...bind("name")} onChange={(e) => set("name", e.target.value)} autoComplete="name" placeholder="e.g. Priya Sharma" maxLength={80} />
+                                                </Field>
+                                                <div className="grid gap-5 sm:grid-cols-2">
+                                                    <Field id="mobile" label="Mobile number" required error={errors.mobile} hint="We'll call or WhatsApp you on this number">
+                                                        <PhoneInput
+                                                            id="mobile"
+                                                            countryCode={form.countryCode}
+                                                            onCountryCode={(c) => set("countryCode", c)}
+                                                            value={form.mobile}
+                                                            onChange={(v) => set("mobile", v)}
+                                                            onBlur={() => touch("mobile")}
+                                                            error={errors.mobile}
+                                                            hint="We'll call or WhatsApp you on this number"
+                                                        />
+                                                    </Field>
+                                                    <Field id="email" label="Email" required error={errors.email}>
+                                                        <TextInput {...bind("email")} onChange={(e) => set("email", e.target.value)} type="email" inputMode="email" autoComplete="email" placeholder="name@example.com" maxLength={120} />
+                                                    </Field>
+                                                </div>
+                                                <Field id="college" label="College / University" required error={errors.college} hint="Start typing to search. Not listed? Just type the full name.">
+                                                    <CollegeCombobox
+                                                        id="college"
+                                                        options={COLLEGES}
+                                                        value={form.college}
+                                                        onChange={(v) => set("college", v)}
+                                                        onBlur={() => touch("college")}
+                                                        error={errors.college}
+                                                        hint="Start typing to search. Not listed? Just type the full name."
+                                                    />
+                                                </Field>
+                                                <div className="grid gap-5 sm:grid-cols-2">
+                                                    <Field id="qualification" label="Highest / current qualification" optional>
+                                                        <SelectInput {...bind("qualification")} onChange={(e) => set("qualification", e.target.value)}>
+                                                            <option value="">Select qualification</option>
+                                                            {QUALIFICATIONS.map((q) => <option key={q} value={q}>{q}</option>)}
+                                                        </SelectInput>
+                                                    </Field>
+                                                    <Field id="passingYear" label="Passing year" optional error={errors.passingYear} hint="Completed or expected">
+                                                        <TextInput {...bind("passingYear")} onChange={(e) => set("passingYear", e.target.value.replace(/\D/g, "").slice(0, 4))}
+                                                            inputMode="numeric" placeholder={String(new Date().getFullYear())} hint="Completed or expected" />
+                                                    </Field>
+                                                </div>
+                                            </>
+                                        )}
+
+                                        {step === 1 && (
+                                            <>
+                                                <ChoiceGroup
+                                                    name="enquiryFor"
+                                                    legend="What is your enquiry about?"
+                                                    required
+                                                    choices={ENQUIRY_TYPES}
+                                                    value={form.enquiryFor}
+                                                    onChange={(v) => set("enquiryFor", v)}
+                                                    error={errors.enquiryFor}
+                                                    columns="grid-cols-2 sm:grid-cols-3"
+                                                />
+
+                                                {form.enquiryFor === "Internship" && (
+                                                    <DetailPanel title="Internship details">
+                                                        <Field id="internshipDomain" label="Domain" required error={errors.internshipDomain}>
+                                                            <SelectInput {...bind("internshipDomain")} onChange={(e) => set("internshipDomain", e.target.value)}>
+                                                                <option value="">Select domain</option>
+                                                                {INTERNSHIP_DOMAINS.map((d) => <option key={d.value} value={d.value}>{d.label}</option>)}
+                                                            </SelectInput>
+                                                        </Field>
+                                                        <ChoiceGroup name="internshipDuration" legend="Preferred duration" optional size="sm" columns="grid-cols-3"
+                                                            choices={INTERNSHIP_DURATIONS.map((d) => ({ value: d }))} value={form.internshipDuration} onChange={(v) => set("internshipDuration", v)} />
+                                                    </DetailPanel>
+                                                )}
+
+                                                {form.enquiryFor === "Course" && (
+                                                    <DetailPanel title="Course details">
+                                                        <ChoiceGroup name="courseName" legend="Which course?" required columns="grid-cols-1 sm:grid-cols-2"
+                                                            choices={COURSES} value={form.courseName} onChange={(v) => set("courseName", v)} error={errors.courseName} />
+                                                    </DetailPanel>
+                                                )}
+
+                                                {form.enquiryFor === "Job" && (
+                                                    <DetailPanel title="Job details">
+                                                        <ChoiceGroup name="jobType" legend="Job type" required columns="grid-cols-2" size="sm"
+                                                            choices={[{ value: "Tech" }, { value: "Non-Tech" }]} value={form.jobType} error={errors.jobType}
+                                                            onChange={(v) => setForm((p) => ({ ...p, jobType: v, jobCategory: "" }))} />
+                                                        {form.jobType && (
+                                                            <Field id="jobCategory" label="Job role" optional>
+                                                                <SelectInput {...bind("jobCategory")} onChange={(e) => set("jobCategory", e.target.value)}>
+                                                                    <option value="">Select role</option>
+                                                                    {JOB_ROLES[form.jobType].map((r) => <option key={r.value} value={r.value}>{r.label}</option>)}
+                                                                </SelectInput>
+                                                            </Field>
+                                                        )}
+                                                        <ChoiceGroup name="experience" legend="Experience" optional columns="grid-cols-2" size="sm"
+                                                            choices={[{ value: "Fresher" }, { value: "Experienced" }]} value={form.experience} onChange={(v) => set("experience", v)} />
+                                                    </DetailPanel>
+                                                )}
+
+                                                {form.enquiryFor === "Overseas" && (
+                                                    <DetailPanel title="Overseas details">
+                                                        <ChoiceGroup name="preferredCountry" legend="Which country are you planning for?" required columns="grid-cols-2 sm:grid-cols-3" size="sm"
+                                                            choices={OVERSEAS_COUNTRIES.map((c) => ({ value: c }))} value={form.preferredCountry} onChange={(v) => set("preferredCountry", v)} error={errors.preferredCountry} />
+                                                        {form.preferredCountry === "Other" && (
+                                                            <Field id="preferredCountryOther" label="Country" required error={errors.preferredCountryOther}>
+                                                                <TextInput {...bind("preferredCountryOther")} onChange={(e) => set("preferredCountryOther", e.target.value)} maxLength={60} placeholder="e.g. Canada" autoComplete="country-name" />
+                                                            </Field>
+                                                        )}
+                                                    </DetailPanel>
+                                                )}
+
+                                                <Field
+                                                    id="message"
+                                                    label={form.enquiryFor === "Other" ? "Describe your enquiry" : "Anything else we should know?"}
+                                                    required={form.enquiryFor === "Other"}
+                                                    optional={form.enquiryFor !== "Other"}
+                                                    error={errors.message}
+                                                    hint={`${form.message.length}/1000`}
+                                                >
+                                                    <TextArea {...bind("message")} onChange={(e) => set("message", e.target.value.slice(0, 1000))} rows={4}
+                                                        hint={`${form.message.length}/1000`} placeholder="e.g. preferred batch timing, questions about fees or eligibility…" />
+                                                </Field>
+                                            </>
+                                        )}
+
+                                        {step === 2 && (
+                                            <>
+                                                <ChoiceGroup
+                                                    name="reference"
+                                                    legend="How did you hear about us?"
+                                                    required
+                                                    size="sm"
+                                                    columns="grid-cols-2 sm:grid-cols-3"
+                                                    choices={REFERENCES.map((r) => ({ value: r }))}
+                                                    value={form.reference}
+                                                    onChange={(v) => setForm((p) => ({ ...p, reference: v, referenceName: "", referenceOther: "", referenceNewspaperOther: "" }))}
+                                                    error={errors.reference}
+                                                />
+                                                {(form.reference === "Friends" || form.reference === "Teacher") && (
+                                                    <Field id="referenceName" label={form.reference === "Friends" ? "Friend's name" : "Teacher's name"} required error={errors.referenceName}>
+                                                        <TextInput {...bind("referenceName")} onChange={(e) => set("referenceName", e.target.value)} maxLength={80} />
+                                                    </Field>
+                                                )}
+                                                {form.reference === "Newspaper" && (
+                                                    <div className="grid gap-5 sm:grid-cols-2">
+                                                        <Field id="referenceName" label="Newspaper" required error={errors.referenceName}>
+                                                            <SelectInput {...bind("referenceName")} onChange={(e) => set("referenceName", e.target.value)}>
+                                                                <option value="">Select newspaper</option>
+                                                                {NEWSPAPERS.map((g) => (
+                                                                    <optgroup key={g.group} label={g.group}>
+                                                                        {g.options.map((n) => <option key={n} value={n}>{n}</option>)}
+                                                                    </optgroup>
+                                                                ))}
+                                                                <option value="Other">Other newspaper</option>
+                                                            </SelectInput>
+                                                        </Field>
+                                                        {form.referenceName === "Other" && (
+                                                            <Field id="referenceNewspaperOther" label="Newspaper name" required error={errors.referenceNewspaperOther}>
+                                                                <TextInput {...bind("referenceNewspaperOther")} onChange={(e) => set("referenceNewspaperOther", e.target.value)} maxLength={80} />
+                                                            </Field>
+                                                        )}
+                                                    </div>
+                                                )}
+                                                {form.reference === "Other" && (
+                                                    <Field id="referenceOther" label="Where did you hear about us?" required error={errors.referenceOther}>
+                                                        <TextInput {...bind("referenceOther")} onChange={(e) => set("referenceOther", e.target.value)} maxLength={120} placeholder="e.g. college notice board" />
+                                                    </Field>
+                                                )}
+
+                                                <ChoiceGroup
+                                                    name="whomToMeet"
+                                                    legend="Whom would you like to meet?"
+                                                    optional
+                                                    size="sm"
+                                                    columns="grid-cols-1 sm:grid-cols-2"
+                                                    choices={PEOPLE_TO_MEET.map((p) => ({ value: p }))}
+                                                    value={form.whomToMeet}
+                                                    onChange={(v) => set("whomToMeet", v)}
+                                                />
+                                                {form.whomToMeet === "Other" && (
+                                                    <Field id="otherName" label="Person's name" optional>
+                                                        <TextInput {...bind("otherName")} onChange={(e) => set("otherName", e.target.value)} maxLength={80} />
+                                                    </Field>
+                                                )}
+
+                                                <div className="grid gap-5 sm:grid-cols-2">
+                                                    <ChoiceGroup name="contactMethod" legend="Preferred way to contact you" optional size="sm" columns="grid-cols-1"
+                                                        choices={CONTACT_METHODS} value={form.contactMethod} onChange={(v) => set("contactMethod", v)} />
+                                                    <ChoiceGroup name="contactTime" legend="Best time to reach you" optional size="sm" columns="grid-cols-2"
+                                                        choices={CONTACT_TIMES} value={form.contactTime} onChange={(v) => set("contactTime", v)} />
+                                                </div>
+
+                                                <Review form={form} onEdit={setStep} />
+
+                                                <Checkbox id="consent" checked={form.consent} onChange={(v) => set("consent", v)} error={errors.consent}>
+                                                    I agree to be contacted by SS Group about this enquiry by phone, WhatsApp or email. <span className="text-rose-500" aria-hidden>*</span>
+                                                </Checkbox>
+                                            </>
+                                        )}
+                                    </motion.div>
+
+                                    {submitError && (
+                                        <div role="alert" className="mt-6 flex gap-2 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">
+                                            <ExclamationTriangleIcon className="mt-0.5 h-5 w-5 shrink-0" aria-hidden />
+                                            <div>
+                                                <p className="font-medium">Your enquiry was not submitted.</p>
+                                                <p>{submitError} Your answers are still here.</p>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    <div className="mt-8 flex flex-col-reverse gap-3 border-t border-violet-100 pt-6 sm:flex-row sm:items-center sm:justify-between">
+                                        {step > 0 ? (
+                                            <button type="button" onClick={() => setStep((s) => s - 1)} disabled={isSubmitting}
+                                                className="inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3 font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-800 focus:outline-none focus-visible:ring-4 focus-visible:ring-violet-200 disabled:opacity-50">
+                                                <ArrowLeftIcon className="h-4 w-4" aria-hidden /> Back
+                                            </button>
+                                        ) : <span className="hidden sm:block" />}
+                                        <button
+                                            type="submit"
+                                            disabled={isSubmitting}
+                                            aria-busy={isSubmitting}
+                                            className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 px-6 py-3.5 text-base font-semibold text-white shadow-lg shadow-violet-300/50 transition hover:brightness-110 focus:outline-none focus-visible:ring-4 focus-visible:ring-violet-300 disabled:cursor-not-allowed disabled:opacity-80 sm:min-w-[200px]"
+                                        >
+                                            {isSubmitting ? (
+                                                <>
+                                                    <span className="h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white" aria-hidden />
+                                                    Submitting…
+                                                </>
+                                            ) : step < STEPS.length - 1 ? (
+                                                <>Continue <ArrowRightIcon className="h-4 w-4" aria-hidden /></>
+                                            ) : (
+                                                "Submit enquiry"
+                                            )}
+                                        </button>
+                                    </div>
+                                    {slowServer && <p className="mt-3 text-center text-sm text-slate-500" aria-live="polite">Still working — the first submission can take up to a minute while our server wakes up.</p>}
+                                </form>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                </div>
+            </div>
         </Layout>
     );
 }
 
-// ==================== THANK YOU PAGE ====================
-function ThankYouPage({ onReset }: { onReset: () => void }) {
+// ==================== PIECES ====================
+
+function Stepper({ step, onStepClick }: { step: number; onStepClick: (i: number) => void }) {
     return (
-    <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="min-h-screen  bg-[#f3efff] flex items-center justify-center py-16 px-4"
-    >
-        <div className="max-w-lg w-full text-center">
-            <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ type: "spring", stiffness: 100, damping: 12 }}
-                className="mx-auto w-28 h-28 bg-white rounded-full flex items-center justify-center mb-8 shadow-[8px_8px_20px_#bebebe,-8px_-8px_20px_#ffffff]"
-            >
-                <CheckCircleIcon className="w-20 h-20" style={{ color: "#22c55e" }} />
+        <nav aria-label="Form progress" className="mb-5">
+            <ol className="flex items-center gap-2">
+                {STEPS.map((s, i) => {
+                    const done = i < step;
+                    const current = i === step;
+                    return (
+                        <li key={s.title} className={cx("flex items-center gap-2", i < STEPS.length - 1 && "flex-1")}>
+                            <button
+                                type="button"
+                                onClick={() => onStepClick(i)}
+                                disabled={!done}
+                                aria-current={current ? "step" : undefined}
+                                aria-label={`Step ${i + 1}: ${s.title}${done ? " (completed, go back)" : current ? " (current)" : ""}`}
+                                className="flex shrink-0 items-center gap-2 rounded-full focus:outline-none focus-visible:ring-4 focus-visible:ring-violet-200 disabled:cursor-default"
+                            >
+                                <span className={cx(
+                                    "grid h-8 w-8 shrink-0 place-items-center rounded-full text-sm font-semibold transition-colors",
+                                    done ? "bg-violet-600 text-white" : current ? "bg-white text-violet-700 ring-2 ring-violet-600" : "bg-white text-slate-400 ring-1 ring-violet-200",
+                                )}>
+                                    {done ? <CheckIcon className="h-4 w-4" aria-hidden /> : i + 1}
+                                </span>
+                                <span className={cx("hidden whitespace-nowrap text-sm font-medium sm:inline", current ? "text-violet-900" : done ? "text-violet-700" : "text-slate-400")}>{s.title}</span>
+                            </button>
+                            {i < STEPS.length - 1 && <span className={cx("h-0.5 flex-1 rounded-full", done ? "bg-violet-500" : "bg-violet-200")} aria-hidden />}
+                        </li>
+                    );
+                })}
+            </ol>
+            <p className="mt-2 text-center text-sm font-medium text-violet-800 sm:hidden">{STEPS[step].title}</p>
+        </nav>
+    );
+}
+
+function DetailPanel({ title, children }: { title: string; children: ReactNode }) {
+    return (
+        <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="space-y-4 overflow-hidden rounded-2xl border border-violet-100 bg-violet-50/50 p-4">
+            <p className="text-sm font-semibold text-violet-900">{title}</p>
+            {children}
+        </motion.div>
+    );
+}
+
+function Review({ form, onEdit }: { form: EnquiryFormState; onEdit: (step: number) => void }) {
+    const country = countryFor(form.countryCode);
+    const detail =
+        form.enquiryFor === "Internship" ? [INTERNSHIP_DOMAINS.find((d) => d.value === form.internshipDomain)?.label, form.internshipDuration].filter(Boolean).join(" · ")
+            : form.enquiryFor === "Course" ? COURSES.find((c) => c.value === form.courseName)?.label
+                : form.enquiryFor === "Job" ? [form.jobType, form.jobCategory, form.experience].filter(Boolean).join(" · ")
+                    : form.enquiryFor === "Overseas" ? (form.preferredCountry === "Other" ? form.preferredCountryOther : form.preferredCountry)
+                        : "";
+    const rows: { label: string; value: string; step: number }[] = [
+        { label: "Name", value: form.name.trim(), step: 0 },
+        { label: "Mobile", value: `+${country?.code} ${nationalDigits(form.mobile, form.countryCode)}`, step: 0 },
+        { label: "Email", value: form.email.trim(), step: 0 },
+        { label: "College", value: form.college.trim(), step: 0 },
+        { label: "Enquiry", value: [form.enquiryFor, detail].filter(Boolean).join(" — "), step: 1 },
+    ];
+    return (
+        <section aria-labelledby="review-heading" className="rounded-2xl border border-violet-100 bg-slate-50/60 p-4">
+            <h3 id="review-heading" className="mb-2 text-sm font-semibold text-slate-900">Review your details</h3>
+            <dl className="divide-y divide-violet-100/70 text-sm">
+                {rows.map((r) => (
+                    <div key={r.label} className="flex items-start justify-between gap-3 py-2">
+                        <dt className="w-20 shrink-0 text-slate-500">{r.label}</dt>
+                        <dd className="min-w-0 flex-1 break-words font-medium text-slate-800">{r.value || "—"}</dd>
+                        <button type="button" onClick={() => onEdit(r.step)} className="shrink-0 rounded-md p-1 text-violet-600 hover:bg-violet-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-400" aria-label={`Edit ${r.label.toLowerCase()}`}>
+                            <PencilSquareIcon className="h-4 w-4" aria-hidden />
+                        </button>
+                    </div>
+                ))}
+            </dl>
+        </section>
+    );
+}
+
+function SuccessScreen({ result, onReset, headingRef }: { result: SubmitResult; onReset: () => void; headingRef: RefObject<HTMLHeadingElement | null> }) {
+    const via = result.contactMethod === "WhatsApp" ? "on WhatsApp" : result.contactMethod === "Email" ? "by email" : "by phone";
+    return (
+        <motion.div initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} className="rounded-3xl border border-violet-100 bg-white p-6 text-center shadow-[0_10px_40px_-12px_rgba(109,40,217,0.25)] sm:p-10">
+            <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring", stiffness: 140, damping: 14 }}
+                className="mx-auto mb-5 grid h-20 w-20 place-items-center rounded-full bg-emerald-50">
+                <CheckCircleIcon className="h-12 w-12 text-emerald-500" aria-hidden />
             </motion.div>
+            <h1 ref={headingRef} tabIndex={-1} className="text-3xl font-bold text-violet-950 focus:outline-none">Thank you{result.name ? `, ${result.name}` : ""}!</h1>
+            <p className="mt-2 text-lg text-slate-700" role="status">Your enquiry has been submitted successfully.</p>
+            <p className="mt-1 text-slate-500">Our team will contact you soon {via}.</p>
 
-            <h1 className="text-5xl font-bold text-violet-900 mb-4">Thank You!</h1>
-            
-            <div className=" bg-[#f3efff] rounded-3xl p-10 shadow-[10px_10px_20px_#d8b4fe,-10px_-10px_20px_#ffffff] mb-8">
-                <p className="text-2xl font-medium text-gray-700 mb-3">
-                    Your form has been submitted successfully
+            {result.reference && (
+                <div className="mx-auto mt-6 max-w-xs rounded-2xl bg-violet-50 px-4 py-3">
+                    <p className="text-xs font-medium uppercase tracking-wider text-violet-600">Your reference</p>
+                    <p className="mt-0.5 font-mono text-2xl font-bold tracking-wider text-violet-950">{result.reference}</p>
+                    <p className="mt-1 text-xs text-slate-500">Mention this if you contact us or visit the office.</p>
+                </div>
+            )}
+
+            {result.repeat && (
+                <p className="mx-auto mt-5 max-w-md rounded-xl bg-sky-50 px-4 py-3 text-sm text-sky-800">
+                    This contact information appears to have an existing enquiry with us. Our team may already be assisting you — this enquiry has been added as well.
                 </p>
-                <p className="text-gray-600 text-lg">
-                    We will connect with you shortly.<br />
-                    Please wait for our team to reach out.
-                </p>
-            </div>
+            )}
 
-            <div className="space-y-4">
-                <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={onReset}
-                    className="w-full py-6 rounded-3xl bg-gradient-to-r from-[#e5bcfb] to-[#c084fc] text-white font-bold text-xl shadow-[8px_8px_16px_#bebebe,-8px_-8px_16px_#ffffff]"
-                >
-                    Submit Another Enquiry
-                </motion.button>
-
-                {/* <p className="text-sm text-gray-500">
-                    You will receive a confirmation on your email shortly
-                </p> */}
-            </div>
-        </div>
-    </motion.div>
+            <button
+                type="button"
+                onClick={onReset}
+                className="mt-8 w-full rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 px-6 py-3.5 font-semibold text-white shadow-lg shadow-violet-300/50 hover:brightness-110 focus:outline-none focus-visible:ring-4 focus-visible:ring-violet-300 sm:w-auto"
+            >
+                Submit another enquiry
+            </button>
+        </motion.div>
     );
 }

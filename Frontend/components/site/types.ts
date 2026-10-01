@@ -49,6 +49,17 @@ export interface Enquiry {
     referenceOther?: string | null;
     referenceNewspaperOther?: string | null;
 
+    // Enquiry form v2 (optional: older records don't have them)
+    qualification?: string;
+    passingYear?: number | null;
+    preferredCountry?: string;
+    message?: string;
+    contactMethod?: "" | "Phone" | "WhatsApp" | "Email";
+    contactTime?: "" | "Morning" | "Afternoon" | "Evening" | "Anytime";
+    consentAt?: string | null;
+    utm?: { source?: string; medium?: string; campaign?: string; term?: string; content?: string };
+    referrer?: string;
+
     // CRM fields (optional: older records and older API versions omit them)
     status?: EnquiryStatus;
     priority?: EnquiryPriority;

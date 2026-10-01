@@ -8,7 +8,7 @@ import {
 } from "../lib/analytics";
 
 /** Dimension filters stored in the URL so any dashboard view can be bookmarked or shared. */
-export const FILTER_KEYS = ["status", "source", "category", "program", "college", "owner", "priority", "outcome"] as const;
+export const FILTER_KEYS = ["status", "source", "category", "program", "college", "country", "owner", "priority", "outcome"] as const;
 export type FilterKey = (typeof FILTER_KEYS)[number];
 
 export const OUTCOME_FILTERS = [
@@ -69,6 +69,7 @@ export function applyDimensionFilters(enquiries: Enquiry[], values: Record<Filte
         if (values.program && DIMENSIONS.program.get(e) !== values.program) return false;
         if (values.college && DIMENSIONS.college.get(e) !== values.college) return false;
         if (values.owner && DIMENSIONS.owner.get(e) !== values.owner) return false;
+        if (values.country && DIMENSIONS.country.get(e) !== values.country) return false;
         switch (values.outcome) {
             case "open": if (!isOpen(e)) return false; break;
             case "closed": if (isOpen(e)) return false; break;
@@ -117,6 +118,7 @@ export function useFilteredEnquiries() {
             program: uniqueValues(enquiries, DIMENSIONS.program.get),
             college: uniqueValues(enquiries, DIMENSIONS.college.get),
             owner: uniqueValues(enquiries, DIMENSIONS.owner.get),
+            country: uniqueValues(enquiries, DIMENSIONS.country.get).filter((c) => c !== "Not specified"),
         }),
         [enquiries],
     );

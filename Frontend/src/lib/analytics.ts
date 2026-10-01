@@ -41,6 +41,21 @@ export const getProgram = (e: Enquiry) =>
 export const getCollege = (e: Enquiry) =>
     e.college === "Other" ? e.customCollege?.trim() || "Other" : e.college?.trim() || NOT_SPECIFIED;
 
+/** Only asked for Overseas enquiries; older records have none. */
+export const getCountry = (e: Enquiry) => e.preferredCountry?.trim() || NOT_SPECIFIED;
+
+export const getQualification = (e: Enquiry) => e.qualification?.trim() || NOT_SPECIFIED;
+
+/** Campaign attribution from UTM tags ("google / cpc"), else the external referrer host. */
+export const getCampaignSource = (e: Enquiry) => {
+    const s = e.utm?.source?.trim();
+    if (s) return e.utm?.medium?.trim() ? `${s} / ${e.utm.medium.trim()}` : s;
+    return e.referrer?.trim() ? `${e.referrer.trim()} (referral)` : NOT_SPECIFIED;
+};
+
+/** Short public reference shown to the visitor after submitting (matches the backend). */
+export const publicReference = (e: Enquiry) => `SS-${e._id.slice(-6).toUpperCase()}`;
+
 /** Explicit assignment wins; otherwise the person the visitor asked to meet. */
 export const getOwner = (e: Enquiry) => e.assignedTo?.trim() || e.whomToMeet?.trim() || "Unassigned";
 
@@ -58,7 +73,7 @@ export const createdAt = (e: Enquiry) => toDate(e.createdAt);
 // Dimensions
 // =====================================================================
 
-export type DimensionKey = "source" | "category" | "program" | "college" | "owner" | "status" | "priority";
+export type DimensionKey = "source" | "category" | "program" | "college" | "owner" | "status" | "priority" | "country" | "qualification" | "campaign";
 
 export const DIMENSIONS: Record<DimensionKey, { label: string; plural: string; get: (e: Enquiry) => string }> = {
     source: { label: "Source", plural: "Sources", get: getSource },
@@ -68,6 +83,9 @@ export const DIMENSIONS: Record<DimensionKey, { label: string; plural: string; g
     owner: { label: "Counselor", plural: "Counselors", get: getOwner },
     status: { label: "Status", plural: "Statuses", get: getStatus },
     priority: { label: "Priority", plural: "Priorities", get: getPriority },
+    country: { label: "Preferred country", plural: "Countries", get: getCountry },
+    qualification: { label: "Qualification", plural: "Qualifications", get: getQualification },
+    campaign: { label: "Campaign (UTM)", plural: "Campaigns", get: getCampaignSource },
 };
 
 export const uniqueValues = (enquiries: Enquiry[], get: (e: Enquiry) => string) =>
@@ -754,10 +772,13 @@ export function generateInsights(
 export function matchesSearch(e: Enquiry, query: string) {
     const q = query.trim().toLowerCase();
     if (!q) return true;
+    // Visitors quote their public reference, e.g. "SS-EDE067" = the last 6 characters of the id.
+    if (/^ss-[0-9a-f]{6}$/.test(q)) return e._id.toLowerCase().endsWith(q.slice(3));
     const digits = q.replace(/\D/g, "");
     if (digits.length >= 3 && normalizeMobile(e.mobile).includes(digits)) return true;
     return [
         e.name, e.email, e._id, getCollege(e), getProgram(e), getCategory(e), getSource(e), getSourceDetail(e), getOwner(e),
+        e.preferredCountry, e.message,
     ].some((v) => v?.toLowerCase().includes(q));
 }
 

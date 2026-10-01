@@ -72,6 +72,25 @@ const enquirySchema = new mongoose.Schema({
         default: "",
     },
 
+    // ==================== ENQUIRY FORM v2 (all optional) ====================
+    qualification: { type: String, default: '', maxlength: 80 },
+    passingYear: { type: Number, min: 1970, max: 2100 },
+    // Only asked for "Overseas" enquiries.
+    preferredCountry: { type: String, default: '', maxlength: 80 },
+    message: { type: String, default: '', maxlength: 1000 },
+    contactMethod: { type: String, enum: ['', 'Phone', 'WhatsApp', 'Email'], default: '' },
+    contactTime: { type: String, enum: ['', 'Morning', 'Afternoon', 'Evening', 'Anytime'], default: '' },
+    consentAt: { type: Date, default: null },
+    // Marketing attribution captured automatically from the landing URL.
+    utm: {
+        source: { type: String, maxlength: 120 },
+        medium: { type: String, maxlength: 120 },
+        campaign: { type: String, maxlength: 120 },
+        term: { type: String, maxlength: 120 },
+        content: { type: String, maxlength: 120 },
+    },
+    referrer: { type: String, default: '', maxlength: 200 },
+
     status: {
         type: String,
         enum: ['New', 'Contacted', 'In Progress', 'Closed'],

@@ -54,6 +54,7 @@ export default function AnalyticsPage() {
                 <div className="space-y-4">
                     <DimensionView {...props} dimension="category" />
                     <DimensionView {...props} dimension="program" hideCharts />
+                    <ProfileBreakdowns current={props.current} />
                 </div>
             )}
             {tab === "colleges" && <DimensionView {...props} dimension="college" />}
@@ -267,7 +268,31 @@ function DimensionView({ current, previous, scoped, range, dimension, extra, tea
     );
 }
 
+/** Applicant profile from the newer form fields; hidden until such data exists. */
+function ProfileBreakdowns({ current }: { current: Enquiry[] }) {
+    const countries = useMemo(() => breakdown(current.filter((e) => e.preferredCountry), DIMENSIONS.country.get), [current]);
+    const qualifications = useMemo(() => breakdown(current.filter((e) => e.qualification), DIMENSIONS.qualification.get), [current]);
+    if (!countries.length && !qualifications.length) return null;
+    return (
+        <div className="grid gap-4 md:grid-cols-2">
+            {countries.length > 0 && (
+                <Card>
+                    <CardHeader title="Overseas: preferred countries" subtitle={`${countries.reduce((s, r) => s + r.total, 0)} overseas enquiries with a country`} />
+                    <div className="p-5 pt-4"><BarList rows={countries.map((r) => ({ key: r.key, value: r.total, meta: `${r.converted} conv.` }))} /></div>
+                </Card>
+            )}
+            {qualifications.length > 0 && (
+                <Card>
+                    <CardHeader title="Applicant qualification" subtitle={`${qualifications.reduce((s, r) => s + r.total, 0)} enquiries that shared it`} />
+                    <div className="p-5 pt-4"><BarList rows={qualifications.slice(0, 8).map((r) => ({ key: r.key, value: r.total, meta: formatPercent(r.conversionRate, 0) + " conv." }))} /></div>
+                </Card>
+            )}
+        </div>
+    );
+}
+
 function SourceDetails({ current }: { current: Enquiry[] }) {
+    const campaigns = useMemo(() => breakdown(current.filter((e) => e.utm?.source || e.referrer), DIMENSIONS.campaign.get), [current]);
     const groups = useMemo(() => {
         return ["Newspaper", "Friends", "Teacher", "Other"]
             .map((src) => {
@@ -276,10 +301,16 @@ function SourceDetails({ current }: { current: Enquiry[] }) {
             })
             .filter((g) => g.rows.length);
     }, [current]);
-    if (!groups.length) return null;
+    if (!groups.length && !campaigns.length) return null;
     const titles: Record<string, string> = { Newspaper: "Newspapers", Friends: "Referring friends", Teacher: "Referring teachers", Other: "Other sources (as typed)" };
     return (
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+            {campaigns.length > 0 && (
+                <Card>
+                    <CardHeader title="Tracked campaigns" subtitle="From UTM links / referring sites" />
+                    <div className="p-5 pt-4"><BarList rows={campaigns.slice(0, 6).map((r) => ({ key: r.key, value: r.total, meta: `${r.converted} conv.` }))} /></div>
+                </Card>
+            )}
             {groups.map((g) => (
                 <Card key={g.src}>
                     <CardHeader title={titles[g.src]} />

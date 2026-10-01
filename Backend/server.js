@@ -34,8 +34,19 @@ app.use(cors({
     credentials: true
 }));
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '20kb' }));
+app.use(express.urlencoded({ extended: true, limit: '20kb' }));
+
+// Render (and most hosts) sit behind a proxy: needed so req.ip is the visitor's IP.
+app.set('trust proxy', 1);
+
+// Public enquiry form: throttle scripted spam per IP.
+const rateLimit = require('./middleware/rateLimit');
+app.post('/api/enquiries', rateLimit({
+    windowMs: 10 * 60 * 1000,
+    max: 20,
+    message: 'Too many submissions from this network. Please try again in a few minutes.',
+}));
 
 // Routes
 app.use('/api/enquiries', require('./routes/enquiryRoutes'));

@@ -13,7 +13,7 @@ import { cx } from "../lib/cx";
 import { enquiryApi, getErrorMessage, type EnquiryUpdate } from "../lib/api";
 import {
     addDays, ageInDays, followUpState, formatDateTime, formatDuration, formatRelative, getCategory, getCollege, getOwner,
-    getPriority, getProgram, getSource, getSourceDetail, getStatus, normalizeMobile, NOT_SPECIFIED, PRIORITIES, STATUSES,
+    getPriority, getProgram, getSource, publicReference, getSourceDetail, getStatus, normalizeMobile, NOT_SPECIFIED, PRIORITIES, STATUSES,
     startOfDay, toDate, uniqueValues,
 } from "../lib/analytics";
 
@@ -127,7 +127,7 @@ function EnquiryDetail({ enquiry: e, all, onChange, onDeleted }: { enquiry: Enqu
                         </div>
                         <p className="mt-1 text-sm text-slate-500">
                             {getCategory(e)}{getProgram(e) !== NOT_SPECIFIED && ` · ${getProgram(e)}`} · received {formatRelative(e.createdAt, now)}
-                            <span className="ml-2 font-mono text-xs text-slate-400">#{e._id.slice(-6)}</span>
+                            <span className="ml-2 font-mono text-xs text-slate-400" title="Reference shown to the visitor">{publicReference(e)}</span>
                         </p>
                     </div>
                     <div className="flex flex-wrap gap-2">
@@ -194,6 +194,9 @@ function EnquiryDetail({ enquiry: e, all, onChange, onDeleted }: { enquiry: Enqu
                                 <Field label="Mobile" value={<a href={`tel:${e.mobile}`} className="text-violet-700 hover:underline">{e.mobile}</a>} />
                                 <Field label="Email" value={e.email ? <a href={`mailto:${e.email}`} className="break-all text-violet-700 hover:underline">{e.email}</a> : "—"} />
                                 <Field label="College" value={getCollege(e)} />
+                                <Field label="Qualification" value={e.qualification || "Not provided"} />
+                                {e.passingYear ? <Field label="Passing year" value={e.passingYear} /> : null}
+                                <Field label="Prefers" value={[e.contactMethod, e.contactTime].filter(Boolean).join(" · ") || "Not provided"} />
                             </Section>
                             <Section title="Requirement">
                                 <Field label="Enquiry for" value={<Tag>{getCategory(e)}</Tag>} />
@@ -203,11 +206,20 @@ function EnquiryDetail({ enquiry: e, all, onChange, onDeleted }: { enquiry: Enqu
                                 {e.jobType && <Field label="Job type" value={e.jobType} />}
                                 {e.jobCategory && <Field label="Job role" value={e.jobCategory} />}
                                 {e.experience && <Field label="Experience" value={e.experience} />}
+                                {e.preferredCountry && <Field label="Preferred country" value={e.preferredCountry} />}
                             </Section>
                             <Section title="Source">
                                 <Field label="Heard via" value={getSource(e)} />
                                 {getSourceDetail(e) && <Field label={e.reference === "Newspaper" ? "Newspaper" : e.reference === "Other" ? "Details" : "Referred by"} value={getSourceDetail(e)} />}
+                                {e.utm?.source && <Field label="Campaign" value={[e.utm.source, e.utm.medium, e.utm.campaign].filter(Boolean).join(" / ")} />}
+                                {e.referrer && <Field label="Came from" value={e.referrer} />}
                             </Section>
+                            {e.message && (
+                                <div className="sm:col-span-2">
+                                    <h3 className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-violet-600">Message from the visitor</h3>
+                                    <p className="whitespace-pre-wrap rounded-xl bg-violet-50/60 px-3 py-2.5 text-sm text-slate-800">{e.message}</p>
+                                </div>
+                            )}
                             <Section title="Ownership">
                                 <Field label="Asked to meet" value={e.whomToMeet || "—"} />
                                 <AssignField current={e.assignedTo || ""} owners={owners} disabled={saving}
@@ -248,6 +260,7 @@ function EnquiryDetail({ enquiry: e, all, onChange, onDeleted }: { enquiry: Enqu
                         <CardHeader title="Key dates" />
                         <dl className="space-y-0.5 p-5 pt-3">
                             <Field label="Received" value={formatDateTime(e.createdAt)} />
+                            <Field label="Contact consent" value={e.consentAt ? formatDateTime(e.consentAt) : "Not recorded"} />
                             <Field label="Age" value={`${Math.floor(ageInDays(e, now))} days`} />
                             <Field label="First contacted" value={firstContact ? formatDateTime(firstContact) : "Not yet"} />
                             {firstContact && created && <Field label="Response time" value={formatDuration(firstContact.getTime() - created.getTime())} />}
