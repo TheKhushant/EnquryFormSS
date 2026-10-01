@@ -2,11 +2,6 @@ import { Link } from "react-router-dom";
 // import { motion } from "framer-motion";
 // import { ArrowRightIcon } from "@heroicons/react/24/outline";
 
-const raisedShadow =
-  "shadow-[8px_8px_16px_#d8b4fe,-8px_-8px_16px_#ffffff]";
-
-const insetShadow =
-  "shadow-[inset_6px_6px_12px_#d8b4fe,inset_-6px_-6px_12px_#ffffff]";
 
 export default function EnquiryHeader() {
   return (

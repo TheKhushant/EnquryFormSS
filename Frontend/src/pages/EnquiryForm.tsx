@@ -2,6 +2,7 @@ import { useState, type ChangeEvent, type FormEvent } from "react";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 import Layout from "../../components/site/Layout";
+import { API_BASE_URL } from "../lib/api";
 import {
     UserIcon,
     PhoneIcon,
@@ -12,8 +13,6 @@ import {
 } from "@heroicons/react/24/outline";
 // const [reference, setReference] = useState("");
 
-import { useEnquiries } from "../../contexts/EnquiryContext";
-
 export default function EnquiryForm() {
     // const accentColor = "#e5bcfb";
 
@@ -23,7 +22,6 @@ export default function EnquiryForm() {
     const insetShadow =
     "shadow-[inset_6px_6px_12px_#d8b4fe,inset_-6px_-6px_12px_#ffffff]";
 
-    const { addEnquiry } = useEnquiries();
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     // State for Thank You Page
@@ -104,7 +102,7 @@ export default function EnquiryForm() {
 
         try {
             const response = await axios.post(
-                "https://enquryformss-2.onrender.com/api/enquiries",
+                `${API_BASE_URL}/api/enquiries`,
                 submissionData
             );
 
@@ -113,7 +111,8 @@ export default function EnquiryForm() {
             // Success → Show Thank You Page
             setIsSubmitted(true);
 
-        } catch (error: any) {
+        } catch (err) {
+            const error = err as { response?: { data?: { message?: string }; status?: number }; request?: unknown; message?: string };
             console.log("FULL ERROR:", error);
 
             if (error.response) {
@@ -146,53 +145,6 @@ export default function EnquiryForm() {
         });
         setIsSubmitted(false);
     };
-
-    // ==================== THANK YOU PAGE ====================
-    const ThankYouPage = () => (
-        <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="min-h-screen  bg-[#f3efff] flex items-center justify-center py-16 px-4"
-        >
-            <div className="max-w-lg w-full text-center">
-                <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ type: "spring", stiffness: 100, damping: 12 }}
-                    className="mx-auto w-28 h-28 bg-white rounded-full flex items-center justify-center mb-8 shadow-[8px_8px_20px_#bebebe,-8px_-8px_20px_#ffffff]"
-                >
-                    <CheckCircleIcon className="w-20 h-20" style={{ color: "#22c55e" }} />
-                </motion.div>
-
-                <h1 className="text-5xl font-bold text-violet-900 mb-4">Thank You!</h1>
-                
-                <div className=" bg-[#f3efff] rounded-3xl p-10 shadow-[10px_10px_20px_#d8b4fe,-10px_-10px_20px_#ffffff] mb-8">
-                    <p className="text-2xl font-medium text-gray-700 mb-3">
-                        Your form has been submitted successfully
-                    </p>
-                    <p className="text-gray-600 text-lg">
-                        We will connect with you shortly.<br />
-                        Please wait for our team to reach out.
-                    </p>
-                </div>
-
-                <div className="space-y-4">
-                    <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={resetForm}
-                        className="w-full py-6 rounded-3xl bg-gradient-to-r from-[#e5bcfb] to-[#c084fc] text-white font-bold text-xl shadow-[8px_8px_16px_#bebebe,-8px_-8px_16px_#ffffff]"
-                    >
-                        Submit Another Enquiry
-                    </motion.button>
-
-                    {/* <p className="text-sm text-gray-500">
-                        You will receive a confirmation on your email shortly
-                    </p> */}
-                </div>
-            </div>
-        </motion.div>
-    );
 
     return (
         <Layout>
@@ -757,9 +709,58 @@ export default function EnquiryForm() {
                         </div>
                     </motion.div>
                 ) : (
-                    <ThankYouPage key="thankyou" />
+                    <ThankYouPage key="thankyou" onReset={resetForm} />
                 )}
             </AnimatePresence>
         </Layout>
+    );
+}
+
+// ==================== THANK YOU PAGE ====================
+function ThankYouPage({ onReset }: { onReset: () => void }) {
+    return (
+    <motion.div
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="min-h-screen  bg-[#f3efff] flex items-center justify-center py-16 px-4"
+    >
+        <div className="max-w-lg w-full text-center">
+            <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ type: "spring", stiffness: 100, damping: 12 }}
+                className="mx-auto w-28 h-28 bg-white rounded-full flex items-center justify-center mb-8 shadow-[8px_8px_20px_#bebebe,-8px_-8px_20px_#ffffff]"
+            >
+                <CheckCircleIcon className="w-20 h-20" style={{ color: "#22c55e" }} />
+            </motion.div>
+
+            <h1 className="text-5xl font-bold text-violet-900 mb-4">Thank You!</h1>
+            
+            <div className=" bg-[#f3efff] rounded-3xl p-10 shadow-[10px_10px_20px_#d8b4fe,-10px_-10px_20px_#ffffff] mb-8">
+                <p className="text-2xl font-medium text-gray-700 mb-3">
+                    Your form has been submitted successfully
+                </p>
+                <p className="text-gray-600 text-lg">
+                    We will connect with you shortly.<br />
+                    Please wait for our team to reach out.
+                </p>
+            </div>
+
+            <div className="space-y-4">
+                <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={onReset}
+                    className="w-full py-6 rounded-3xl bg-gradient-to-r from-[#e5bcfb] to-[#c084fc] text-white font-bold text-xl shadow-[8px_8px_16px_#bebebe,-8px_-8px_16px_#ffffff]"
+                >
+                    Submit Another Enquiry
+                </motion.button>
+
+                {/* <p className="text-sm text-gray-500">
+                    You will receive a confirmation on your email shortly
+                </p> */}
+            </div>
+        </div>
+    </motion.div>
     );
 }

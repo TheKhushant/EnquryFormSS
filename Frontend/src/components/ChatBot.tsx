@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { chatbotResponses } from "../data/chatbotData";
 import axios from "axios";
+import { API_BASE_URL } from "../lib/api";
 
 interface Message {
 sender: "user" | "bot";
@@ -91,7 +92,7 @@ const handleSend = async () => {
     if (leadStep === 2) {
         try {
             await axios.post(
-               "https://enquryformss-2.onrender.com/api/chat-leads",
+               `${API_BASE_URL}/api/chat-leads`,
                 {
                     name: leadName,
                     mobile: userInput,

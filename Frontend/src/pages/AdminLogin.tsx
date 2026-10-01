@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { isAdminLoggedIn, setAdminSession } from "../lib/auth";
 
 const raisedShadow = "shadow-[6px_6px_12px_#bebebe,-6px_-6px_12px_#ffffff]";
 const insetShadow = "shadow-[inset_4px_4px_8px_#bebebe,inset_-4px_-4px_8px_#ffffff]";
@@ -10,6 +11,8 @@ const adminPassword = "12345";
 
 export default function AdminLogin() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const redirectTo = (location.state as { from?: string } | null)?.from || "/dashboard";
   const [userId, setUserId] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -23,7 +26,8 @@ export default function AdminLogin() {
     // Simple credential check
     if (userId === adminId && password === adminPassword) {
       setTimeout(() => {
-        navigate("/dashboard");
+        setAdminSession(true);
+        navigate(redirectTo, { replace: true });
       }, 600);
     } else {
       setTimeout(() => {
@@ -32,6 +36,8 @@ export default function AdminLogin() {
       }, 500);
     }
   };
+
+  if (isAdminLoggedIn()) return <Navigate to={redirectTo} replace />;
 
   return (
     <div className="min-h-screen  bg-[#f3efff] flex items-center justify-center p-4">
@@ -108,9 +114,6 @@ export default function AdminLogin() {
             </motion.button>
           </form>
 
-          <p className="text-center text-xs text-gray-500 mt-8">
-            Default Credentials: <span className="font-mono">admin / 12345</span>
-          </p>
         </div>
       </motion.div>
     </div>

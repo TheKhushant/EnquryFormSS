@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
+import { API_BASE_URL } from "../src/lib/api";
 
 type Enquiry = {
     id: number;
@@ -53,7 +54,7 @@ export function EnquiryProvider({ children }: { children: ReactNode }) {
 
     const addEnquiry = async (data: Omit<Enquiry, "id" | "date">) => {
         try {
-            const res = await fetch("https://enquryformss-2.onrender.com/api/chat-leads", {
+            const res = await fetch(`${API_BASE_URL}/api/chat-leads`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
